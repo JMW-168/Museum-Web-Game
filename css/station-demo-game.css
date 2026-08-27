@@ -782,7 +782,38 @@
 }
 
 .station-demo-fire .fire-beat {
-    z-index: 4;
+    z-index: 6;
+    opacity: 1;
+    visibility: visible;
+}
+
+.station-demo-fire .fire-beat img {
+    position: relative;
+    z-index: 1;
+}
+
+.fire-danger-alert {
+    position: absolute;
+    left: 50%;
+    top: 18%;
+    z-index: 7;
+    transform: translateX(-50%) scale(0.94);
+    opacity: 0;
+    pointer-events: none;
+    color: #ffef7a;
+    font-size: clamp(28px, 6vw, 68px);
+    font-weight: 900;
+    text-shadow:
+        0 3px 0 #8b1908,
+        0 0 18px rgba(255, 53, 23, 0.88),
+        0 0 38px rgba(255, 128, 29, 0.72);
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.fire-danger-alert.active {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    animation: fire-danger-pulse 0.48s ease-in-out infinite alternate;
 }
 
 .station-demo-fire .fire-target::before {
@@ -903,6 +934,11 @@
 @keyframes fire-water-drop {
     0% { transform: translateY(-12px) rotate(12deg); }
     100% { transform: translateY(48px) rotate(-8deg); }
+}
+
+@keyframes fire-danger-pulse {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.35); }
 }
 
 @media (orientation: landscape) and (max-height: 560px) {
