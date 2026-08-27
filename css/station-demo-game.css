@@ -540,3 +540,157 @@
         min-height: 86px;
     }
 }
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .station-panel,
+    .station-play {
+        width: min(94%, 860px);
+        min-height: auto;
+        max-height: calc(100% - 12px);
+        padding: 8px 12px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 58px auto 64px 14px auto;
+        gap: 5px;
+    }
+
+    .station-hud {
+        gap: 6px;
+        font-size: 11px;
+        line-height: 1.1;
+    }
+
+    .station-hud span {
+        padding: 3px 6px;
+    }
+
+    .fire-stage {
+        min-height: 58px;
+    }
+
+    .fire-stove-img {
+        width: min(26%, 150px);
+        max-height: 64px;
+    }
+
+    .fire-flame-img {
+        width: min(8%, 40px);
+        max-height: 42px;
+        bottom: 5px;
+    }
+
+    .fire-help-row {
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .fire-help-row span {
+        padding: 2px 6px;
+    }
+
+    .fire-track {
+        height: 64px;
+    }
+
+    .fire-target {
+        width: 48px;
+        height: 48px;
+        border-width: 3px;
+        font-size: 11px;
+    }
+
+    .fire-beat {
+        width: 44px;
+        height: 44px;
+    }
+
+    .fire-beat.big {
+        width: 56px;
+        height: 48px;
+    }
+
+    .fire-meter {
+        height: 14px;
+    }
+
+    .station-feedback {
+        min-height: 21px;
+        font-size: 16px;
+        line-height: 1.15;
+    }
+
+    .station-actions.compact {
+        gap: 8px;
+        margin-top: 3px;
+    }
+
+    .station-actions.compact button {
+        margin: 0 auto;
+        padding: 5px 10px;
+        min-width: 76px;
+        font-size: 11px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+    .station-panel,
+    .station-play {
+        max-height: calc(100% - 8px);
+        padding: 6px 10px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 44px auto 52px 12px auto;
+        gap: 4px;
+    }
+
+    .fire-stage {
+        min-height: 44px;
+    }
+
+    .fire-stove-img {
+        width: min(22%, 126px);
+        max-height: 48px;
+    }
+
+    .fire-flame-img {
+        max-height: 32px;
+        bottom: 4px;
+    }
+
+    .fire-help-row {
+        font-size: 10px;
+    }
+
+    .fire-track {
+        height: 52px;
+    }
+
+    .fire-target {
+        width: 42px;
+        height: 42px;
+        font-size: 10px;
+    }
+
+    .fire-beat {
+        width: 38px;
+        height: 38px;
+    }
+
+    .fire-beat.big {
+        width: 48px;
+        height: 40px;
+    }
+
+    .station-feedback {
+        min-height: 18px;
+        font-size: 14px;
+    }
+
+    .station-actions.compact button {
+        padding: 4px 9px;
+        min-width: 70px;
+        font-size: 10px;
+    }
+}
