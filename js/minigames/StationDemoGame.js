@@ -7,6 +7,7 @@ const StationDemoGame = {
     keyHandler: null,
     fireMusic: null,
     fireMusicSrc: 'assets/sounds/picking-tea-girl.mp3',
+    fireMusicStarted: false,
     fireDurationMs: 60000,
     fireBeatTimes: [
         2.670, 3.646, 5.108, 6.594, 7.570, 8.545,
@@ -100,6 +101,7 @@ const StationDemoGame = {
         this.container.querySelector('.station-primary').addEventListener('click', () => {
             this.playClick();
             if (stationId === 'fire') {
+                this.startFireMusic();
                 const fireAssets = window.MinigameAssets && typeof window.MinigameAssets.getStationFirePreloadUrls === 'function'
                     ? window.MinigameAssets.getStationFirePreloadUrls()
                     : [];
@@ -115,7 +117,7 @@ const StationDemoGame = {
     },
 
     startFireGame() {
-        this.startFireMusic();
+        this.syncFireMusicToGameStart();
         this.state = {
             stationId: 'fire',
             score: 0,
@@ -366,10 +368,6 @@ const StationDemoGame = {
     },
 
     getFireElapsedMs(time) {
-        if (this.fireMusic && !this.fireMusic.paused && Number.isFinite(this.fireMusic.currentTime)) {
-            return this.fireMusic.currentTime * 1000;
-        }
-
         return time - this.state.startedAt;
     },
 
@@ -629,18 +627,45 @@ const StationDemoGame = {
             this.fireMusic = new Audio(this.fireMusicSrc);
             this.fireMusic.loop = true;
             this.fireMusic.volume = 0.55;
+            this.fireMusic.preload = 'auto';
         }
 
         this.fireMusic.currentTime = 0;
-        this.fireMusic.play().catch((error) => {
+        this.fireMusic.play().then(() => {
+            this.fireMusicStarted = true;
+        }).catch((error) => {
+            this.fireMusicStarted = false;
             if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
         });
+    },
+
+    syncFireMusicToGameStart() {
+        if (!this.fireMusic) {
+            this.startFireMusic();
+            return;
+        }
+
+        try {
+            this.fireMusic.currentTime = 0;
+        } catch (error) {
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂重設失敗:', error);
+        }
+
+        if (this.fireMusic.paused) {
+            this.fireMusic.play().then(() => {
+                this.fireMusicStarted = true;
+            }).catch((error) => {
+                this.fireMusicStarted = false;
+                if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+            });
+        }
     },
 
     stopFireMusic() {
         if (!this.fireMusic) return;
         this.fireMusic.pause();
         this.fireMusic.currentTime = 0;
+        this.fireMusicStarted = false;
     }
 };
 

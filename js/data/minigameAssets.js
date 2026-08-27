@@ -44,8 +44,7 @@
         'assets/images/station-fire/fire-small.png',
         'assets/images/station-fire/fire-large.png',
         'assets/images/station-fire/wood-small.png',
-        'assets/images/station-fire/wood-large.png',
-        'assets/sounds/picking-tea-girl.mp3'
+        'assets/images/station-fire/wood-large.png'
     ];
 
     window.MinigameAssets = {
