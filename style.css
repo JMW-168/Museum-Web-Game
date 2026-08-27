@@ -59,10 +59,11 @@ body {
     padding: 0;
     background: #000;
     font-family: 'LXGW WenKai TC', 'DFKai-SB', 'Kaiti TC', '標楷體', '微軟正黑體', sans-serif;
-    height: 100dvh;
+    height: var(--app-height, 100dvh);
     width: 100%;
     position: relative;
     padding-bottom: env(safe-area-inset-bottom);
+    overflow: hidden;
 }
 
 /* 所有文字預設繼承 body 的字型，不強制覆蓋 */
@@ -113,17 +114,46 @@ body.child-mode #loading-screen {
 
 /* ========== 其餘原始樣式保持不變 ========== */
 html {
-    height: 100vh;
+    height: var(--app-height, 100vh);
     height: -webkit-fill-available;
+    overflow: hidden;
 }
 
 /* 遊戲主容器 */
 #game-wrapper {
     position: relative;
     width: min(100vw, calc(100dvh * 16 / 9));
-    height: min(100dvh, calc(100vw * 9 / 16));
+    width: min(100vw, calc(var(--app-height, 100dvh) * 16 / 9));
+    height: min(var(--app-height, 100dvh), calc(100vw * 9 / 16));
     margin: auto;
     overflow: hidden;
+}
+
+.install-app-btn {
+    position: absolute;
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 95;
+    width: auto;
+    min-width: 86px;
+    max-width: 32%;
+    margin: 0;
+    padding: 8px 14px;
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    border-radius: 6px;
+    background: rgba(23, 38, 45, 0.92);
+    color: #ffd700;
+    font-size: clamp(13px, 1.8vw, 16px);
+    line-height: 1.2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.38);
+}
+
+.install-app-btn:hover {
+    background: rgba(58, 85, 83, 0.95);
+}
+
+.install-app-btn[hidden] {
+    display: none;
 }
 
 /* Loading 畫面 */
@@ -1237,6 +1267,14 @@ body.child-mode .tab-title {
         bottom: 5px;
         right: 5px;
         padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .install-app-btn {
+        right: max(6px, env(safe-area-inset-right));
+        bottom: max(6px, env(safe-area-inset-bottom));
+        min-width: 64px;
+        padding: 5px 10px;
         font-size: 11px;
     }
 

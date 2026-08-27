@@ -5,13 +5,34 @@ const StationDemoGame = {
     animationId: null,
     timers: [],
     keyHandler: null,
+    fireMusic: null,
+    fireMusicSrc: 'assets/sounds/picking-tea-girl.mp3',
+    fireDurationMs: 60000,
+    fireBeatTimes: [
+        2.670, 3.158, 3.646, 4.133, 5.108, 5.596,
+        6.594, 7.082, 7.570, 8.057, 8.545, 9.776,
+        10.542, 11.471, 11.935, 12.423, 13.166, 13.700,
+        14.466, 15.186, 15.859, 16.370, 17.136, 17.903,
+        18.390, 19.110, 19.853, 20.341, 21.084, 21.827,
+        22.314, 22.825, 23.290, 23.777, 24.265, 25.008,
+        25.751, 26.239, 27.237, 27.701, 28.212, 28.932,
+        29.675, 30.186, 30.906, 31.649, 32.136, 32.856,
+        33.367, 34.110, 34.830, 35.573, 36.061, 36.804,
+        37.547, 38.034, 38.545, 39.033, 39.520, 40.008,
+        40.728, 41.471, 41.958, 42.701, 43.421, 43.932,
+        44.931, 45.418, 45.906, 46.417, 46.881, 47.369,
+        47.856, 48.576, 49.342, 49.853, 50.318, 50.805,
+        51.780, 52.268, 52.779, 53.267, 53.754, 54.242,
+        54.753, 55.263, 55.705, 56.216, 56.703, 57.214,
+        57.702, 58.189, 58.654, 59.164, 59.675
+    ],
 
     stations: {
         fire: {
             kicker: '關卡一 / 站點 1',
             title: '灶台生火',
             subtitle: '看準節拍添柴，讓火候維持在剛好的溫度。',
-            intro: '木柴會沿著節奏軌道移動。當木柴進入金色火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；火候超過綠色區間右側時，按「噴水」少量降火。最多可以失誤 5 次。',
+            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；火候超過綠色區間右側時，按「噴水」少量降火。最多可以失誤 5 次。',
             success: '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
             fail: '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
         },
@@ -33,6 +54,7 @@ const StationDemoGame = {
         showScene('game-container');
         this.hideLegacyGameUi();
         this.createShell(stationId);
+        if (stationId === 'fire') this.startFireMusic();
         this.showIntro(stationId);
     },
 
@@ -99,6 +121,7 @@ const StationDemoGame = {
     },
 
     startFireGame() {
+        this.startFireMusic();
         this.state = {
             stationId: 'fire',
             score: 0,
@@ -109,18 +132,18 @@ const StationDemoGame = {
             startedAt: performance.now(),
             nextBeatIndex: 0,
             nextSpawnAt: 0,
-            totalBeats: 18,
+            totalBeats: this.fireBeatTimes.length,
             idealMin: 45,
             idealMax: 72,
             safeMin: 30,
             safeMax: 88,
-            stableMs: 0,
             unstableMs: 0,
             maxMistakes: 5,
             mistakesRemaining: 5,
+            durationMs: this.fireDurationMs,
             lastTickAt: performance.now(),
             finished: false,
-            lastResult: '等木柴進入金色火圈再添柴',
+            lastResult: '等木柴進入灶台火圈再添柴',
         };
 
         this.container.innerHTML = `
@@ -129,30 +152,32 @@ const StationDemoGame = {
                     <div>${this.station.kicker}</div>
                     <div>分數 <span data-score>0</span></div>
                     <div>火候 <span data-fire>50</span>%</div>
-                    <div>穩定 <span data-stable>0</span>%</div>
-                    <div>還可失誤 <span data-mistakes>5</span> 次</div>
+                    <div>時間 <span data-time>60</span> 秒</div>
                 </div>
-                <div class="fire-stage" aria-label="灶台火候">
-                    <img class="fire-stove-img" src="assets/images/station-fire/stove.png" alt="灶台">
-                    <img class="fire-flame-img" data-flame src="assets/images/station-fire/fire-small.png" alt="火焰">
-                </div>
+                <button type="button" class="station-corner-exit" data-exit aria-label="返回入口">返回</button>
                 <div class="fire-help-row">
-                    <span>木柴進入金色火圈：按添柴</span>
+                    <span>木柴進入灶台火圈：按添柴</span>
                     <span data-water-hint>火候超過 72%：按噴水</span>
                 </div>
                 <div class="fire-track" aria-label="節奏軌道">
-                    <div class="fire-target">添柴點</div>
+                    <div class="fire-danger-alert" data-fire-danger>快要火燒厝了</div>
+                    <div class="fire-target">
+                        <img class="fire-stove-img" src="assets/images/station-fire/stove.png" alt="灶台">
+                        <img class="fire-flame-img" data-flame src="assets/images/station-fire/fire-small.png" alt="火焰">
+                        <div class="fire-water-burst" data-water-effect aria-hidden="true">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
                 </div>
                 <div class="fire-meter">
                     <div class="fire-ideal-zone"></div>
                     <span></span>
                 </div>
-                <div class="station-feedback">等木柴進入金色火圈再添柴</div>
+                <div class="station-feedback">等木柴進入灶台火圈再添柴</div>
                 <div class="station-actions compact">
                     <button type="button" class="station-primary" data-hit>添柴</button>
-                    <button type="button" class="station-water" data-water>噴水</button>
-                    <button type="button" class="station-secondary" data-exit>返回入口</button>
                 </div>
+                <button type="button" class="station-water station-water-fixed" data-water>噴水</button>
             </div>
         `;
 
@@ -177,30 +202,30 @@ const StationDemoGame = {
     tickFire(time) {
         if (!this.state || this.state.finished) return;
 
-        const elapsed = time - this.state.startedAt;
+        const elapsed = this.getFireElapsedMs(time);
         const delta = Math.min(80, time - this.state.lastTickAt);
         this.state.lastTickAt = time;
 
         while (
             this.state.nextBeatIndex < this.state.totalBeats &&
-            elapsed >= this.state.nextSpawnAt
+            elapsed >= this.getFireSpawnAt(this.state.nextBeatIndex)
         ) {
             this.spawnFireBeat(time);
-            this.state.nextSpawnAt += this.getFireSpawnEvery(this.state.nextBeatIndex);
             this.state.nextBeatIndex++;
         }
 
         const track = this.container.querySelector('.fire-track');
         const trackWidth = track ? track.clientWidth : 1;
-        const targetX = trackWidth * 0.76;
+        const targetX = this.getFireTargetX(trackWidth);
         const stillActive = [];
 
         this.state.beats.forEach((beat) => {
-            const progress = (time - beat.spawnedAt) / beat.travelMs;
-            const x = progress * trackWidth;
+            const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
+            const startX = trackWidth + beat.el.offsetWidth;
+            const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
 
-            if (!beat.hit && x > targetX + 100) {
+            if (!beat.hit && x < targetX - 100) {
                 beat.hit = true;
                 this.applyFireScore('木柴錯過了', -6, -10, true, true);
                 beat.el.remove();
@@ -215,11 +240,8 @@ const StationDemoGame = {
         this.updateFireStability(delta);
         this.renderFireHud();
 
-        if (this.state.judged >= this.state.totalBeats && this.state.beats.length === 0) {
-            const totalMs = time - this.state.startedAt;
-            const stableRatio = totalMs > 0 ? this.state.stableMs / totalMs : 0;
-            const success = stableRatio >= 0.45 && this.isFireInSafeRange();
-            this.showResult(success);
+        if (elapsed >= this.state.durationMs) {
+            this.showFireResult();
             return;
         }
 
@@ -243,7 +265,8 @@ const StationDemoGame = {
         this.state.beats.push({
             el: beat,
             type,
-            spawnedAt: time,
+            spawnedAtMs: this.getFireSpawnAt(this.state.nextBeatIndex),
+            targetAtMs: this.fireBeatTimes[this.state.nextBeatIndex] * 1000,
             travelMs: this.getFireTravelMs(this.state.nextBeatIndex),
             hit: false
         });
@@ -254,7 +277,7 @@ const StationDemoGame = {
 
         const track = this.container.querySelector('.fire-track');
         const trackWidth = track ? track.clientWidth : 1;
-        const targetX = trackWidth * 0.76;
+        const targetX = this.getFireTargetX(trackWidth);
         let best = null;
         let bestDistance = Infinity;
 
@@ -293,17 +316,22 @@ const StationDemoGame = {
         if (countMistake) this.state.mistakesRemaining = Math.max(0, this.state.mistakesRemaining - 1);
         this.state.score = Math.max(0, this.state.score + points);
         this.state.fire = Math.max(0, Math.min(100, this.state.fire + fireDelta));
-        const feedback = countMistake ? `${label}，還可失誤 ${this.state.mistakesRemaining} 次` : label;
+        const feedback = countMistake ? `${label}，扣分但繼續` : label;
         this.state.lastResult = feedback;
         this.container.querySelector('.station-feedback').textContent = feedback;
         this.playClick();
         this.renderFireHud();
-        if (this.state.mistakesRemaining <= 0) this.showResult(false);
     },
 
     sprayWater() {
         if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
         this.state.fire = Math.max(0, this.state.fire - 5);
+        const waterEffect = this.container.querySelector('[data-water-effect]');
+        if (waterEffect) {
+            waterEffect.classList.remove('active');
+            void waterEffect.offsetWidth;
+            waterEffect.classList.add('active');
+        }
         this.container.querySelector('.station-feedback').textContent = this.state.fire > this.state.idealMax
             ? '噴水降火，再按一次可以更穩'
             : '噴水降火，回到綠色區間就先停';
@@ -316,14 +344,24 @@ const StationDemoGame = {
         return Math.max(0, Math.min(1, index / (this.state.totalBeats - 1)));
     },
 
-    getFireSpawnEvery(index) {
-        const progress = this.getFireProgress(index);
-        return 1380 - (progress * 420);
+    getFireTravelMs(index) {
+        return index < 4 ? 2100 : 1950;
     },
 
-    getFireTravelMs(index) {
-        const progress = this.getFireProgress(index);
-        return 3100 - (progress * 860);
+    getFireSpawnAt(index) {
+        return Math.max(0, (this.fireBeatTimes[index] * 1000) - this.getFireTravelMs(index));
+    },
+
+    getFireElapsedMs(time) {
+        if (this.fireMusic && !this.fireMusic.paused && Number.isFinite(this.fireMusic.currentTime)) {
+            return this.fireMusic.currentTime * 1000;
+        }
+
+        return time - this.state.startedAt;
+    },
+
+    getFireTargetX(trackWidth) {
+        return trackWidth * 0.24;
     },
 
     updateFireStability(delta) {
@@ -332,15 +370,12 @@ const StationDemoGame = {
         this.state.fire = Math.max(0, Math.min(100, this.state.fire + (drift * delta)));
 
         if (inIdeal) {
-            this.state.stableMs += delta;
             this.state.unstableMs = Math.max(0, this.state.unstableMs - delta * 0.4);
         } else {
             this.state.unstableMs += delta;
         }
 
-        if (!this.isFireInSafeRange() && this.state.unstableMs > 3200) {
-            this.showResult(false);
-        }
+        if (!this.isFireInSafeRange() && this.state.unstableMs > 3200) this.state.unstableMs = 3200;
     },
 
     isFireInIdealRange() {
@@ -354,19 +389,18 @@ const StationDemoGame = {
     renderFireHud() {
         const score = this.container.querySelector('[data-score]');
         const fire = this.container.querySelector('[data-fire]');
-        const stable = this.container.querySelector('[data-stable]');
-        const mistakes = this.container.querySelector('[data-mistakes]');
+        const time = this.container.querySelector('[data-time]');
         const meter = this.container.querySelector('.fire-meter span');
         const idealZone = this.container.querySelector('.fire-ideal-zone');
         const waterHint = this.container.querySelector('[data-water-hint]');
         const waterButton = this.container.querySelector('[data-water]');
+        const dangerAlert = this.container.querySelector('[data-fire-danger]');
         const flame = this.container.querySelector('[data-flame]');
         if (score) score.textContent = this.state.score;
         if (fire) fire.textContent = Math.round(this.state.fire);
-        if (mistakes) mistakes.textContent = this.state.mistakesRemaining;
-        if (stable) {
-            const elapsed = Math.max(1, performance.now() - this.state.startedAt);
-            stable.textContent = Math.min(100, Math.round((this.state.stableMs / elapsed) * 100));
+        if (time) {
+            const elapsed = this.getFireElapsedMs(performance.now());
+            time.textContent = Math.max(0, Math.ceil((this.state.durationMs - elapsed) / 1000));
         }
         if (meter) meter.style.width = `${this.state.fire}%`;
         if (idealZone) {
@@ -376,11 +410,13 @@ const StationDemoGame = {
         const needsWater = this.state.fire > this.state.idealMax;
         if (waterHint) waterHint.classList.toggle('active', needsWater);
         if (waterButton) waterButton.classList.toggle('needs-water', needsWater);
+        if (dangerAlert) dangerAlert.classList.toggle('active', this.state.fire > this.state.safeMax);
         if (flame) {
             flame.src = this.state.fire > this.state.idealMax
                 ? 'assets/images/station-fire/fire-large.png'
                 : 'assets/images/station-fire/fire-small.png';
-            flame.style.transform = `translateX(-50%) scale(${0.62 + (this.state.fire / 130)})`;
+            const flameScale = 0.55 + (this.state.fire / 75);
+            flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
     },
 
@@ -480,13 +516,28 @@ const StationDemoGame = {
         if (stability) stability.textContent = this.state.stability;
     },
 
+    showFireResult() {
+        if (!this.state || this.state.stationId !== 'fire') return;
+        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 58) * 2);
+        const mistakeBonus = this.state.mistakesRemaining * 40;
+        const totalScore = Math.round(this.state.score + fireScore + mistakeBonus);
+        const success = totalScore >= 2400 && this.isFireInSafeRange();
+        this.state.score = totalScore;
+        this.station.fireSummary = `分數 ${totalScore}，火候 ${Math.round(this.state.fire)}%，失誤 ${this.state.maxMistakes - this.state.mistakesRemaining} 次。`;
+        this.showResult(success);
+    },
+
     showResult(success) {
         if (!this.state) return;
         this.state.finished = true;
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
+        this.stopFireMusic();
 
-        const message = success ? this.station.success : this.station.fail;
+        const summary = this.state.stationId === 'fire' && this.station.fireSummary
+            ? `${this.station.fireSummary} `
+            : '';
+        const message = summary + (success ? this.station.success : this.station.fail);
         this.container.innerHTML = `
             <section class="station-panel station-result-panel">
                 <div class="station-kicker-line">${this.station.kicker}</div>
@@ -500,7 +551,10 @@ const StationDemoGame = {
         `;
 
         this.container.querySelector('[data-retry]').addEventListener('click', () => {
-            if (this.state.stationId === 'fire') this.startFireGame();
+            if (this.state.stationId === 'fire') {
+                this.startFireMusic();
+                this.startFireGame();
+            }
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
@@ -518,6 +572,7 @@ const StationDemoGame = {
         this.animationId = null;
         if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);
         this.keyHandler = null;
+        this.stopFireMusic();
         if (this.container && this.container.parentNode) this.container.remove();
         this.container = null;
         this.state = null;
@@ -529,6 +584,25 @@ const StationDemoGame = {
 
     playWrong() {
         if (typeof AudioManager !== 'undefined') AudioManager.playSFX('assets/sounds/wrong.mp3');
+    },
+
+    startFireMusic() {
+        if (!this.fireMusic) {
+            this.fireMusic = new Audio(this.fireMusicSrc);
+            this.fireMusic.loop = true;
+            this.fireMusic.volume = 0.55;
+        }
+
+        this.fireMusic.currentTime = 0;
+        this.fireMusic.play().catch((error) => {
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+        });
+    },
+
+    stopFireMusic() {
+        if (!this.fireMusic) return;
+        this.fireMusic.pause();
+        this.fireMusic.currentTime = 0;
     }
 };
 

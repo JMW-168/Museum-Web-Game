@@ -1,8 +1,8 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v8';
+const CACHE_NAME = 'museum-web-game-v15';
 
-// 需要快取的檔案列表（您的遊戲所有核心檔案）
+// 只預快取核心殼層；大型圖片改由 fetch 時漸進快取，避免手機更新時卡在 loading。
 const urlsToCache = [
   './',
   'index.html',
@@ -32,73 +32,6 @@ const urlsToCache = [
   'js/minigames/MemoryGameV2.js',
   'js/minigames/CatchGame.js',
   'js/minigames/StationDemoGame.js',
-
-  // Catch game assets
-  'assets/images/market.jpg',
-  'assets/images/items/豆花.png',
-  'assets/images/ch3/game/thin_mushroom.png',
-  'assets/images/ch3/game/star_anise.png',
-  'assets/images/ch3/game/white_pepper.png',
-  'assets/images/ch3/game/black_pepper.png',
-  'assets/images/ch3/game/broken_mushroom.png',
-
-  // 如果有圖片資源（可選）
-  'assets/images/title2.png',
-  'assets/images/intro/封面.jpg',
-  'assets/images/demo/entry-bg.png',
-  'assets/images/station-fire/stove.png',
-  'assets/images/station-fire/fire-small.png',
-  'assets/images/station-fire/fire-large.png',
-  'assets/images/station-fire/wood-small.png',
-  'assets/images/station-fire/wood-large.png',
-  'assets/images/ch1/background.png',
-  'assets/images/characters/阿斗仔.png',
-  'assets/images/ch2/background.png',
-  'assets/images/ch2/bg.png',
-  'assets/images/ch2/面板.png',
-  'assets/images/ch2/資訊欄.png',
-  'assets/images/ch2/卡背.png',
-
-  // Level 1 需要的圖片
-'assets/images/defense/level1/bg.png',
-'assets/images/defense/level1/player.png',
-'assets/images/defense/level1/enemy.png',
-'assets/images/defense/level1/stone.png',
-'assets/images/defense/level1/projectile.png',
-'assets/images/defense/level1/projectile_hit.png',
-'assets/images/defense/level1/shield.png',
-'assets/images/defense/level1/aoe_line.png',
-
-// Level 2 需要的圖片
-'assets/images/defense/level2/bg.png',
-'assets/images/defense/level2/player.png',
-'assets/images/defense/level2/enemy.png',
-'assets/images/defense/level2/stone.png',
-'assets/images/defense/level2/projectile.png',
-'assets/images/defense/level2/projectile_hit.png',
-'assets/images/defense/level2/shield.png',
-'assets/images/defense/level2/aoe_line.png',
-
-// Level 3 需要的圖片
-'assets/images/defense/level3/bg.png',
-'assets/images/defense/level3/player.png',
-'assets/images/defense/level3/enemy.png',
-'assets/images/defense/level3/stone.png',
-'assets/images/defense/level3/projectile.png',
-'assets/images/defense/level3/projectile_hit.png',
-'assets/images/defense/level3/shield.png',
-'assets/images/defense/level3/aoe_line.png',
-'assets/images/defense/level3/heavy_enemy.png',
-  
-  // chapter2 - 記憶遊戲需要的圖片
-  'assets/images/memory/詹永豐米店.png',
-  'assets/images/memory/其實豆製所.png',
-  'assets/images/memory/彰化北斗肉圓.png',
-  'assets/images/memory/正老店阿美.png',
-  'assets/images/memory/阿在伯炸彈蔥油餅.png',
-  'assets/images/memory/奠安宮楊記炸物.png',
-  'assets/images/memory/碗粿.png',
-
 ];
 
 // ========== 安裝 Service Worker ==========
