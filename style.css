@@ -1,0 +1,1300 @@
+/* 載入 Google Fonts 的 LXGW WenKai TC (霞鶩文楷) - 成人模式使用 */
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap');
+
+/* 注音字型定義 - 小朋友模式使用 */
+@font-face {
+    font-family: 'BpmfZihiKai';
+    src: url('./assets/fonts/BpmfZihiKaiStd-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ========== 禁止長按選取文字（提升手機遊戲體驗）========== */
+* {
+    -webkit-tap-highlight-color: transparent;  /* 移除點擊時的灰色背景 */
+    -webkit-touch-callout: none;              /* 禁止長按選單（複製/貼上） */
+    -webkit-user-select: none;                /* Safari 禁止選取 */
+    -khtml-user-select: none;                 /* Konqueror 禁止選取 */
+    -moz-user-select: none;                   /* Firefox 禁止選取 */
+    -ms-user-select: none;                    /* IE/Edge 禁止選取 */
+    user-select: none;                        /* 標準語法禁止選取 */
+}
+
+/* 對話文字保留選取功能（方便閱讀，但不會影響遊戲體驗） */
+#dialogue-text,
+#npc-name {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+/* 選項按鈕確保文字不可選取（但按鈕可點擊） */
+#options-container button,
+.option-btn {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* 所有按鈕確保文字不可選取 */
+button,
+.age-btn,
+.back-btn,
+.skip-btn,
+.confirm-btn,
+#result-btn,
+.level-buttons button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* 基礎樣式：預設成人模式字型 */
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    font-family: 'LXGW WenKai TC', 'DFKai-SB', 'Kaiti TC', '標楷體', '微軟正黑體', sans-serif;
+    height: 100dvh;
+    width: 100%;
+    position: relative;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 所有文字預設繼承 body 的字型，不強制覆蓋 */
+* {
+    font-family: inherit;
+}
+
+/* ========== 小朋友模式：僅特定元素套用注音字型 ========== */
+body.child-mode #npc-name,
+body.child-mode #dialogue-text,
+body.child-mode #options-container button,
+body.child-mode .defense-msg,
+body.child-mode .defense-combo,
+body.child-mode .defense-hint {
+    font-family: 'BpmfZihiKai', 'LXGW WenKai TC', 'DFKai-SB', 'Kaiti TC', '標楷體', '微軟正黑體', sans-serif !important;
+}
+
+/* 確保對話框內所有文字（包含動態內容）都套用注音 */
+body.child-mode #dialog-box,
+body.child-mode #dialog-box * {
+    font-family: inherit; /* 繼承上面指定的特定元素字型 */
+}
+
+/* 小朋友模式下，選項按鈕文字專用字型（已在上方定義，此為加強） */
+body.child-mode #options-container button {
+    font-family: 'BpmfZihiKai', 'LXGW WenKai TC', 'DFKai-SB', 'Kaiti TC', '標楷體', '微軟正黑體', sans-serif !important;
+}
+
+/* 防禦小遊戲相關文字（若有需要可保留） */
+body.child-mode .defense-msg,
+body.child-mode .defense-combo,
+body.child-mode .defense-hint {
+    font-family: 'BpmfZihiKai', 'LXGW WenKai TC', 'DFKai-SB', 'Kaiti TC', '標楷體', '微軟正黑體', sans-serif !important;
+}
+
+/* 其餘所有元件（按鈕、標題、一般文字）維持成人模式字型，不套用注音 */
+body.child-mode button:not(#options-container button),
+body.child-mode h1,
+body.child-mode h2,
+body.child-mode .back-btn,
+body.child-mode .skip-btn,
+body.child-mode .level-buttons button,
+body.child-mode .age-btn,
+body.child-mode .confirm-dialog-content,
+body.child-mode #loading-screen {
+    font-family: 'LXGW WenKai TC', 'DFKai-SB', 'Kaiti TC', '標楷體', '微軟正黑體', sans-serif !important;
+}
+
+/* ========== 其餘原始樣式保持不變 ========== */
+html {
+    height: 100vh;
+    height: -webkit-fill-available;
+}
+
+/* 遊戲主容器 */
+#game-wrapper {
+    position: relative;
+    width: min(100vw, calc(100dvh * 16 / 9));
+    height: min(100dvh, calc(100vw * 9 / 16));
+    margin: auto;
+    overflow: hidden;
+}
+
+/* Loading 畫面 */
+#loading-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    color: #e67e22;
+    font-family: '微軟正黑體', sans-serif;
+    backdrop-filter: blur(3px);
+}
+
+.loading-content {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #e67e22;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #333;
+    border-top: 5px solid #e67e22;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-progress {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+/* ========== 年齡選擇視窗 ========== */
+.age-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.age-dialog-content {
+    background: linear-gradient(145deg, #2c3e50, #1a2632);
+    border: 4px solid #e67e22;
+    border-radius: clamp(20px, 4vw, 30px);
+    padding: clamp(20px, 5vw, 40px);
+    max-width: 600px;
+    width: 80%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: ageDialogAppear 0.5s ease-out;
+}
+
+@keyframes ageDialogAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.age-dialog h2 {
+    color: #ffd700;
+    font-size: clamp(24px, 5vw, 40px);
+    margin: 0 0 clamp(8px, 2vh, 10px) 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.age-subtitle {
+    color: #e67e22;
+    font-size: clamp(14px, 2.5vw, 20px);
+    margin-bottom: clamp(20px, 5vh, 30px);
+    opacity: 0.9;
+}
+
+.age-buttons {
+    display: flex;
+    gap: clamp(15px, 3vw, 30px);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.age-btn {
+    flex: 1;
+    min-width: clamp(140px, 25vw, 200px);
+    padding: clamp(15px, 4vh, 30px) clamp(15px, 3vw, 20px);
+    border: none;
+    border-radius: clamp(12px, 3vw, 20px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 2vh, 15px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.age-btn:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+}
+
+.age-btn:active {
+    transform: translateY(-5px);
+}
+
+.age-icon {
+    font-size: clamp(40px, 8vw, 60px);
+    line-height: 1;
+}
+
+.age-text {
+    font-size: clamp(18px, 4vw, 32px);
+    font-weight: bold;
+}
+
+.age-desc {
+    font-size: clamp(12px, 2vw, 18px);
+    opacity: 0.9;
+}
+
+/* 小朋友版按鈕樣式 */
+.child-btn {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    color: white;
+    border: clamp(2px, 0.5vw, 3px) solid #f1c40f;
+}
+
+.child-btn:hover {
+    background: linear-gradient(145deg, #5dade2, #3498db);
+}
+
+/* 一般版按鈕樣式 */
+.adult-btn {
+    background: linear-gradient(145deg, #e67e22, #d35400);
+    color: white;
+    border: clamp(2px, 0.5vw, 3px) solid #f39c12;
+}
+
+.adult-btn:hover {
+    background: linear-gradient(145deg, #f39c12, #e67e22);
+}
+
+/* ========== 統一背景設定 ========== */
+.scene, #game-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
+}
+
+/* 標題畫面背景 - 修改為圖片按鈕風格 */
+#start-menu {
+    background-image: url('assets/images/title/background.png') !important;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
+    position: relative;
+    display: block;  /* 取消原本的 flex 居中 */
+}
+
+/* 標題圖片容器 - 新增 */
+.title-container {
+    position: absolute;
+    top: 10%;
+    left: 60%;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 600px;
+    z-index: 5;
+}
+
+/* 標題圖片 - 不規則呼吸動畫 */
+.start-title-img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+    animation: irregularBreath 3s ease-in-out infinite alternate;
+}
+
+@keyframes irregularBreath {
+    0% {
+        transform: scale(0.95);
+    }
+    30% {
+        transform: scale(1.02);
+    }
+    60% {
+        transform: scale(0.98);
+    }
+    100% {
+        transform: scale(1.05);
+    }
+}
+
+/* 按鈕容器 - 新增 */
+.menu-buttons {
+    position: absolute;
+    bottom: 15%;
+    right: 8%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 20%;
+    max-width: 220px;
+    z-index: 5;
+}
+
+/* 圖片按鈕樣式 - 新增 */
+.img-btn {
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+.img-btn img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 互動效果 */
+.img-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.img-btn:active {
+    transform: scale(0.95);
+}
+
+/* 關卡選擇畫面背景 */
+#level-select { 
+    background-image: url('assets/images/intro/封面.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
+    color: white; 
+}
+
+/* 影片場景 */
+#video-scene {
+    background-color: #000;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 影片修正 */
+#intro-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    background-color: #000;
+}
+
+/* 跳過按鈕 */
+.skip-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: 2px solid #e67e22;
+    border-radius: 5px;
+    font-size: clamp(14px, 2vw, 18px);
+    cursor: pointer;
+    z-index: 100;
+}
+
+.skip-btn:hover {
+    background-color: rgba(230, 126, 34, 0.8);
+    transform: scale(1.05);
+}
+
+/* 返回按鈕 */
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 8px 16px;
+    font-size: clamp(14px, 2vw, 18px);
+    z-index: 100;
+}
+
+/* ========== 按鈕與文字調整 ========== */
+button {
+    padding: 12px 24px;
+    font-size: clamp(14px, 2vw, 20px);
+    cursor: pointer;
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+    margin: 10px auto;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+button:hover {
+    background-color: #f39c12;
+    transform: scale(1.05);
+}
+
+/* 對話框小朋友版樣式（僅調整行高，不影響字型） */
+#dialog-box.child-mode {
+    line-height: 1.8;
+}
+
+#dialogue-text.child-mode {
+    line-height: 1.8;
+}
+
+/* ========== 修正 1：縮小標題文字 ========== */
+h1 {
+    font-size: clamp(24px, 5vw, 40px);
+    margin: 15px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    text-align: center;
+    max-width: 90%;
+    word-wrap: break-word;
+    color: white;
+}
+
+h2 {
+    font-size: clamp(20px, 4vw, 30px);
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    text-align: center;
+    max-width: 90%;
+    word-wrap: break-word;
+    color: white;
+}
+
+/* 遊戲容器 */
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: #333;
+}
+
+/* ========== 修正 2：防止標題按鈕文字被切掉 ========== */
+#start-menu button {
+    width: 200px;
+    white-space: normal;
+    line-height: 1.2;
+    padding: 10px 15px;
+    font-size: clamp(16px, 2vw, 20px);
+}
+
+/* ========== 修正 3：縮小關卡選單按鈕 ========== */
+.level-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px auto;
+    width: 60%;
+    max-width: 300px;
+    align-items: center;
+}
+
+.level-buttons button {
+    width: 100%;
+    font-size: clamp(16px, 2.5vw, 20px);
+    padding: 10px 20px;
+    margin: 0;
+}
+
+/* ========== 對話系統優化 ========== */
+#dialog-box {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    min-height: 100px;
+    max-height: 25%;
+    background: rgba(0, 0, 0, 0.85);
+    border: 3px solid #b38b3d;
+    border-radius: 15px;
+    padding: 30px 30px 20px 30px;
+    box-sizing: border-box;
+    z-index: 20;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+    overflow: visible;
+}
+
+#npc-name {
+    position: absolute;
+    top: -25px;
+    left: 20px;
+    background: #4a2c1a;
+    color: #ffd700;
+    padding: 8px 25px;
+    border-radius: 25px;
+    font-size: clamp(16px, 2.2vw, 18px);
+    font-weight: bold;
+    border: 2px solid #b38b3d;
+    z-index: 100;
+    white-space: nowrap;
+    max-width: calc(100% - 40px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    border-bottom: 3px solid #e67e22;
+}
+
+#dialogue-text {
+    font-size: clamp(16px, 2.2vw, 20px);
+    line-height: 1.5;
+    margin: 5px 0 0 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+    max-height: 120px;
+}
+
+/* 選項容器居中優化 */
+#options-container {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 30;
+    width: 75%;           /* 從 60% 改為 75% */
+    max-width: 650px;     /* 從 500px 改為 650px */
+    align-items: center;
+    text-align: center;
+}
+
+#options-container button {
+    width: 100%;
+    padding: 12px 16px;        /* 減少左右內距，讓文字空間更大 */
+    font-size: clamp(15px, 2vw, 18px);  /* 稍微縮小字體 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+/* 角色圖片容器 - 針對 800x800 圖片優化，底部貼齊 */
+#character-container {
+    position: absolute;
+    bottom: 0;           /* 改為 0，讓容器底部貼齊畫面 */
+    left: 0;
+    width: 100%;
+    height: 80%;         /* 稍微增加高度 */
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;  /* 改回 flex-end，讓內容靠底部 */
+    overflow: visible;
+}
+
+#character-image {
+    width: auto;
+    height: auto;
+    max-width: 75%;
+    max-height: 90%;     /* 增加高度上限 */
+    object-fit: contain;
+    object-position: center bottom;  /* 圖片從底部對齊 */
+    border-radius: 10px;
+    animation: characterAppear 0.3s ease-out;
+}
+
+@keyframes characterAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 畫布 */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: transparent;
+    z-index: 2;
+}
+
+#gameCanvas.minigame-active {
+    display: block;
+    z-index: 10;
+}
+
+/* 打字完成指示器 */
+#typing-complete-indicator {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #ffd700;
+    transform: rotate(180deg);
+    animation: pulse 1s infinite;
+    z-index: 21;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+/* ========== 確認彈窗樣式 ========== */
+.confirm-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+.confirm-dialog-content {
+    background: #2c3e50;
+    border: 3px solid #e67e22;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 400px;
+    width: 80%;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+.confirm-dialog-content p {
+    color: white;
+    font-size: clamp(18px, 3vw, 24px);
+    margin: 10px 0;
+}
+
+.confirm-dialog-content .warning-text {
+    color: #ffd700;
+    font-size: clamp(14px, 2.5vw, 18px);
+    margin-bottom: 20px;
+}
+
+.confirm-dialog-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    padding: 12px 24px;
+    font-size: clamp(14px, 2.5vw, 18px);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+}
+
+.confirm-yes {
+    background-color: #e67e22;
+    color: white;
+}
+
+.confirm-yes:hover {
+    background-color: #f39c12;
+    transform: scale(1.05);
+}
+
+.confirm-no {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.confirm-no:hover {
+    background-color: #7f8c8d;
+    transform: scale(1.05);
+}
+
+/* ========== 圖文展示系統 (Gallery System) ========== */
+
+/* 第一層：相簿遮罩 */
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.gallery-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 相簿容器 */
+.gallery-container {
+    position: relative;
+    width: 90%;
+    max-width: min(800px, 130vh);
+    background: transparent;
+    padding: 20px 0;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+}
+
+/* Swiper 幻燈片 */
+.gallery-swiper .swiper-slide {
+    width: auto;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* 圖片容器 - 固定高度，確保每張卡片一致 */
+.gallery-swiper .swiper-slide .slide-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 260px;           /* ✅ 固定高度，不讓圖片撐開 */
+    width: 100%;
+}
+
+/* 圖片 - 限制最大尺寸，維持比例 */
+.gallery-swiper .swiper-slide img {
+    width: auto;
+    height: auto;
+    max-width: 200px;        /* 最大寬度 */
+    max-height: 240px;       /* 最大高度（比容器小一點） */
+    object-fit: contain;
+    border-radius: 15px;
+    background: transparent;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+/* 中間圖片的陰影加強 */
+.gallery-swiper .swiper-slide-active img {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* 幻燈片標題 */
+.gallery-swiper .swiper-slide div {
+    margin-top: -20px;
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ========== 分頁指示器（點點） ========== */
+.gallery-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 0;
+}
+
+.gallery-pagination .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gallery-pagination .swiper-pagination-bullet-active {
+    background: #e67e22;
+    width: 24px;
+    border-radius: 5px;
+}
+
+/* 關閉按鈕 */
+.gallery-close-btn {
+    all: unset;
+    position: absolute;
+    top: clamp(5px, 2vh, 10px);
+    right: clamp(10px, 3vw, 15px);
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #e67e22;
+    border-radius: 50%;
+    width: clamp(32px, 5vh, 44px);
+    height: clamp(32px, 5vh, 44px);
+    font-size: clamp(16px, 2.5vh, 22px);
+    font-weight: bold;
+    color: #e67e22;
+    cursor: pointer;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+.gallery-close-btn:hover {
+    background: #e67e22;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ========== 第二層：分頁詳細彈窗 ========== */
+.detail-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.detail-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* 詳細視窗容器 - 需要 relative 讓按鈕相對定位 */
+.detail-container {
+    position: relative;
+    width: 85%;
+    max-width: 700px;
+    max-height: 80vh;
+    background: linear-gradient(145deg, #2c3e50, #1a2632);
+    border: 3px solid #e67e22;
+    border-radius: 20px;
+    overflow: hidden;
+    animation: detailAppear 0.3s ease-out;
+}
+
+@keyframes detailAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 分頁標籤列 - 右邊留空間給關閉按鈕 */
+.detail-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #e67e22;
+    padding-right: 100px;
+    gap: 2px;  /* 分頁之間微間距，避免邊框重疊 */
+}
+
+.detail-tab {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: bold;
+    color: #ecf0f1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;  /* 預設透明邊框，保持高度一致 */
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.detail-tab:hover {
+    transform: none;  /* ✅ 完全取消 transform 效果 */
+    background: rgba(230, 126, 34, 0.15);
+    color: #f0a050;
+}
+
+.detail-tab.active {
+    background: rgba(230, 126, 34, 0.3);
+    color: #ffd700;
+    border-bottom: 2px solid #e67e22;  /* 改為 2px，與容器邊框同寬 */
+}
+
+.detail-tab:hover:not(.active) {
+    background: rgba(230, 126, 34, 0.15);
+    color: #f0a050;
+}
+
+/* 分頁內容區 */
+.detail-content {
+    padding: 16px 20px;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+/* 分頁一：圖片+摘要 */
+.tab-image-area {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.tab-image-area img {
+    max-width: 90%;
+    max-height: 35vh;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 2px solid #e67e22;
+    background: #1a1a2e;
+}
+
+.tab-title {
+    font-size: clamp(18px, 3.5vw, 24px);
+    color: #ffd700;
+    margin: 12px 0 8px;
+    text-align: center;
+}
+
+.tab-summary {
+    font-size: clamp(13px, 2.2vw, 16px);
+    color: #ecf0f1;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* 分頁二：詳細故事（可滾動） */
+.tab-story {
+    font-size: clamp(13px, 2.2vw, 16px);
+    color: #ecf0f1;
+    line-height: 1.7;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* 詳細視窗關閉按鈕 - 固定在右上角 */
+.detail-close-btn {
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    width: auto;
+    min-width: 80px;
+    padding: 8px 16px;
+    background: linear-gradient(145deg, #e67e22, #d35400);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: clamp(13px, 2vw, 16px);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.detail-close-btn:hover {
+    transform: scale(1.05);
+    background: #f39c12;
+}
+
+/* ========== 兒童模式字型覆蓋 ========== */
+body.child-mode .gallery-container,
+body.child-mode .detail-container,
+body.child-mode .tab-summary,
+body.child-mode .tab-story,
+body.child-mode .detail-tab {
+    font-family: 'BpmfZihiKai', 'LXGW WenKai TC', '標楷體', sans-serif !important;
+}
+
+body.child-mode .tab-title {
+    font-family: 'BpmfZihiKai', 'LXGW WenKai TC', '標楷體', sans-serif !important;
+}
+
+/* ========== 響應式調整 ========== */
+@media (max-width: 920px) and (orientation: landscape) {
+    .age-dialog-content {
+        padding: clamp(12px, 3vh, 20px);
+        width: 85%;
+    }
+    
+    .age-buttons {
+        gap: clamp(10px, 2vw, 20px);
+    }
+    
+    .age-btn {
+        min-width: clamp(120px, 20vw, 160px);
+        padding: clamp(10px, 2vh, 15px) clamp(10px, 2vw, 15px);
+        gap: clamp(5px, 1vh, 8px);
+    }
+    
+    .age-icon {
+        font-size: clamp(30px, 6vw, 40px);
+    }
+    
+    .age-text {
+        font-size: clamp(14px, 3vw, 20px);
+    }
+    
+    .age-desc {
+        font-size: clamp(10px, 1.5vw, 12px);
+    }
+    
+    h1 { 
+        font-size: 22px; 
+        margin: 5px 0; 
+    }
+    
+    h2 { 
+        font-size: 18px; 
+        margin: 5px 0; 
+    }
+    
+    #start-menu button {
+        width: 150px;
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+    
+    .level-buttons {
+        gap: 8px;
+        width: 50%;
+        margin: 10px auto;
+    }
+    
+    .level-buttons button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+    
+    #dialog-box {
+        bottom: 5px;
+        padding: 15px 15px 8px 15px;
+        min-height: 55px;
+        max-height: 100px;
+    }
+
+    #npc-name {
+        top: -12px;
+        padding: 2px 12px;
+        font-size: 12px;
+    }
+
+    #dialogue-text {
+        font-size: 13px;
+        line-height: 1.2;
+        margin-top: 0;
+    }
+
+    #options-container {
+        width: 55%;           /* 從 40% 改為 55% */
+        gap: 8px;
+        max-height: 50vh;
+    }
+
+    #options-container button {
+        padding: 8px 12px;
+        font-size: clamp(12px, 2vw, 15px);
+        min-width: 100px;
+    }
+
+    /* #character-container {
+        height: 50%;
+        bottom: 60px;
+    } */
+    
+    .back-btn {
+        top: 5px;
+        left: 5px;
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+    
+    .skip-btn {
+        bottom: 5px;
+        right: 5px;
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    .confirm-dialog-content {
+        padding: 20px;
+        width: 70%;
+    }
+    
+    .confirm-btn {
+        padding: 8px 16px;
+        min-width: 100px;
+    }
+
+    .gallery-container {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .gallery-swiper .swiper-slide img {
+        width: 150px;
+        max-height: 30vh;
+    }
+    
+    .detail-container {
+        width: 90%;
+        max-height: 90vh;
+    }
+    
+    .detail-content {
+        max-height: 55vh;
+    }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+    .age-dialog-content {
+        padding: clamp(8px, 2vh, 12px);
+        width: 90%;
+    }
+    
+    .age-btn {
+        min-width: clamp(100px, 18vw, 120px);
+        padding: clamp(6px, 1.5vh, 10px) clamp(8px, 1.5vw, 10px);
+    }
+    
+    .age-icon {
+        font-size: clamp(24px, 5vw, 32px);
+    }
+    
+    .age-text {
+        font-size: clamp(12px, 2.5vw, 16px);
+    }
+
+    #dialog-box {
+        padding: 12px 10px 5px 10px;
+    }
+    
+    #npc-name {
+        top: -10px;
+        padding: 2px 10px;
+        font-size: 11px;
+    }
+    
+    #dialogue-text {
+        font-size: 11px;
+    }
+    
+    #options-container {
+        width: 45%;
+        gap: 6px;
+    }
+    
+    #options-container button {
+        font-size: clamp(10px, 2.2vw, 12px);
+        padding: 8px 10px;
+        min-width: 80px;
+    }
+    
+    /* #character-container {
+        bottom: 50px;
+        height: 45%;
+    } */
+    
+    .back-btn, .skip-btn {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+
+    .confirm-dialog-content {
+        padding: 15px;
+    }
+    
+    .confirm-btn {
+        padding: 6px 12px;
+        min-width: 80px;
+        font-size: 12px;
+    }
+}
+
+/* ========== 手機直立提示 ========== */
+@media (orientation: portrait) and (max-width: 1024px) {
+    body::before {
+        content: "請將手機轉為橫向以獲得最佳體驗";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.9);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        font-size: clamp(18px, 4vw, 24px);
+        z-index: 9999;
+        text-align: center;
+        border: 2px solid #e67e22;
+        white-space: nowrap;
+    }
+    
+    #game-wrapper {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+}

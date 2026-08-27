@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>字型測試</title>
+    <style>
+        @font-face {
+            font-family: 'TestFont';
+            src: url('assets/fonts/BpmfZihiKaiStd-Regular.ttf') format('truetype');
+        }
+        
+        body { background: #333; color: white; padding: 20px; }
+        .test1 { font-family: '標楷體'; font-size: 30px; margin: 20px; }
+        .test2 { font-family: 'TestFont'; font-size: 30px; margin: 20px; }
+        .info { background: #444; padding: 10px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h2>字型載入測試</h2>
+    
+    <div class="info">
+        <p>字型路徑：assets/fonts/BpmfZihiKaiStd-Regular.ttf</p>
+        <p>檔案是否存在：<span id="fileCheck">檢查中...</span></p>
+    </div>
+    
+    <div class="test1">測試文字：嘿～少年家（標楷體）</div>
+    <div class="test2">測試文字：嘿～少年家（注音字型）</div>
+    
+    <script>
+        // 檢查檔案是否存在
+        fetch('assets/fonts/BpmfZihiKaiStd-Regular.ttf', { method: 'HEAD' })
+            .then(response => {
+                document.getElementById('fileCheck').textContent = 
+                    response.ok ? '✅ 存在' : '❌ 不存在';
+                document.getElementById('fileCheck').style.color = 
+                    response.ok ? '#0f0' : '#f00';
+            })
+            .catch(() => {
+                document.getElementById('fileCheck').textContent = '❌ 無法存取';
+                document.getElementById('fileCheck').style.color = '#f00';
+            });
+    </script>
+</body>
+</html>

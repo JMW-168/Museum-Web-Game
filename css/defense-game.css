@@ -1,0 +1,349 @@
+/* css/defense-game.css */
+
+/* 遊戲主容器 - 基礎樣式 */
+.defense-game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+/* 遊戲舞台 - 固定 16:9 比例 */
+.defense-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* 中央玩家區域 - 使用百分比 */
+.defense-play-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;      /* 772/1920 = 40.2% */
+    height: 58.5%;   /* 632/1080 = 58.5% */
+    background: transparent;
+    pointer-events: none;
+}
+
+/* 玩家 - 相對於中央區域 */
+.defense-player {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32.4%;    /* 250/772 = 32.4% */
+    height: 39.6%;   /* 250/632 = 39.6% */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* 通道口 */
+.defense-gate {
+    position: absolute;
+    width: 19.4%;    /* 150/772 = 19.4% */
+    height: 23.7%;   /* 150/632 = 23.7% */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 15;
+    pointer-events: none;
+}
+
+.defense-gate.up {
+    top: -12%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.defense-gate.down {
+    bottom: -12%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.defense-gate.left {
+    left: -12%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.defense-gate.right {
+    right: -12%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 敵人 */
+.defense-enemy {
+    position: absolute;
+    width: 19.4%;    /* 150/772 = 19.4% */
+    height: 23.7%;   /* 150/632 = 23.7% */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    z-index: 100;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    pointer-events: auto;
+}
+
+/* 投射物 - 統一 z-index */
+.defense-projectile {
+    position: absolute;
+    width: 10.4%;    /* 80/772 = 10.4% */
+    height: 12.7%;   /* 80/632 = 12.7% */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 20;
+    pointer-events: none;
+    transition: left 0.05s linear, top 0.05s linear;
+}
+
+/* 重擊序列 */
+.defense-heavy-sequence {
+    position: absolute;
+    width: 10.4%;    /* 80/772 = 10.4% */
+    height: 12.7%;   /* 80/632 = 12.7% */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 25;
+    transition: all 0.1s ease;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.defense-heavy-sequence.active {
+    filter: drop-shadow(0 0 15px #ff6600);
+    transform: scale(1.1);
+}
+
+/* AOE 線條 */
+.defense-aoe-line {
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 20;
+    opacity: 0.7;
+    transition: transform 0.05s linear;
+}
+
+.defense-aoe-line.up {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4.63%;   /* 50/1080 = 4.63% */
+    transform: translateY(0);
+}
+
+.defense-aoe-line.down {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4.63%;
+    transform: translateY(0);
+}
+
+.defense-aoe-line.left {
+    top: 0;
+    left: 0;
+    width: 2.6%;     /* 50/1920 = 2.6% */
+    height: 100%;
+    transform: translateX(0);
+}
+
+.defense-aoe-line.right {
+    top: 0;
+    right: 0;
+    width: 2.6%;
+    height: 100%;
+    transform: translateX(0);
+}
+
+/* 防護罩 */
+.defense-shield {
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 200;
+    pointer-events: none;
+}
+
+.defense-shield.show {
+    opacity: 0.8;
+}
+
+/* 上方防護罩 - 橫跨整個中央區域寬度 */
+.defense-shield.up {
+    top: -8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 103%;
+    height: 15%;
+}
+
+/* 下方防護罩 */
+.defense-shield.down {
+    bottom: -8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 103%;
+    height: 15%;
+}
+
+/* 左方防護罩 - 調整位置 */
+.defense-shield.left {
+    left: -4%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15%;
+    height: 103%;
+}
+
+/* 右方防護罩 */
+.defense-shield.right {
+    right: -8%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15%;
+    height: 103%;
+}
+
+/* 成功文字 */
+.defense-success-text {
+    position: absolute;
+    color: #ffd700;
+    font-size: clamp(16px, 2vw, 32px);
+    font-weight: bold;
+    text-shadow: 0 0 10px #ff6600;
+    z-index: 50;
+    pointer-events: none;
+    white-space: nowrap;
+    animation: defenseSuccessFloat 0.5s ease-out forwards;
+}
+
+@keyframes defenseSuccessFloat {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-50px) scale(1.5); }
+}
+
+/* ✅ 新增：分數飄浮動畫（加分文字用） */
+@keyframes scoreFloat {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -70%) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(0.8);
+    }
+}
+
+/* 閃光效果 */
+.defense-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.1s;
+}
+
+.defense-flash.show {
+    opacity: 1;
+}
+
+/* HUD - 使用相對於遊戲容器的比例 */
+.defense-hud {
+    position: absolute;
+    top: 3%;  /* 改用百分比 */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 110;
+    pointer-events: none;
+}
+
+/* 訊息文字 - 使用相對於容器寬度的 vw，並限制最大最小值 */
+.defense-msg {
+    font-size: clamp(14px, 3vw, 28px);
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 0 10px #ff6600;
+    margin-bottom: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    padding: 5px 20px;
+    border-radius: 30px;
+    white-space: nowrap;
+}
+
+/* 分數文字 */
+.defense-combo {
+    font-size: clamp(16px, 3.5vw, 32px);
+    font-weight: bold;
+    color: #00ffaa;
+    text-shadow: 0 0 15px #00ffaa;
+}
+
+/* 提示文字 */
+.defense-hint {
+    position: absolute;
+    bottom: 3%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #888;
+    font-size: clamp(9px, 2vw, 14px);
+    z-index: 110;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px;
+}
+
+/* 投射物飛行效果（可選） */
+.defense-projectile {
+    filter: drop-shadow(0 0 3px #00ffaa);
+}
+
+/* 手機橫向特殊調整 */
+@media (max-width: 920px) and (orientation: landscape) {
+    .defense-msg {
+        font-size: 14px;
+        padding: 3px 12px;
+    }
+    
+    .defense-combo {
+        font-size: 20px;
+    }
+    
+    .defense-hint {
+        font-size: 9px;
+        bottom: 3%;
+    }
+}

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <title>Museum Web Game</title>
+    
+    <!-- ========== PWA 設定 ========== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Museum Game">
+    <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
+    
+    <!-- ========== CSS ========== -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/defense-game.css">
+    <link rel="stylesheet" href="css/memory-game.css">
+    <link rel="stylesheet" href="css/interact-system.css">
+    <link rel="stylesheet" href="css/catch-game.css">
+
+    <!-- Swiper.js CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+</head>
+<body>
+    <div id="game-wrapper">
+        <!-- 新增 Loading 畫面 -->
+        <div id="loading-screen" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>資源加載中... <span id="loading-progress">0</span>%</p>
+            </div>
+        </div>
+
+        <!-- 新增：年齡選擇視窗 - 層級比標題畫面高，但比旋轉提示低 -->
+        <div id="age-select-dialog" class="age-dialog">
+            <div class="age-dialog-content">
+                <h2>選擇遊戲模式</h2>
+                <p class="age-subtitle">請選擇適合您的版本</p>
+                <div class="age-buttons">
+                    <button id="age-child" class="age-btn child-btn">
+                        <span class="age-icon">🧒</span>
+                        <span class="age-text">小朋友版</span>
+                        <span class="age-desc">附注音・簡單引導</span>
+                    </button>
+                    <button id="age-adult" class="age-btn adult-btn">
+                        <span class="age-icon">👤</span>
+                        <span class="age-text">一般版</span>
+                        <span class="age-desc">標準文字・完整劇情</span>
+                    </button>
+                </div>  
+            </div>
+        </div>
+
+        <!-- 起始頁面 -->
+        <div id="start-menu" class="scene">
+            <!-- 背景由 CSS 控制，這裡放置 UI 元素 -->
+            <div class="title-container">
+                <img src="assets/images/title/title.png" alt="標題" class="start-title-img">
+            </div>
+            
+            <div class="menu-buttons">
+                <div id="startBtn" class="img-btn">
+                    <img src="assets/images/title/enter.png" alt="進入市場">
+                </div>
+                <div id="exitBtn" class="img-btn">
+                    <img src="assets/images/title/leave.png" alt="離開市場">
+                </div>
+            </div>
+        </div>
+
+        <div id="video-scene" class="scene" style="display:none;">
+            <video id="intro-video" width="1280" height="720" style="width:100%; height:100%; object-fit:cover;" playsinline>
+                <source src="assets/videos/intro.mp4" type="video/mp4">
+                您的瀏覽器不支援影片播放。
+            </video>
+            <button id="skip-video-btn" class="skip-btn">跳過</button>
+        </div>
+
+        <!-- 關卡選擇頁面 -->
+        <div id="level-select" class="scene" style="display:none;">
+            <h2>選擇故事章節</h2>
+            <div class="level-buttons">
+                <button id="chapter1-btn" onclick="loadChapter('chapter1')">第一章：博物館入口</button>
+                <button id="chapter2-btn" onclick="loadChapter('chapter2')">第二章：老街記憶</button>
+                <button id="chapter3-btn" onclick="loadChapter('chapter3')">第三章：時光印記</button>
+                <button id="catch-demo-btn" onclick="startCatchGameDemo()">接物遊戲</button>
+            </div>
+            <button class="back-btn" onclick="showScene('start-menu')">返回</button>
+        </div>
+
+        <!-- 遊戲主容器 -->
+        <div id="game-container" class="scene" style="display:none;">
+            <!-- 背景圖層 -->
+            <div id="game-background"></div>
+            
+            <!-- 角色圖片層 -->
+            <div id="character-container">
+                <img id="character-image" src="" alt="角色" style="display:none;">
+            </div>
+            
+            <!-- 遊戲畫布（用小遊戲時顯示） -->
+            <canvas id="gameCanvas" width="1280" height="720" style="display:none;"></canvas>
+            
+            <!-- 對話框 -->
+            <div id="dialog-box" style="display:none;">
+                <div id="npc-name"></div>
+                <div id="dialogue-text"></div>
+            </div>
+            
+            <!-- 選項容器 -->
+            <div id="options-container"></div>
+
+            <button class="back-btn" onclick="showScene('level-select')" style="display:none;">返回選單</button>
+        </div>
+        
+        <!-- 音效控制（隱藏） -->
+        <audio id="bg-music" loop></audio>
+        <audio id="sfx-player"></audio>
+
+        <!-- 退出確認彈窗 -->
+        <div id="exit-confirm-dialog" class="confirm-dialog" style="display: none;">
+            <div class="confirm-dialog-content">
+                <p>你確定要退出嗎？</p>
+                <p class="warning-text">任何未儲存的進度都會遺失</p>
+                <div class="confirm-dialog-buttons">
+                    <button id="exit-confirm-yes" class="confirm-btn confirm-yes">確認退出</button>
+                    <button id="exit-confirm-no" class="confirm-btn confirm-no">繼續遊戲</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zingtouch/1.0.6/zingtouch.min.js"></script>
+    
+    <!-- ========== 核心引擎 - 注意載入順序 ========== -->
+    <!-- 1. 最基本的工具 -->
+    <script src="js/core/Logger.js"></script>
+    <script src="js/core/ErrorReporter.js"></script>
+    <script src="js/data/minigameAssets.js"></script>
+    <script src="js/core/LoadingManager.js"></script>
+    <script src="js/core/GameEngine.js"></script>
+    <script src="js/core/AudioManager.js"></script>
+    <script src="js/core/SceneManager.js"></script>
+    
+    <!-- 2. Typewriter 要在 DialogueSystem 之前 -->
+    <script src="js/core/Typewriter.js"></script>
+    
+    <!-- 3. DialogueSystem 依賴 Typewriter -->
+    <script src="js/core/DialogueSystem.js"></script>
+    
+    <!-- 4. 對話資料 -->
+    <script src="js/data/intro.js"></script>
+    <!-- 青少年版（一般模式） -->
+    <script src="js/data/chapter1_teen.js"></script>
+    <script src="js/data/chapter2_teen.js"></script>
+    <script src="js/data/chapter3_teen.js"></script>
+    <!-- 小朋友版 -->
+    <script src="js/data/chapter1_child.js"></script>
+    <script src="js/data/chapter2_child.js"></script>
+    <script src="js/data/chapter3_child.js"></script>
+    <!-- 問答題庫 -->
+    <script src="js/data/quizQuestions.js"></script>
+    
+    <!-- 5. 小遊戲 -->
+    <!-- <script src="js/minigames/PuzzleGame.js"></script> -->
+    <!-- <script src="js/minigames/FindingGame.js"></script> -->
+    <script src="js/minigames/DefenseLevels.js"></script>     <!-- 先載入關卡設定 -->
+    <script src="js/minigames/defense/DefenseTrailRender.js"></script>
+    <script src="js/minigames/defense/DefenseInput.js"></script>
+    <script src="js/minigames/defense/DefenseAttackRunner.js"></script>
+    <script src="js/minigames/DefenseGameV2.js"></script>
+    <script src="js/minigames/MemoryGameV2.js"></script>
+    <script src="js/minigames/InteractSystem.js"></script>
+    <script src="js/minigames/PaymentSystem.js"></script>
+    <script src="js/minigames/CatchGame.js"></script>
+
+    <!-- 6. 圖文展示系統、蒐集物品系統 -->
+    <script src="js/core/GallerySystem.js"></script>
+    <script src="js/core/CollectionSystem.js"></script>
+    
+    <!-- 7. 主入口 - 最後載入 -->
+    <script src="js/main.js"></script>
+    
+    <!-- ========== Service Worker 註冊（PWA） ========== -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js').then(function(registration) {
+                    console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
+                }).catch(function(error) {
+                    console.log('❌ Service Worker 註冊失敗:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
