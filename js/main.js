@@ -209,7 +209,7 @@ function playIntroVideo() {
         if (window.Logger) window.Logger.info('⏭️ 跳過影片');
         video.pause();
         video.currentTime = 0;
-        showIntro();
+        showScene('level-select');
     };
 }
 
@@ -440,8 +440,7 @@ function setupBackButton() {
 // 關卡狀態：'open' = 開放, 'locked' = 鎖定, 'completed' = 已完成
 const chapterStatus = {
     chapter1: 'open',      // 第一章預設開放
-    chapter2: 'open',    // 第二章預設鎖定
-    chapter3: 'open'     // 第三章預設鎖定
+    chapter2: 'open'       // 第二章預設開放
 };
 
 // 儲存到 localStorage
@@ -459,7 +458,6 @@ function loadChapterStatus() {
         // ✅ 每次都重設，不讀取儲存
         chapterStatus.chapter1 = 'open';
         chapterStatus.chapter2 = 'open';
-        chapterStatus.chapter3 = 'open';
         localStorage.removeItem('chapterStatus');
         if (window.Logger) window.Logger.info('📀 重整模式：關卡狀態已重設為預設值');
     } else {
@@ -476,7 +474,7 @@ function loadChapterStatus() {
 
 // 更新按鈕外觀
 function updateChapterButtons() {
-    const chapters = ['chapter1', 'chapter2', 'chapter3'];
+    const chapters = ['chapter1', 'chapter2'];
     chapters.forEach(chapter => {
         const btn = document.getElementById(`${chapter}-btn`);
         if (!btn) return;
@@ -538,8 +536,7 @@ function lockChapter(chapterId) {
 // 重設所有關卡（方便測試）
 function resetAllChapters() {
     chapterStatus.chapter1 = 'open';
-    chapterStatus.chapter2 = 'locked';
-    chapterStatus.chapter3 = 'locked';
+    chapterStatus.chapter2 = 'open';
     saveChapterStatus();
     updateChapterButtons();
     if (window.Logger) window.Logger.info('🔄 所有關卡已重設');

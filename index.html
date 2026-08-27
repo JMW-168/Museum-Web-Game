@@ -81,12 +81,18 @@
 
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
-            <h2>選擇故事章節</h2>
+            <h2>選擇遊戲入口</h2>
             <div class="level-buttons">
-                <button id="chapter1-btn" onclick="loadChapter('chapter1')">第一章：博物館入口</button>
-                <button id="chapter2-btn" onclick="loadChapter('chapter2')">第二章：老街記憶</button>
-                <button id="chapter3-btn" onclick="loadChapter('chapter3')">第三章：時光印記</button>
-                <button id="catch-demo-btn" onclick="startCatchGameDemo()">接物遊戲</button>
+                <button id="chapter1-btn" class="station-entry" onclick="loadChapter('chapter1')">
+                    <span class="station-kicker">關卡一 / 站點 1</span>
+                    <span class="station-title">灶台生火</span>
+                    <span class="station-desc">依節拍加入柴火，控制火候條，認識葉家勤儉與生火日常。</span>
+                </button>
+                <button id="chapter2-btn" class="station-entry" onclick="loadChapter('chapter2')">
+                    <span class="station-kicker">關卡二 / 站點 2</span>
+                    <span class="station-title">擂茶研磨</span>
+                    <span class="station-desc">依序完成材料、研磨、力道控制與盛碗，解鎖擂茶小知識。</span>
+                </button>
             </div>
             <button class="back-btn" onclick="showScene('start-menu')">返回</button>
         </div>

@@ -1,6 +1,6 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v1';
+const CACHE_NAME = 'museum-web-game-v2';
 
 // 需要快取的檔案列表（您的遊戲所有核心檔案）
 const urlsToCache = [

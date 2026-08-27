@@ -525,18 +525,63 @@ h2 {
 .level-buttons {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin: 20px auto;
-    width: 60%;
-    max-width: 300px;
+    gap: 12px;
+    margin: 16px auto;
+    width: min(76%, 720px);
+    max-width: 720px;
     align-items: center;
 }
 
 .level-buttons button {
     width: 100%;
-    font-size: clamp(16px, 2.5vw, 20px);
-    padding: 10px 20px;
+    font-size: clamp(15px, 2.1vw, 18px);
+    padding: 12px 18px;
     margin: 0;
+}
+
+.station-entry {
+    display: grid;
+    grid-template-columns: minmax(108px, 0.32fr) 1fr;
+    grid-template-areas:
+        "kicker title"
+        "kicker desc";
+    align-items: center;
+    column-gap: 16px;
+    min-height: 92px;
+    text-align: left;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    border: 2px solid rgba(255, 215, 0, 0.45);
+    background: rgba(23, 38, 45, 0.9);
+}
+
+.station-entry:hover {
+    background: rgba(58, 85, 83, 0.95);
+}
+
+.station-kicker {
+    grid-area: kicker;
+    color: #ffd700;
+    font-size: clamp(13px, 1.7vw, 16px);
+    line-height: 1.35;
+    text-align: center;
+}
+
+.station-title {
+    grid-area: title;
+    color: #fff;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.station-desc {
+    grid-area: desc;
+    color: #f4ead2;
+    font-size: clamp(13px, 1.8vw, 16px);
+    line-height: 1.45;
+    margin-top: 4px;
 }
 
 /* ========== 對話系統優化 ========== */
@@ -1120,13 +1165,29 @@ body.child-mode .tab-title {
     
     .level-buttons {
         gap: 8px;
-        width: 50%;
+        width: 76%;
         margin: 10px auto;
     }
     
     .level-buttons button {
         padding: 6px 12px;
         font-size: 14px;
+    }
+
+    .station-entry {
+        min-height: 74px;
+        column-gap: 10px;
+        grid-template-columns: minmax(88px, 0.3fr) 1fr;
+        padding: 8px 12px !important;
+    }
+
+    .station-title {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .station-desc {
+        font-size: clamp(11px, 1.9vw, 13px);
+        line-height: 1.35;
     }
     
     #dialog-box {
