@@ -5,6 +5,13 @@ const StationDemoGame = {
     animationId: null,
     timers: [],
     keyHandler: null,
+    fireMusic: null,
+    fireMusicSrc: 'assets/sounds/picking-tea-girl.mp3',
+    fireBeatTimes: [
+        2.670, 3.158, 3.646, 4.133, 5.108, 5.596,
+        6.594, 7.082, 7.570, 8.057, 8.545, 9.776,
+        10.542, 11.471, 11.935, 12.423, 13.166, 13.700
+    ],
 
     stations: {
         fire: {
@@ -84,6 +91,7 @@ const StationDemoGame = {
         this.container.querySelector('.station-primary').addEventListener('click', () => {
             this.playClick();
             if (stationId === 'fire') {
+                this.startFireMusic();
                 const fireAssets = window.MinigameAssets && typeof window.MinigameAssets.getStationFirePreloadUrls === 'function'
                     ? window.MinigameAssets.getStationFirePreloadUrls()
                     : [];
@@ -109,7 +117,7 @@ const StationDemoGame = {
             startedAt: performance.now(),
             nextBeatIndex: 0,
             nextSpawnAt: 0,
-            totalBeats: 18,
+            totalBeats: this.fireBeatTimes.length,
             idealMin: 45,
             idealMax: 72,
             safeMin: 30,
@@ -177,16 +185,15 @@ const StationDemoGame = {
     tickFire(time) {
         if (!this.state || this.state.finished) return;
 
-        const elapsed = time - this.state.startedAt;
+        const elapsed = this.getFireElapsedMs(time);
         const delta = Math.min(80, time - this.state.lastTickAt);
         this.state.lastTickAt = time;
 
         while (
             this.state.nextBeatIndex < this.state.totalBeats &&
-            elapsed >= this.state.nextSpawnAt
+            elapsed >= this.getFireSpawnAt(this.state.nextBeatIndex)
         ) {
             this.spawnFireBeat(time);
-            this.state.nextSpawnAt += this.getFireSpawnEvery(this.state.nextBeatIndex);
             this.state.nextBeatIndex++;
         }
 
@@ -196,8 +203,9 @@ const StationDemoGame = {
         const stillActive = [];
 
         this.state.beats.forEach((beat) => {
-            const progress = (time - beat.spawnedAt) / beat.travelMs;
-            const x = trackWidth - (progress * trackWidth);
+            const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
+            const startX = trackWidth + beat.el.offsetWidth;
+            const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
 
             if (!beat.hit && x < targetX - 100) {
@@ -241,7 +249,8 @@ const StationDemoGame = {
         this.state.beats.push({
             el: beat,
             type,
-            spawnedAt: time,
+            spawnedAtMs: this.getFireSpawnAt(this.state.nextBeatIndex),
+            targetAtMs: this.fireBeatTimes[this.state.nextBeatIndex] * 1000,
             travelMs: this.getFireTravelMs(this.state.nextBeatIndex),
             hit: false
         });
@@ -320,14 +329,20 @@ const StationDemoGame = {
         return Math.max(0, Math.min(1, index / (this.state.totalBeats - 1)));
     },
 
-    getFireSpawnEvery(index) {
-        const progress = this.getFireProgress(index);
-        return 1380 - (progress * 420);
+    getFireTravelMs(index) {
+        return index < 4 ? 2100 : 1950;
     },
 
-    getFireTravelMs(index) {
-        const progress = this.getFireProgress(index);
-        return 3100 - (progress * 860);
+    getFireSpawnAt(index) {
+        return Math.max(0, (this.fireBeatTimes[index] * 1000) - this.getFireTravelMs(index));
+    },
+
+    getFireElapsedMs(time) {
+        if (this.fireMusic && !this.fireMusic.paused && Number.isFinite(this.fireMusic.currentTime)) {
+            return this.fireMusic.currentTime * 1000;
+        }
+
+        return time - this.state.startedAt;
     },
 
     getFireTargetX(trackWidth) {
@@ -382,7 +397,8 @@ const StationDemoGame = {
             flame.src = this.state.fire > this.state.idealMax
                 ? 'assets/images/station-fire/fire-large.png'
                 : 'assets/images/station-fire/fire-small.png';
-            flame.style.transform = `translateX(-50%) scale(${0.62 + (this.state.fire / 130)})`;
+            const flameScale = 0.55 + (this.state.fire / 75);
+            flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
     },
 
@@ -487,6 +503,7 @@ const StationDemoGame = {
         this.state.finished = true;
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
+        this.stopFireMusic();
 
         const message = success ? this.station.success : this.station.fail;
         this.container.innerHTML = `
@@ -502,7 +519,10 @@ const StationDemoGame = {
         `;
 
         this.container.querySelector('[data-retry]').addEventListener('click', () => {
-            if (this.state.stationId === 'fire') this.startFireGame();
+            if (this.state.stationId === 'fire') {
+                this.startFireMusic();
+                this.startFireGame();
+            }
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
@@ -520,6 +540,7 @@ const StationDemoGame = {
         this.animationId = null;
         if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);
         this.keyHandler = null;
+        this.stopFireMusic();
         if (this.container && this.container.parentNode) this.container.remove();
         this.container = null;
         this.state = null;
@@ -531,6 +552,25 @@ const StationDemoGame = {
 
     playWrong() {
         if (typeof AudioManager !== 'undefined') AudioManager.playSFX('assets/sounds/wrong.mp3');
+    },
+
+    startFireMusic() {
+        if (!this.fireMusic) {
+            this.fireMusic = new Audio(this.fireMusicSrc);
+            this.fireMusic.loop = true;
+            this.fireMusic.volume = 0.55;
+        }
+
+        this.fireMusic.currentTime = 0;
+        this.fireMusic.play().catch((error) => {
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+        });
+    },
+
+    stopFireMusic() {
+        if (!this.fireMusic) return;
+        this.fireMusic.pause();
+        this.fireMusic.currentTime = 0;
     }
 };
 
