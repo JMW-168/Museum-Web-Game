@@ -100,7 +100,7 @@ const LoadingManager = {
                 });
             } 
             // 判斷影片
-            else if (src.match(/\.(mp4|webm|ogg)$/i)) {
+            else if (src.match(/\.(mp4|webm)$/i)) {
                 this.loadVideo(src, () => {
                     loadedCount++;
                     this.updateProgress(Math.floor((loadedCount / totalCount) * 100));
@@ -109,6 +109,16 @@ const LoadingManager = {
                     }
                 });
             } 
+            // 判斷音訊
+            else if (src.match(/\.(mp3|wav|ogg|m4a)$/i)) {
+                this.loadAudio(src, () => {
+                    loadedCount++;
+                    this.updateProgress(Math.floor((loadedCount / totalCount) * 100));
+                    if (loadedCount === totalCount) {
+                        setTimeout(() => this.finish(onComplete), 300);
+                    }
+                });
+            }
             // 其他資源
             else {
                 loadedCount++;
@@ -133,7 +143,13 @@ const LoadingManager = {
             if (window.Logger) window.Logger.warn('⚠️ 圖片載入逾時，略過:', src);
             finish();
         }, 10000);
-        img.onload = finish;
+        img.onload = () => {
+            if (typeof img.decode === 'function') {
+                img.decode().then(finish).catch(finish);
+            } else {
+                finish();
+            }
+        };
         img.onerror = () => {
             if (window.Logger) window.Logger.warn('⚠️ 圖片載入失敗:', src);
             finish(); // 即使失敗也繼續
@@ -163,6 +179,54 @@ const LoadingManager = {
         };
         video.src = src;
         video.load();
+    },
+
+    loadAudio: function(src, callback) {
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            clearTimeout(timeoutId);
+            callback();
+        };
+        const timeoutId = setTimeout(() => {
+            if (window.Logger) window.Logger.warn('⚠️ 音訊預載逾時，先進入遊戲:', src);
+            finish();
+        }, 12000);
+
+        if (window.fetch) {
+            fetch(src, { cache: 'force-cache' })
+                .then((response) => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.blob();
+                })
+                .then(finish)
+                .catch((err) => {
+                    if (window.Logger) window.Logger.warn('⚠️ 音訊 fetch 預載失敗，改用 audio preload:', src, err);
+                    this.loadAudioElement(src, finish);
+                });
+            return;
+        }
+
+        this.loadAudioElement(src, finish);
+    },
+
+    loadAudioElement: function(src, callback) {
+        const audio = new Audio();
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            clearTimeout(timeoutId);
+            callback();
+        };
+        const timeoutId = setTimeout(finish, 8000);
+        audio.preload = 'auto';
+        audio.oncanplaythrough = finish;
+        audio.onloadeddata = finish;
+        audio.onerror = finish;
+        audio.src = src;
+        audio.load();
     },
 
     // 在 LoadingManager 中加入字型載入方法

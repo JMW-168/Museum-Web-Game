@@ -26,7 +26,7 @@ const StationDemoGame = {
             kicker: '關卡一 / 站點 1',
             title: '灶台生火',
             subtitle: '看準節拍添柴，讓火候維持在剛好的溫度。',
-            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；火候超過綠色區間右側時，按「噴水」少量降火。最多可以失誤 5 次。',
+            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；火候維持在綠色區間會持續加分，火候太高還添柴會扣分。火候超過綠色區間右側時，按「噴水」少量降火。',
             success: '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
             fail: '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
         },
@@ -138,6 +138,7 @@ const StationDemoGame = {
             lastTickAt: performance.now(),
             finished: false,
             lastResult: '等木柴進入灶台火圈再添柴',
+            idealScoreCarryMs: 0,
         };
 
         this.container.innerHTML = `
@@ -168,6 +169,7 @@ const StationDemoGame = {
                     <span></span>
                 </div>
                 <div class="station-feedback">等木柴進入灶台火圈再添柴</div>
+                <div class="fire-score-layer" data-score-layer aria-hidden="true"></div>
                 <div class="station-actions compact">
                     <button type="button" class="station-primary" data-hit>添柴</button>
                 </div>
@@ -221,7 +223,7 @@ const StationDemoGame = {
 
             if (!beat.hit && x < targetX - 100) {
                 beat.hit = true;
-                this.applyFireScore('木柴錯過了', -6, -10, true, true);
+                this.applyFireScore('木柴錯過了', -8, -10, true, true);
                 beat.el.remove();
                 return;
             }
@@ -286,22 +288,33 @@ const StationDemoGame = {
         });
 
         if (!best) {
-            this.applyFireScore('太早了，等木柴進火圈', -2, -3, false, true);
+            this.applyFireScore('太早了，等木柴進火圈', -8, -3, false, true);
             return;
         }
 
         if (bestDistance > 120) {
             best.hit = true;
             best.el.remove();
-            this.applyFireScore('沒對準火圈', -4, -8, true, true);
+            this.applyFireScore('沒對準火圈', -12, -8, true, true);
             return;
         }
 
         best.hit = true;
         best.el.remove();
-        if (bestDistance <= 38) this.applyFireScore(`剛剛好：${best.type === 'big' ? '大柴' : '小柴'}`, 90, best.type === 'big' ? 13 : 7);
-        else if (bestDistance <= 82) this.applyFireScore(`有添到：${best.type === 'big' ? '大柴' : '小柴'}`, 60, best.type === 'big' ? 9 : 4);
-        else this.applyFireScore('沒對準火圈', -4, -8, true, true);
+        const woodLabel = best.type === 'big' ? '大柴' : '小柴';
+        const fireDelta = best.type === 'big' ? 13 : 7;
+        const basePoints = bestDistance <= 38 ? 55 : 35;
+        const timingLabel = bestDistance <= 38 ? '剛剛好' : '有添到';
+
+        if (this.state.fire > this.state.idealMax) {
+            this.applyFireScore(`火太旺還添${woodLabel}`, -25, fireDelta, true, true);
+        } else if (this.isFireInIdealRange()) {
+            this.applyFireScore(`${timingLabel}：${woodLabel}，火候正好`, basePoints + 45, fireDelta);
+        } else if (this.state.fire < this.state.idealMin) {
+            this.applyFireScore(`${timingLabel}：${woodLabel}，把火拉回來`, basePoints + 15, fireDelta);
+        } else {
+            this.applyFireScore(`${timingLabel}：${woodLabel}`, basePoints, fireDelta);
+        }
     },
 
     applyFireScore(label, points, fireDelta, countJudgement = true, countMistake = false) {
@@ -313,13 +326,18 @@ const StationDemoGame = {
         const feedback = countMistake ? `${label}，扣分但繼續` : label;
         this.state.lastResult = feedback;
         this.container.querySelector('.station-feedback').textContent = feedback;
+        this.showFireScorePop(points);
         this.playClick();
         this.renderFireHud();
     },
 
     sprayWater() {
         if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
-        this.state.fire = Math.max(0, this.state.fire - 5);
+        const wasTooHot = this.state.fire > this.state.idealMax;
+        const wasSafe = this.isFireInSafeRange();
+        this.state.fire = Math.max(0, this.state.fire - 7);
+        const points = wasTooHot ? (wasSafe ? 12 : 20) : -8;
+        this.state.score = Math.max(0, this.state.score + points);
         const waterEffect = this.container.querySelector('[data-water-effect]');
         if (waterEffect) {
             waterEffect.classList.remove('active');
@@ -328,7 +346,8 @@ const StationDemoGame = {
         }
         this.container.querySelector('.station-feedback').textContent = this.state.fire > this.state.idealMax
             ? '噴水降火，再按一次可以更穩'
-            : '噴水降火，回到綠色區間就先停';
+            : wasTooHot ? '噴水降火，火候回穩' : '火候還不用噴水';
+        this.showFireScorePop(points);
         this.playClick();
         this.renderFireHud();
     },
@@ -365,8 +384,15 @@ const StationDemoGame = {
 
         if (inIdeal) {
             this.state.unstableMs = Math.max(0, this.state.unstableMs - delta * 0.4);
+            this.state.idealScoreCarryMs += delta;
+            while (this.state.idealScoreCarryMs >= 1000) {
+                this.state.idealScoreCarryMs -= 1000;
+                this.state.score += 10;
+                this.showFireScorePop(10, '控火');
+            }
         } else {
             this.state.unstableMs += delta;
+            this.state.idealScoreCarryMs = 0;
         }
 
         if (!this.isFireInSafeRange() && this.state.unstableMs > 3200) this.state.unstableMs = 3200;
@@ -412,6 +438,24 @@ const StationDemoGame = {
             const flameScale = 0.55 + (this.state.fire / 75);
             flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
+    },
+
+    showFireScorePop(points, prefix = '') {
+        if (!this.container || !Number.isFinite(points)) return;
+        const layer = this.container.querySelector('[data-score-layer]');
+        if (!layer) return;
+        const pop = document.createElement('div');
+        pop.className = `fire-score-pop ${points >= 0 ? 'positive' : 'negative'}`;
+        const sign = points >= 0 ? '+' : '';
+        pop.textContent = `${prefix ? `${prefix} ` : ''}${sign}${points}`;
+        const offsetX = 42 + (Math.random() * 16);
+        const offsetY = 42 + (Math.random() * 18);
+        pop.style.left = `${offsetX}%`;
+        pop.style.top = `${offsetY}%`;
+        layer.appendChild(pop);
+        this.timers.push(setTimeout(() => {
+            if (pop.parentNode) pop.remove();
+        }, 900));
     },
 
     startTeaGame() {

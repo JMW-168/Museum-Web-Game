@@ -904,6 +904,32 @@
     line-height: 1.15;
 }
 
+.fire-score-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.fire-score-pop {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: clamp(26px, 4.4vw, 54px);
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.72);
+    animation: fire-score-pop 0.86s ease-out forwards;
+}
+
+.fire-score-pop.positive {
+    color: #80ff9b;
+}
+
+.fire-score-pop.negative {
+    color: #ff7771;
+}
+
 .station-demo-fire .station-actions.compact {
     position: absolute;
     left: clamp(18px, 7vw, 92px);
@@ -939,6 +965,12 @@
 @keyframes fire-danger-pulse {
     from { filter: brightness(1); }
     to { filter: brightness(1.35); }
+}
+
+@keyframes fire-score-pop {
+    0% { opacity: 0; transform: translate(-50%, -18%) scale(0.82); }
+    18% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+    100% { opacity: 0; transform: translate(-50%, -118%) scale(0.9); }
 }
 
 @media (orientation: landscape) and (max-height: 560px) {
