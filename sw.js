@@ -1,6 +1,6 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v18';
+const CACHE_NAME = 'museum-web-game-v19';
 
 // 只預快取核心殼層；大型圖片改由 fetch 時漸進快取，避免手機更新時卡在 loading。
 const urlsToCache = [
@@ -57,6 +57,28 @@ self.addEventListener('fetch', event => {
 
   const requestUrl = new URL(event.request.url);
   const isLocalAsset = requestUrl.origin === self.location.origin;
+  const isImage = event.request.destination === 'image';
+
+  if (isLocalAsset && isImage) {
+    event.respondWith(
+      caches.match(event.request).then(cachedResponse => {
+        const networkUpdate = fetch(event.request).then(response => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          }
+          return response;
+        });
+
+        if (cachedResponse) {
+          event.waitUntil(networkUpdate.catch(() => undefined));
+          return cachedResponse;
+        }
+        return networkUpdate;
+      })
+    );
+    return;
+  }
 
   if (isLocalAsset) {
     event.respondWith(

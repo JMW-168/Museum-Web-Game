@@ -9,6 +9,14 @@ const StationDemoGame = {
     fireMusicSrc: 'assets/sounds/picking-tea-girl.mp3',
     fireMusicStarted: false,
     fireDurationMs: 60000,
+    fireAssetUrls: null,
+    fireImageUrls: [
+        'assets/images/station-fire/stove.png',
+        'assets/images/station-fire/fire-small.png',
+        'assets/images/station-fire/fire-large.png',
+        'assets/images/station-fire/wood-small.png',
+        'assets/images/station-fire/wood-large.png'
+    ],
     fireBeatTimes: [
         2.670, 3.646, 5.108, 6.594, 7.570, 8.545,
         9.776, 11.471, 12.423, 13.468, 14.466, 15.859,
@@ -27,7 +35,7 @@ const StationDemoGame = {
             kicker: '關卡一 / 站點 1',
             title: '灶台生火',
             subtitle: '看準節拍添柴，讓火候維持在剛好的溫度。',
-            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；火候維持在綠色區間會持續加分，火候太高還添柴會扣分。火候超過綠色區間右側時，按「噴水」少量降火。',
+            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；添柴時火候在綠色區間會獲得較多分，火候太高還添柴會扣分。火候超過綠色區間右側時，按「噴水」少量降火。',
             success: '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
             fail: '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
         },
@@ -102,14 +110,9 @@ const StationDemoGame = {
             this.playClick();
             if (stationId === 'fire') {
                 this.startFireMusic();
-                const fireAssets = window.MinigameAssets && typeof window.MinigameAssets.getStationFirePreloadUrls === 'function'
-                    ? window.MinigameAssets.getStationFirePreloadUrls()
-                    : [];
-                if (fireAssets.length > 0 && typeof LoadingManager !== 'undefined') {
-                    LoadingManager.showAndLoad(fireAssets, () => this.startFireGame());
-                } else {
-                    this.startFireGame();
-                }
+                this.prepareFireAssets()
+                    .then(() => this.startFireGame())
+                    .catch((error) => this.showFireLoadError(error));
             }
             if (stationId === 'tea') this.startTeaGame();
         });
@@ -125,7 +128,7 @@ const StationDemoGame = {
             fire: 50,
             judged: 0,
             beats: [],
-            startedAt: performance.now(),
+            startedAt: 0,
             nextBeatIndex: 0,
             nextSpawnAt: 0,
             totalBeats: this.fireBeatTimes.length,
@@ -137,14 +140,16 @@ const StationDemoGame = {
             maxMistakes: 5,
             mistakesRemaining: 5,
             durationMs: this.fireDurationMs,
-            lastTickAt: performance.now(),
+            lastTickAt: 0,
             finished: false,
             lastResult: '等木柴進入灶台火圈再添柴',
-            idealScoreCarryMs: 0,
         };
 
+        const stoveImage = this.getFireAsset('assets/images/station-fire/stove.png');
+        const smallFlameImage = this.getFireAsset('assets/images/station-fire/fire-small.png');
+
         this.container.innerHTML = `
-            <div class="station-play">
+            <div class="station-play is-preparing">
                 <div class="station-hud">
                     <div>${this.station.kicker}</div>
                     <div>分數 <span data-score>0</span></div>
@@ -159,8 +164,8 @@ const StationDemoGame = {
                 <div class="fire-track" aria-label="節奏軌道">
                     <div class="fire-danger-alert" data-fire-danger>快要火燒厝了</div>
                     <div class="fire-target">
-                        <img class="fire-stove-img" src="assets/images/station-fire/stove.png" alt="灶台">
-                        <img class="fire-flame-img" data-flame src="assets/images/station-fire/fire-small.png" alt="火焰">
+                        <img class="fire-stove-img" src="${stoveImage}" alt="灶台">
+                        <img class="fire-flame-img" data-flame src="${smallFlameImage}" alt="火焰">
                         <div class="fire-water-burst" data-water-effect aria-hidden="true">
                             <span></span><span></span><span></span><span></span>
                         </div>
@@ -194,7 +199,187 @@ const StationDemoGame = {
         };
         window.addEventListener('keydown', this.keyHandler);
 
-        this.animationId = requestAnimationFrame((time) => this.tickFire(time));
+        this.renderFireHud();
+        this.waitForFireGameReady()
+            .then(() => this.beginFireLoop())
+            .catch((error) => this.showFireLoadError(error));
+    },
+
+    beginFireLoop() {
+        if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
+        const play = this.container.querySelector('.station-play');
+        if (play) play.classList.remove('is-preparing');
+        if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
+
+        this.animationId = requestAnimationFrame((time) => {
+            if (!this.state || this.state.finished) return;
+            this.state.startedAt = time;
+            this.state.lastTickAt = time;
+            this.renderFireHud();
+            this.animationId = requestAnimationFrame((nextTime) => this.tickFire(nextTime));
+        });
+    },
+
+    waitForFireGameReady() {
+        if (typeof LoadingManager !== 'undefined') {
+            LoadingManager.loadingScreen.style.display = 'flex';
+            LoadingManager.updateProgress(100);
+        }
+
+        const domImages = Array.from(this.container.querySelectorAll('.fire-stove-img, .fire-flame-img'));
+        const domReady = domImages.map((img) => this.waitForImageElement(img));
+
+        return Promise.all(domReady).then(() => new Promise((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }));
+    },
+
+    waitForImageElement(img) {
+        return new Promise((resolve, reject) => {
+            let done = false;
+            const finish = (error) => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                img.onload = null;
+                img.onerror = null;
+                if (error) reject(error);
+                else resolve();
+            };
+            const verify = () => {
+                if (!img.complete || img.naturalWidth <= 0) {
+                    finish(new Error(`圖片無法顯示：${img.alt || img.src}`));
+                    return;
+                }
+                if (typeof img.decode === 'function') {
+                    img.decode().then(() => finish()).catch(() => finish(new Error(`圖片解碼失敗：${img.alt || img.src}`)));
+                } else {
+                    finish();
+                }
+            };
+            const timeoutId = setTimeout(() => finish(new Error(`圖片顯示逾時：${img.alt || img.src}`)), 12000);
+            if (img.complete && img.naturalWidth > 0) {
+                verify();
+                return;
+            }
+            img.onload = verify;
+            img.onerror = () => finish(new Error(`圖片載入失敗：${img.alt || img.src}`));
+        });
+    },
+
+    prepareFireAssets() {
+        if (this.fireAssetUrls && this.fireImageUrls.every((src) => this.fireAssetUrls.has(src))) {
+            return Promise.resolve();
+        }
+
+        if (typeof LoadingManager !== 'undefined' && LoadingManager.loadingScreen) {
+            LoadingManager.loadingScreen.style.display = 'flex';
+            LoadingManager.updateProgress(0);
+        }
+
+        this.releaseFireAssets();
+        const loadedAssets = new Map();
+        let loadedCount = 0;
+        return Promise.all(this.fireImageUrls.map((src) => this.fetchDecodedFireImage(src).then((objectUrl) => {
+            loadedAssets.set(src, objectUrl);
+            loadedCount++;
+            if (typeof LoadingManager !== 'undefined') {
+                LoadingManager.updateProgress(Math.round((loadedCount / this.fireImageUrls.length) * 100));
+            }
+        }))).then(() => {
+            this.fireAssetUrls = loadedAssets;
+        }).catch((error) => {
+            loadedAssets.forEach((url) => URL.revokeObjectURL(url));
+            throw error;
+        });
+    },
+
+    fetchDecodedFireImage(src, attempt = 0) {
+        return fetch(src, { cache: attempt === 0 ? 'force-cache' : 'reload' })
+            .then((response) => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${src}`);
+                return response.blob();
+            })
+            .then((blob) => {
+                if (!blob.type.startsWith('image/') || blob.size === 0) {
+                    throw new Error(`圖片資料無效：${src}`);
+                }
+                return this.decodeFireBlob(blob, src);
+            })
+            .catch((error) => {
+                if (attempt < 1) return this.fetchDecodedFireImage(src, attempt + 1);
+                throw error;
+            });
+    },
+
+    decodeFireBlob(blob, src) {
+        return new Promise((resolve, reject) => {
+            const objectUrl = URL.createObjectURL(blob);
+            const img = new Image();
+            let done = false;
+            const finish = (error) => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                img.onload = null;
+                img.onerror = null;
+                if (error) {
+                    URL.revokeObjectURL(objectUrl);
+                    reject(error);
+                    return;
+                }
+                resolve(objectUrl);
+            };
+            const verify = () => {
+                if (img.naturalWidth <= 0) {
+                    finish(new Error(`圖片解碼後沒有尺寸：${src}`));
+                    return;
+                }
+                if (typeof img.decode === 'function') {
+                    img.decode().then(() => finish()).catch(() => finish(new Error(`圖片解碼失敗：${src}`)));
+                } else {
+                    finish();
+                }
+            };
+            const timeoutId = setTimeout(() => finish(new Error(`圖片解碼逾時：${src}`)), 12000);
+            img.onload = verify;
+            img.onerror = () => finish(new Error(`圖片載入失敗：${src}`));
+            img.src = objectUrl;
+        });
+    },
+
+    getFireAsset(src) {
+        return this.fireAssetUrls && this.fireAssetUrls.get(src) || src;
+    },
+
+    releaseFireAssets() {
+        if (!this.fireAssetUrls) return;
+        this.fireAssetUrls.forEach((url) => URL.revokeObjectURL(url));
+        this.fireAssetUrls = null;
+    },
+
+    showFireLoadError(error) {
+        if (window.Logger) window.Logger.error('關卡一圖片準備失敗:', error);
+        if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
+        if (!this.container) return;
+        this.container.innerHTML = `
+            <section class="station-panel station-intro-panel">
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>圖片還沒載入完成</h1>
+                <p class="station-copy">目前網路沒有把灶台與木柴圖片完整送達，請按下方按鈕重新載入。</p>
+                <div class="station-actions">
+                    <button type="button" class="station-primary" data-retry-load>重新載入</button>
+                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                </div>
+            </section>
+        `;
+        this.container.querySelector('[data-retry-load]').addEventListener('click', () => {
+            this.startFireMusic();
+            this.prepareFireAssets()
+                .then(() => this.startFireGame())
+                .catch((retryError) => this.showFireLoadError(retryError));
+        });
+        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
     },
 
     tickFire(time) {
@@ -253,8 +438,8 @@ const StationDemoGame = {
         const beat = document.createElement('div');
         beat.className = `fire-beat ${type === 'big' ? 'big' : 'small'}`;
         const woodImage = type === 'big'
-            ? 'assets/images/station-fire/wood-large.png'
-            : 'assets/images/station-fire/wood-small.png';
+            ? this.getFireAsset('assets/images/station-fire/wood-large.png')
+            : this.getFireAsset('assets/images/station-fire/wood-small.png');
         beat.innerHTML = `
             <img src="${woodImage}" alt="${type === 'big' ? '大柴' : '小柴'}">
             <span>${type === 'big' ? '大柴' : '小柴'}</span>
@@ -368,6 +553,7 @@ const StationDemoGame = {
     },
 
     getFireElapsedMs(time) {
+        if (!this.state.startedAt) return 0;
         return time - this.state.startedAt;
     },
 
@@ -382,15 +568,8 @@ const StationDemoGame = {
 
         if (inIdeal) {
             this.state.unstableMs = Math.max(0, this.state.unstableMs - delta * 0.4);
-            this.state.idealScoreCarryMs += delta;
-            while (this.state.idealScoreCarryMs >= 1000) {
-                this.state.idealScoreCarryMs -= 1000;
-                this.state.score += 10;
-                this.showFireScorePop(10, '控火');
-            }
         } else {
             this.state.unstableMs += delta;
-            this.state.idealScoreCarryMs = 0;
         }
 
         if (!this.isFireInSafeRange() && this.state.unstableMs > 3200) this.state.unstableMs = 3200;
@@ -430,9 +609,10 @@ const StationDemoGame = {
         if (waterButton) waterButton.classList.toggle('needs-water', needsWater);
         if (dangerAlert) dangerAlert.classList.toggle('active', this.state.fire > this.state.safeMax);
         if (flame) {
-            flame.src = this.state.fire > this.state.idealMax
-                ? 'assets/images/station-fire/fire-large.png'
-                : 'assets/images/station-fire/fire-small.png';
+            const flameSrc = this.state.fire > this.state.idealMax
+                ? this.getFireAsset('assets/images/station-fire/fire-large.png')
+                : this.getFireAsset('assets/images/station-fire/fire-small.png');
+            if (flame.src !== flameSrc) flame.src = flameSrc;
             const flameScale = 0.55 + (this.state.fire / 75);
             flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
@@ -609,6 +789,7 @@ const StationDemoGame = {
         if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);
         this.keyHandler = null;
         this.stopFireMusic();
+        this.releaseFireAssets();
         if (this.container && this.container.parentNode) this.container.remove();
         this.container = null;
         this.state = null;

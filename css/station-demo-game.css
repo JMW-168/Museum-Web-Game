@@ -710,6 +710,10 @@
     gap: clamp(8px, 1.8vh, 16px);
 }
 
+.station-demo-fire .station-play.is-preparing {
+    visibility: hidden;
+}
+
 .station-demo-fire .station-hud {
     padding-right: 86px;
 }
