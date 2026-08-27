@@ -12,6 +12,9 @@ const GameEngine = {
                 if (window.Logger) window.Logger.info(`📦 防禦遊戲預載入 ${urls.length} 張圖片`);
                 return [...new Set(urls)];
             }
+            if (minigameName === 'station-fire' && typeof MinigameAssets.getStationFirePreloadUrls === 'function') {
+                return [...new Set(MinigameAssets.getStationFirePreloadUrls())];
+            }
         }
 
         if (minigameName === 'catch') {

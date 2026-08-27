@@ -1,6 +1,6 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v2';
+const CACHE_NAME = 'museum-web-game-v8';
 
 // 需要快取的檔案列表（您的遊戲所有核心檔案）
 const urlsToCache = [
@@ -10,11 +10,13 @@ const urlsToCache = [
   'css/defense-game.css',
   'css/memory-game.css',
   'css/catch-game.css',
+  'css/station-demo-game.css',
   'js/main.js',
   'js/core/LoadingManager.js',
   'js/core/GameEngine.js',
   'js/core/AudioManager.js',
   'js/core/SceneManager.js',
+  'js/data/minigameAssets.js',
   'js/core/Typewriter.js',
   'js/core/DialogueSystem.js',
   'js/core/GallerySystem.js',
@@ -29,6 +31,7 @@ const urlsToCache = [
   'js/minigames/DefenseGameV2.js',
   'js/minigames/MemoryGameV2.js',
   'js/minigames/CatchGame.js',
+  'js/minigames/StationDemoGame.js',
 
   // Catch game assets
   'assets/images/market.jpg',
@@ -42,6 +45,12 @@ const urlsToCache = [
   // 如果有圖片資源（可選）
   'assets/images/title2.png',
   'assets/images/intro/封面.jpg',
+  'assets/images/demo/entry-bg.png',
+  'assets/images/station-fire/stove.png',
+  'assets/images/station-fire/fire-small.png',
+  'assets/images/station-fire/fire-large.png',
+  'assets/images/station-fire/wood-small.png',
+  'assets/images/station-fire/wood-large.png',
   'assets/images/ch1/background.png',
   'assets/images/characters/阿斗仔.png',
   'assets/images/ch2/background.png',
@@ -105,9 +114,32 @@ self.addEventListener('install', event => {
         console.log('❌ 快取失敗:', err);
       })
   );
+  self.skipWaiting();
 });
 // ========== 攔截請求並從快取回應 ==========
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  const requestUrl = new URL(event.request.url);
+  const isLocalAsset = requestUrl.origin === self.location.origin;
+
+  if (isLocalAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -135,6 +167,6 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });

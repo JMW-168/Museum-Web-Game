@@ -392,7 +392,7 @@ html {
 
 /* 關卡選擇畫面背景 */
 #level-select { 
-    background-image: url('assets/images/intro/封面.jpg');
+    background-image: url('assets/images/demo/entry-bg.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
