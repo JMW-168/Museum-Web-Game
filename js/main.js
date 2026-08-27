@@ -289,7 +289,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (typeof setupBackButton !== 'undefined') {
         setupBackButton();
     }
+
+    bindStationDemoButtons();
 });
+
+function bindStationDemoButtons() {
+    document.querySelectorAll('[data-station-demo]').forEach((button) => {
+        const stationId = button.dataset.stationDemo;
+        button.onclick = null;
+        button.addEventListener('click', () => {
+            if (window.Logger) window.Logger.info('🎮 進入 demo 站點:', stationId);
+            if (typeof AudioManager !== 'undefined') {
+                AudioManager.playSFX('assets/sounds/click.mp3');
+            }
+            if (typeof startStationDemo === 'function') {
+                startStationDemo(stationId);
+            } else {
+                alert('Demo 遊戲尚未載入，請重新整理頁面。');
+            }
+        });
+    });
+}
 
 // 載入章節（使用動態載入，根據模式選擇版本）
 function loadChapter(chapterId) {

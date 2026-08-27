@@ -39,6 +39,14 @@
         return files.map((f) => base + f);
     }
 
+    const STATION_FIRE_URLS = [
+        'assets/images/station-fire/stove.png',
+        'assets/images/station-fire/fire-small.png',
+        'assets/images/station-fire/fire-large.png',
+        'assets/images/station-fire/wood-small.png',
+        'assets/images/station-fire/wood-large.png'
+    ];
+
     window.MinigameAssets = {
         memoryCardImageUrls: MEMORY_CARD_URLS.slice(),
         memoryEmojiToImageUrl: Object.assign({}, MEMORY_EMOJI_TO_IMAGE),
@@ -54,6 +62,10 @@
                 out.push(...defenseLevelUrls(L));
             }
             return [...new Set(out)];
+        },
+
+        getStationFirePreloadUrls: function () {
+            return STATION_FIRE_URLS.slice();
         }
     };
 })();
