@@ -330,9 +330,15 @@
 @media (max-width: 920px) and (orientation: landscape) {
     .station-panel,
     .station-play {
-        width: 88%;
-        min-height: 78%;
-        padding: 14px;
+        width: 90%;
+        min-height: auto;
+        max-height: calc(100% - 18px);
+        padding: 10px 14px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 70px auto 76px 16px auto;
+        gap: 6px;
     }
 
     .station-panel h1 {
@@ -344,29 +350,44 @@
         font-size: clamp(13px, 2.2vw, 16px);
     }
 
-    .fire-track {
-        height: 88px;
+    .station-hud {
+        gap: 8px;
+        font-size: 12px;
+        line-height: 1.2;
     }
 
     .fire-stage {
-        min-height: 86px;
+        min-height: 70px;
     }
 
     .fire-stove-img {
-        width: min(44%, 240px);
-        max-height: 104px;
+        width: min(36%, 190px);
+        max-height: 76px;
     }
 
     .fire-flame-img {
-        width: min(14%, 76px);
-        max-height: 78px;
-        bottom: 10px;
+        width: min(11%, 50px);
+        max-height: 54px;
+        bottom: 8px;
+    }
+
+    .fire-help-row {
+        gap: 8px;
+        font-size: 12px;
+    }
+
+    .fire-help-row span {
+        padding: 3px 8px;
+    }
+
+    .fire-track {
+        height: 76px;
     }
 
     .fire-target {
-        width: 64px;
-        height: 64px;
-        font-size: 14px;
+        width: 58px;
+        height: 58px;
+        font-size: 12px;
     }
 
     .fire-beat {
@@ -379,16 +400,143 @@
         height: 58px;
     }
 
+    .fire-meter {
+        height: 16px;
+    }
+
+    .station-feedback {
+        min-height: 26px;
+        font-size: clamp(17px, 3vw, 22px);
+        line-height: 1.2;
+    }
+
+    .station-actions.compact {
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .station-actions.compact button {
+        margin: 0 auto;
+        padding: 6px 14px;
+        min-width: 92px;
+        font-size: 13px;
+    }
+
     .tea-board {
         grid-template-columns: 0.45fr 1fr;
         gap: 12px;
     }
 
     .tea-mortar {
-        min-height: 132px;
+        min-height: 120px;
     }
 
-    .station-actions {
-        margin-top: 12px;
+    .tea-bowl-text {
+        font-size: 14px;
+    }
+
+    .tea-sequence,
+    .tea-buttons {
+        gap: 7px;
+    }
+
+    .tea-sequence span {
+        padding: 5px 8px;
+        font-size: 13px;
+    }
+
+    .tea-buttons {
+        margin-top: 10px;
+    }
+
+    .tea-buttons button {
+        margin: 0;
+        padding: 6px 12px;
+        min-width: 78px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+    .station-panel,
+    .station-play {
+        width: 94%;
+        max-height: calc(100% - 12px);
+        padding: 8px 10px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 54px auto 62px 14px auto;
+        gap: 5px;
+    }
+
+    .station-hud {
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .fire-stage {
+        min-height: 54px;
+    }
+
+    .fire-stove-img {
+        width: min(32%, 150px);
+        max-height: 58px;
+    }
+
+    .fire-flame-img {
+        width: min(10%, 38px);
+        max-height: 42px;
+        bottom: 6px;
+    }
+
+    .fire-help-row {
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .fire-help-row span {
+        padding: 2px 6px;
+    }
+
+    .fire-track {
+        height: 62px;
+    }
+
+    .fire-target {
+        width: 48px;
+        height: 48px;
+        border-width: 3px;
+        font-size: 11px;
+    }
+
+    .fire-beat {
+        width: 46px;
+        height: 46px;
+    }
+
+    .fire-beat.big {
+        width: 58px;
+        height: 50px;
+    }
+
+    .station-feedback {
+        min-height: 22px;
+        font-size: 17px;
+    }
+
+    .station-actions.compact button {
+        padding: 5px 12px;
+        min-width: 82px;
+        font-size: 12px;
+    }
+
+    .tea-board {
+        grid-template-columns: 0.35fr 1fr;
+        gap: 8px;
+    }
+
+    .tea-mortar {
+        min-height: 86px;
     }
 }
