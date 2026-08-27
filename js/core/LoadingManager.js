@@ -122,21 +122,44 @@ const LoadingManager = {
     
     loadImage: function(src, callback) {
         const img = new Image();
-        img.onload = callback;
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            clearTimeout(timeoutId);
+            callback();
+        };
+        const timeoutId = setTimeout(() => {
+            if (window.Logger) window.Logger.warn('⚠️ 圖片載入逾時，略過:', src);
+            finish();
+        }, 10000);
+        img.onload = finish;
         img.onerror = () => {
             if (window.Logger) window.Logger.warn('⚠️ 圖片載入失敗:', src);
-            callback(); // 即使失敗也繼續
+            finish(); // 即使失敗也繼續
         };
         img.src = src;
     },
     
     loadVideo: function(src, callback) {
         const video = document.createElement('video');
-        video.preload = 'auto';
-        video.oncanplaythrough = callback;
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            clearTimeout(timeoutId);
+            callback();
+        };
+        const timeoutId = setTimeout(() => {
+            if (window.Logger) window.Logger.warn('⚠️ 影片預載逾時，先進入遊戲:', src);
+            finish();
+        }, 8000);
+        video.preload = 'metadata';
+        video.onloadeddata = finish;
+        video.oncanplaythrough = finish;
         video.onerror = () => {
             if (window.Logger) window.Logger.warn('⚠️ 影片載入失敗:', src);
-            callback();
+            finish();
         };
         video.src = src;
         video.load();
