@@ -10,6 +10,12 @@ const StationDemoGame = {
     fireMusicStarted: false,
     fireDurationMs: 60000,
     fireAssetUrls: null,
+    teaTimerId: null,
+    teaStageDurationMs: 30000,
+    teaImageUrls: [
+        'assets/images/station-tea/ingredient-sprites.png',
+        'assets/images/station-tea/tool-sprites.png'
+    ],
     fireImageUrls: [
         'assets/images/station-fire/stove.png',
         'assets/images/station-fire/fire-small.png',
@@ -41,11 +47,11 @@ const StationDemoGame = {
         },
         tea: {
             kicker: '關卡二 / 站點 2',
-            title: '擂茶研磨',
-            subtitle: '依照順序加入材料，研磨出一碗香氣完整的擂茶。',
-            intro: '照著提示順序完成：茶葉、芝麻、花生、研磨、盛碗。點錯會扣穩定度，時間內完成就能解鎖擂茶小知識。',
-            success: '擂茶小知識：擂茶需要耐心和順序，從材料到力道都會影響香氣。阿公笑著說：「慢慢來，香味才會出來。」',
-            fail: '順序有點亂了。重新看一次材料提示，照著節奏慢慢完成。',
+            title: '擂茶料理',
+            subtitle: '看著指定順序，把食材逐一研磨、切好，完成一組擂茶。',
+            intro: '先依照上方順序，把五種食材拖進石臼，每一種都要畫滿 5 圈；接著把四種配菜拖上砧板，每一種連點 10 刀。兩段各有 30 秒，拖錯會提示正確材料，時間到也會協助補完，不會卡關。',
+            success: '擂茶小知識：擂茶把茶葉、香草、花生與芝麻耐心擂成茶膏，再配上切細的蔬菜與豆腐，是一碗兼具香氣與口感的客家料理。',
+            fail: '',
         }
     },
 
@@ -114,7 +120,11 @@ const StationDemoGame = {
                     .then(() => this.startFireGame())
                     .catch((error) => this.showFireLoadError(error));
             }
-            if (stationId === 'tea') this.startTeaGame();
+            if (stationId === 'tea') {
+                this.prepareTeaAssets()
+                    .then(() => this.startTeaGame())
+                    .catch((error) => this.showTeaLoadError(error));
+            }
         });
         this.container.querySelector('.station-secondary').addEventListener('click', () => this.close());
     },
@@ -636,100 +646,443 @@ const StationDemoGame = {
         }, 900));
     },
 
+    getTeaStageConfig(stageId) {
+        const stages = {
+            grind: {
+                title: '小遊戲一・研磨食材',
+                verb: '研磨',
+                instruction: '依照順序拖進石臼，每一種食材畫滿 5 圈',
+                target: 5,
+                unit: '圈',
+                toolClass: 'grind',
+                items: [
+                    { id: 'basil', name: '九層塔', sprite: 0 },
+                    { id: 'mint', name: '薄荷', sprite: 1 },
+                    { id: 'kuding', name: '苦刺心', sprite: 2 },
+                    { id: 'peanut', name: '花生', sprite: 3 },
+                    { id: 'sesame', name: '芝麻', sprite: 4 }
+                ]
+            },
+            chop: {
+                title: '小遊戲二・切配菜',
+                verb: '切料',
+                instruction: '依照順序拖上砧板，每一種食材快速連點 10 刀',
+                target: 10,
+                unit: '刀',
+                toolClass: 'chop',
+                items: [
+                    { id: 'long-bean', name: '長豆', sprite: 5 },
+                    { id: 'radish', name: '菜脯', sprite: 6 },
+                    { id: 'tree-veg', name: '樹仔菜', sprite: 7 },
+                    { id: 'tofu', name: '豆腐', sprite: 8 }
+                ]
+            }
+        };
+        return stages[stageId];
+    },
+
+    shuffleTeaItems(items) {
+        const shuffled = items.map((item) => ({ ...item }));
+        for (let index = shuffled.length - 1; index > 0; index--) {
+            const swapIndex = Math.floor(Math.random() * (index + 1));
+            [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+        }
+        return shuffled;
+    },
+
+    prepareTeaAssets() {
+        return Promise.all(this.teaImageUrls.map((src) => new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = resolve;
+            image.onerror = () => reject(new Error(`無法載入 ${src}`));
+            image.src = src;
+        })));
+    },
+
+    showTeaLoadError(error) {
+        if (window.Logger) window.Logger.error('關卡二圖片準備失敗:', error);
+        if (!this.container) return;
+        this.container.innerHTML = `
+            <section class="station-panel station-result-panel">
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>素材載入失敗</h1>
+                <p class="station-copy">請確認網路後再試一次，或先返回入口。</p>
+                <div class="station-actions">
+                    <button type="button" class="station-primary" data-retry-load>重新載入</button>
+                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                </div>
+            </section>
+        `;
+        this.container.querySelector('[data-retry-load]').addEventListener('click', () => {
+            this.prepareTeaAssets()
+                .then(() => this.startTeaGame())
+                .catch((retryError) => this.showTeaLoadError(retryError));
+        });
+        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
+    },
+
     startTeaGame() {
+        this.clearTeaTimer();
+        const grind = this.getTeaStageConfig('grind');
+        const chop = this.getTeaStageConfig('chop');
         this.state = {
             stationId: 'tea',
-            sequence: ['茶葉', '芝麻', '花生', '研磨', '盛碗'],
-            current: 0,
-            stability: 100,
-            startedAt: Date.now(),
-            duration: 45,
-            finished: false,
+            phase: 'grind',
+            orders: {
+                grind: this.shuffleTeaItems(grind.items),
+                chop: this.shuffleTeaItems(chop.items)
+            },
+            completed: { grind: [], chop: [] },
+            autoCompleted: { grind: false, chop: false },
+            currentIndex: 0,
+            processing: false,
+            activeItemId: null,
+            actionProgress: 0,
+            rotationAngle: 0,
+            lastPointerAngle: null,
+            timeLeft: 30,
+            stageDeadline: 0,
+            transitioning: false,
+            feedback: '先看上方順序，把第一種食材拖下來',
+            finished: false
         };
+        this.renderTeaStage();
+        this.startTeaTimer();
+    },
+
+    renderTeaStage() {
+        if (!this.container || !this.state || this.state.stationId !== 'tea') return;
+        const config = this.getTeaStageConfig(this.state.phase);
+        const order = this.state.orders[this.state.phase];
+        const completed = this.state.completed[this.state.phase];
+        const expected = order[this.state.currentIndex];
+        const orderMarkup = order.map((item, index) => {
+            const status = completed.includes(item.id)
+                ? 'done'
+                : index === this.state.currentIndex ? 'current' : '';
+            return `<span class="${status}"><b>${index + 1}</b>${item.name}${status === 'done' ? ' ✓' : ''}</span>`;
+        }).join('');
+        const cardsMarkup = config.items.map((item) => {
+            const column = item.sprite % 3;
+            const row = Math.floor(item.sprite / 3);
+            const isDone = completed.includes(item.id);
+            const isActive = this.state.activeItemId === item.id;
+            return `
+                <button type="button" class="tea-ingredient-card${isDone ? ' done' : ''}${isActive ? ' active' : ''}"
+                    data-tea-item="${item.id}" aria-label="拖曳${item.name}"
+                    style="--tea-sprite-x:${column * 50}%;--tea-sprite-y:${row * 50}%">
+                    <span class="tea-ingredient-art" aria-hidden="true"></span>
+                    <span class="tea-ingredient-name">${item.name}</span>
+                </button>
+            `;
+        }).join('');
+        const progressText = this.state.processing
+            ? `${this.state.actionProgress}/${config.target} ${config.unit}`
+            : `等待 ${expected ? expected.name : '完成'}`;
+        const progressPercent = this.state.processing
+            ? Math.min(100, this.state.actionProgress / config.target * 100)
+            : 0;
 
         this.container.innerHTML = `
-            <div class="station-play">
-                <div class="station-hud">
-                    <div>${this.station.kicker}</div>
-                    <div>步驟 <span data-step>1</span>/5</div>
-                    <div>穩定度 <span data-stability>100</span>%</div>
+            <div class="station-play tea-play">
+                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                <div class="station-hud tea-hud">
+                    <span>${config.title}</span>
+                    <span>進度 ${Math.min(this.state.currentIndex + 1, order.length)}/${order.length}</span>
+                    <span class="tea-timer${this.state.timeLeft <= 5 ? ' urgent' : ''}">剩餘 <b data-tea-time>${Math.ceil(this.state.timeLeft)}</b> 秒</span>
                 </div>
-                <div class="tea-board">
-                    <div class="tea-mortar">
-                        <div class="tea-pestle"></div>
-                        <div class="tea-bowl-text">擂茶石臼</div>
+                <div class="tea-instruction">${config.instruction}</div>
+                <div class="tea-order" aria-label="正確順序">${orderMarkup}</div>
+                <div class="tea-game-area">
+                    <div class="tea-ingredient-grid" style="--tea-item-count:${config.items.length}">${cardsMarkup}</div>
+                    <div class="tea-workspace">
+                        <div class="tea-drop-zone ${config.toolClass}${this.state.processing ? ' processing' : ''}" data-tea-drop>
+                            <span class="tea-tool-art" aria-hidden="true"></span>
+                            <span class="tea-target-label">${this.state.processing && expected ? `${expected.name}・${config.verb}` : `拖到這裡${config.verb}`}</span>
+                            <span class="tea-action-progress">${progressText}</span>
+                            <span class="tea-action-meter"><i style="width:${progressPercent}%"></i></span>
+                        </div>
                     </div>
-                    <div class="tea-sequence"></div>
-                    <div class="tea-buttons"></div>
                 </div>
-                <div class="station-feedback">照順序完成材料與動作</div>
-                <div class="station-actions compact">
-                    <button type="button" class="station-secondary" data-exit>返回入口</button>
-                </div>
+                <div class="station-feedback tea-feedback" aria-live="polite">${this.state.feedback}</div>
             </div>
         `;
 
         this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
-        this.renderTeaGame();
-    },
-
-    renderTeaGame() {
-        const sequenceEl = this.container.querySelector('.tea-sequence');
-        const buttonsEl = this.container.querySelector('.tea-buttons');
-        const labels = ['茶葉', '芝麻', '花生', '研磨', '盛碗'];
-
-        sequenceEl.innerHTML = this.state.sequence.map((item, index) => `
-            <span class="${index < this.state.current ? 'done' : index === this.state.current ? 'current' : ''}">${item}</span>
-        `).join('');
-
-        buttonsEl.innerHTML = labels.map((label) => `
-            <button type="button" data-tea-action="${label}">${label}</button>
-        `).join('');
-
-        buttonsEl.querySelectorAll('button').forEach((button) => {
-            button.addEventListener('click', () => this.handleTeaAction(button.dataset.teaAction));
+        this.container.querySelectorAll('[data-tea-item]').forEach((card) => {
+            const item = config.items.find((candidate) => candidate.id === card.dataset.teaItem);
+            if (!item || completed.includes(item.id) || item.id === this.state.activeItemId) return;
+            this.bindTeaIngredientDrag(card, item);
         });
-
-        this.updateTeaHud();
+        if (this.state.processing) {
+            if (this.state.phase === 'grind') this.bindTeaGrinding();
+            if (this.state.phase === 'chop') this.bindTeaChopping();
+        }
     },
 
-    handleTeaAction(label) {
-        if (!this.state || this.state.finished) return;
+    bindTeaIngredientDrag(card, item) {
+        card.addEventListener('pointerdown', (event) => {
+            if (!this.state || this.state.finished || this.state.transitioning) return;
+            if (this.state.processing) {
+                const active = this.state.orders[this.state.phase][this.state.currentIndex];
+                this.flashTeaError(`請先完成${active.name}的${this.getTeaStageConfig(this.state.phase).verb}`, item.id);
+                return;
+            }
+            event.preventDefault();
+            const startX = event.clientX;
+            const startY = event.clientY;
+            let moved = false;
+            card.setPointerCapture(event.pointerId);
+            card.classList.add('dragging');
 
-        const expected = this.state.sequence[this.state.current];
-        if (label === expected) {
-            this.state.current++;
-            this.container.querySelector('.station-feedback').textContent = `${label} 完成`;
-            this.container.querySelector('.tea-pestle').classList.add('moving');
+            const move = (moveEvent) => {
+                if (moveEvent.pointerId !== event.pointerId) return;
+                const offsetX = moveEvent.clientX - startX;
+                const offsetY = moveEvent.clientY - startY;
+                moved = moved || Math.abs(offsetX) + Math.abs(offsetY) > 8;
+                card.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.08)`;
+            };
+            const finish = (finishEvent) => {
+                if (finishEvent.pointerId !== event.pointerId) return;
+                card.removeEventListener('pointermove', move);
+                card.removeEventListener('pointerup', finish);
+                card.removeEventListener('pointercancel', cancel);
+                card.classList.remove('dragging');
+                card.style.transform = '';
+                const dropZone = this.container?.querySelector('[data-tea-drop]');
+                if (!dropZone || !moved) return;
+                const bounds = dropZone.getBoundingClientRect();
+                const inside = finishEvent.clientX >= bounds.left && finishEvent.clientX <= bounds.right
+                    && finishEvent.clientY >= bounds.top && finishEvent.clientY <= bounds.bottom;
+                if (inside) this.handleTeaDrop(item);
+            };
+            const cancel = (cancelEvent) => {
+                if (cancelEvent.pointerId !== event.pointerId) return;
+                card.removeEventListener('pointermove', move);
+                card.removeEventListener('pointerup', finish);
+                card.removeEventListener('pointercancel', cancel);
+                card.classList.remove('dragging');
+                card.style.transform = '';
+            };
+            card.addEventListener('pointermove', move);
+            card.addEventListener('pointerup', finish);
+            card.addEventListener('pointercancel', cancel);
+        });
+    },
+
+    handleTeaDrop(item) {
+        if (!this.state || this.state.processing || this.state.transitioning) return;
+        const expected = this.state.orders[this.state.phase][this.state.currentIndex];
+        if (!expected || item.id !== expected.id) {
+            this.flashTeaError(`順序錯誤，下一個是${expected ? expected.name : '指定食材'}`, item.id);
+            return;
+        }
+        const config = this.getTeaStageConfig(this.state.phase);
+        this.state.processing = true;
+        this.state.activeItemId = item.id;
+        this.state.actionProgress = 0;
+        this.state.rotationAngle = 0;
+        this.state.lastPointerAngle = null;
+        this.state.feedback = `${item.name}已放入，開始${config.verb}`;
+        this.playClick();
+        this.renderTeaStage();
+    },
+
+    flashTeaError(message, itemId) {
+        if (!this.container) return;
+        this.playWrong();
+        const feedback = this.container.querySelector('.tea-feedback');
+        const card = this.container.querySelector(`[data-tea-item="${itemId}"]`);
+        const dropZone = this.container.querySelector('[data-tea-drop]');
+        if (feedback) feedback.textContent = message;
+        if (card) card.classList.add('error');
+        if (dropZone) dropZone.classList.add('error');
+        this.timers.push(setTimeout(() => {
+            if (card) card.classList.remove('error');
+            if (dropZone) dropZone.classList.remove('error');
+        }, 620));
+    },
+
+    bindTeaGrinding() {
+        const target = this.container.querySelector('[data-tea-drop]');
+        if (!target) return;
+        const getAngle = (event) => {
+            const bounds = target.getBoundingClientRect();
+            return Math.atan2(event.clientY - (bounds.top + bounds.height / 2), event.clientX - (bounds.left + bounds.width / 2)) * 180 / Math.PI;
+        };
+        target.addEventListener('pointerdown', (event) => {
+            if (!this.state?.processing) return;
+            event.preventDefault();
+            target.setPointerCapture(event.pointerId);
+            this.state.lastPointerAngle = getAngle(event);
+            target.classList.add('gesturing');
+        });
+        target.addEventListener('pointermove', (event) => {
+            if (!this.state?.processing || this.state.lastPointerAngle === null) return;
+            event.preventDefault();
+            const angle = getAngle(event);
+            let delta = angle - this.state.lastPointerAngle;
+            if (delta > 180) delta -= 360;
+            if (delta < -180) delta += 360;
+            this.state.lastPointerAngle = angle;
+            // 手機快速畫圈時 pointermove 取樣可能較疏，允許單次最多 120 度的有效位移。
+            if (Math.abs(delta) < 1 || Math.abs(delta) > 120) return;
+            this.state.rotationAngle += Math.abs(delta);
+            while (this.state.rotationAngle >= 360 && this.state.actionProgress < 5) {
+                this.state.rotationAngle -= 360;
+                this.state.actionProgress++;
+                this.playClick();
+                target.classList.remove('tea-pulse');
+                void target.offsetWidth;
+                target.classList.add('tea-pulse');
+                this.updateTeaActionProgress();
+                if (this.state.actionProgress >= 5) {
+                    this.completeTeaItem();
+                    return;
+                }
+            }
+        });
+        const endGesture = (event) => {
+            if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
+            if (this.state) this.state.lastPointerAngle = null;
+            target.classList.remove('gesturing');
+        };
+        target.addEventListener('pointerup', endGesture);
+        target.addEventListener('pointercancel', endGesture);
+    },
+
+    bindTeaChopping() {
+        const target = this.container.querySelector('[data-tea-drop]');
+        if (!target) return;
+        target.addEventListener('pointerdown', (event) => {
+            if (!this.state?.processing || this.state.transitioning) return;
+            event.preventDefault();
+            this.state.actionProgress++;
             this.playClick();
-            this.timers.push(setTimeout(() => {
-                const pestle = this.container?.querySelector('.tea-pestle');
-                if (pestle) pestle.classList.remove('moving');
-            }, 260));
-        } else {
-            this.state.stability = Math.max(0, this.state.stability - 18);
-            this.container.querySelector('.station-feedback').textContent = `順序不對，下一步是 ${expected}`;
-            this.playWrong();
-        }
-
-        if (this.state.current >= this.state.sequence.length) {
-            this.showResult(this.state.stability >= 45);
-            return;
-        }
-
-        if (this.state.stability <= 0) {
-            this.showResult(false);
-            return;
-        }
-
-        this.renderTeaGame();
+            target.classList.remove('tea-chop-hit');
+            void target.offsetWidth;
+            target.classList.add('tea-chop-hit');
+            this.updateTeaActionProgress();
+            if (this.state.actionProgress >= 10) this.completeTeaItem();
+        });
     },
 
-    updateTeaHud() {
-        const step = this.container.querySelector('[data-step]');
-        const stability = this.container.querySelector('[data-stability]');
-        if (step) step.textContent = Math.min(this.state.current + 1, this.state.sequence.length);
-        if (stability) stability.textContent = this.state.stability;
+    updateTeaActionProgress() {
+        if (!this.container || !this.state) return;
+        const config = this.getTeaStageConfig(this.state.phase);
+        const label = this.container.querySelector('.tea-action-progress');
+        const meter = this.container.querySelector('.tea-action-meter i');
+        if (label) label.textContent = `${this.state.actionProgress}/${config.target} ${config.unit}`;
+        if (meter) meter.style.width = `${Math.min(100, this.state.actionProgress / config.target * 100)}%`;
+    },
+
+    completeTeaItem() {
+        if (!this.state || !this.state.processing || this.state.transitioning) return;
+        const phase = this.state.phase;
+        const config = this.getTeaStageConfig(phase);
+        const item = this.state.orders[phase][this.state.currentIndex];
+        this.state.completed[phase].push(item.id);
+        this.state.currentIndex++;
+        this.state.processing = false;
+        this.state.activeItemId = null;
+        this.state.actionProgress = 0;
+        this.state.feedback = `${item.name}${config.verb}完成！`;
+        if (this.state.currentIndex >= this.state.orders[phase].length) {
+            this.state.transitioning = true;
+            this.renderTeaStage();
+            this.timers.push(setTimeout(() => this.completeTeaStage(), 700));
+            return;
+        }
+        const next = this.state.orders[phase][this.state.currentIndex];
+        this.state.feedback += ` 下一個是${next.name}`;
+        this.renderTeaStage();
+    },
+
+    startTeaTimer() {
+        this.clearTeaTimer();
+        if (!this.state) return;
+        this.state.timeLeft = this.teaStageDurationMs / 1000;
+        this.state.stageDeadline = Date.now() + this.teaStageDurationMs;
+        this.teaTimerId = setInterval(() => {
+            if (!this.state || this.state.finished || this.state.transitioning) return;
+            this.state.timeLeft = Math.max(0, (this.state.stageDeadline - Date.now()) / 1000);
+            const time = this.container?.querySelector('[data-tea-time]');
+            const timer = this.container?.querySelector('.tea-timer');
+            if (time) time.textContent = Math.ceil(this.state.timeLeft);
+            if (timer) timer.classList.toggle('urgent', this.state.timeLeft <= 5);
+            if (this.state.timeLeft <= 0) this.handleTeaTimeout();
+        }, 200);
+    },
+
+    clearTeaTimer() {
+        if (this.teaTimerId) clearInterval(this.teaTimerId);
+        this.teaTimerId = null;
+    },
+
+    handleTeaTimeout() {
+        if (!this.state || this.state.transitioning) return;
+        this.clearTeaTimer();
+        const phase = this.state.phase;
+        const config = this.getTeaStageConfig(phase);
+        this.state.autoCompleted[phase] = true;
+        this.state.completed[phase] = config.items.map((item) => item.id);
+        this.state.currentIndex = this.state.orders[phase].length;
+        this.state.processing = false;
+        this.state.activeItemId = null;
+        this.state.timeLeft = 0;
+        this.state.transitioning = true;
+        this.state.feedback = '時間到，師傅幫你完成剩餘步驟';
+        this.renderTeaStage();
+        this.container.querySelector('.tea-play')?.classList.add('is-auto-completing');
+        this.timers.push(setTimeout(() => this.completeTeaStage(), 1200));
+    },
+
+    completeTeaStage() {
+        if (!this.state || this.state.stationId !== 'tea') return;
+        this.clearTeaTimer();
+        if (this.state.phase === 'grind') {
+            this.state.phase = 'chop';
+            this.state.currentIndex = 0;
+            this.state.processing = false;
+            this.state.activeItemId = null;
+            this.state.actionProgress = 0;
+            this.state.rotationAngle = 0;
+            this.state.lastPointerAngle = null;
+            this.state.transitioning = false;
+            this.state.feedback = '配菜時間！先把第一種食材拖上砧板';
+            this.renderTeaStage();
+            this.startTeaTimer();
+            return;
+        }
+        this.showTeaResult();
+    },
+
+    showTeaResult() {
+        if (!this.state || !this.container) return;
+        this.clearTeaTimer();
+        this.state.finished = true;
+        const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
+        this.container.innerHTML = `
+            <section class="station-panel station-result-panel tea-result-panel">
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>擂茶組合完成</h1>
+                <div class="tea-result-layout">
+                    <div class="tea-result-art" role="img" aria-label="擂茶與配菜組合"></div>
+                    <div class="tea-result-copy">
+                        <p class="station-subtitle">九層塔・薄荷・苦刺心・花生・芝麻</p>
+                        <p class="station-subtitle">長豆・菜脯・樹仔菜・豆腐</p>
+                        <p class="station-copy">${this.station.success}</p>
+                        ${usedHelp ? '<p class="tea-assisted-note">這次有師傅協助補完，下一次試著在倒數內完成吧！</p>' : '<p class="tea-perfect-note">兩段都在時間內完成，手腳真俐落！</p>'}
+                    </div>
+                </div>
+                <div class="station-actions">
+                    <button type="button" class="station-primary" data-retry>再玩一次</button>
+                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                </div>
+            </section>
+        `;
+        this.container.querySelector('[data-retry]').addEventListener('click', () => this.startTeaGame());
+        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
     },
 
     showFireResult() {
@@ -784,6 +1137,7 @@ const StationDemoGame = {
     stop() {
         this.timers.forEach((timer) => clearTimeout(timer));
         this.timers = [];
+        this.clearTeaTimer();
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);

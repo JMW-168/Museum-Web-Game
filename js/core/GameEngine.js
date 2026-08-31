@@ -15,6 +15,9 @@ const GameEngine = {
             if (minigameName === 'station-fire' && typeof MinigameAssets.getStationFirePreloadUrls === 'function') {
                 return [...new Set(MinigameAssets.getStationFirePreloadUrls())];
             }
+            if (minigameName === 'station-tea' && typeof MinigameAssets.getStationTeaPreloadUrls === 'function') {
+                return [...new Set(MinigameAssets.getStationTeaPreloadUrls())];
+            }
         }
 
         if (minigameName === 'catch') {
