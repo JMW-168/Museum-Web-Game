@@ -422,7 +422,9 @@ html {
 
 /* 關卡選擇畫面背景 */
 #level-select { 
-    background-image: url('assets/images/demo/entry-bg.png');
+    background-image:
+        linear-gradient(rgba(12, 18, 18, 0.2), rgba(12, 18, 18, 0.42)),
+        url('assets/images/demo/entry-background.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
