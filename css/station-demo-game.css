@@ -1362,15 +1362,93 @@
     }
 
     .tea-result-panel {
-        padding: 10px 16px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 104px;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        column-gap: 10px;
+        row-gap: 2px;
+        width: min(96%, 980px);
+        height: calc(100% - 12px);
+        min-height: 0;
+        padding: 7px 12px 6px;
+        align-items: stretch;
+    }
+
+    .tea-result-panel.has-guide {
+        padding-right: 12px;
+    }
+
+    .tea-result-panel .station-kicker-line {
+        grid-column: 1;
+        grid-row: 1;
+        margin-bottom: 2px;
+        font-size: 11px;
     }
 
     .tea-result-panel h1 {
-        font-size: clamp(28px, 5vw, 40px);
+        grid-column: 1;
+        grid-row: 2;
+        margin-bottom: 3px;
+        font-size: clamp(22px, 4.2vw, 30px);
+        line-height: 1.05;
+    }
+
+    .tea-result-layout {
+        grid-column: 1;
+        grid-row: 3;
+        grid-template-columns: minmax(190px, 0.82fr) minmax(0, 1.18fr);
+        gap: 8px;
+        min-height: 0;
+        align-self: center;
     }
 
     .tea-result-art {
-        max-height: 210px;
+        align-self: center;
+        max-height: 166px;
+    }
+
+    .tea-result-copy .station-subtitle {
+        margin-bottom: 2px;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    .tea-result-copy .station-copy {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    .tea-result-panel .tea-assisted-note,
+    .tea-result-panel .tea-perfect-note {
+        margin-top: 4px;
+        padding: 3px 6px;
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .tea-result-panel .station-actions {
+        grid-column: 1;
+        grid-row: 4;
+        align-self: end;
+        gap: 7px;
+        margin-top: 6px;
+    }
+
+    .tea-result-panel .station-actions button {
+        margin: 0;
+        min-width: 82px;
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+
+    .tea-result-panel .station-guide-result {
+        position: static;
+        grid-column: 2;
+        grid-row: 1 / 5;
+        align-self: end;
+        justify-self: center;
+        width: 100%;
+        max-height: 72%;
     }
 }
 
@@ -1412,8 +1490,38 @@
         width: min(30%, 104px);
     }
 
+    .tea-result-panel {
+        grid-template-columns: minmax(0, 1fr) 80px;
+        column-gap: 8px;
+        height: calc(100% - 8px);
+        padding: 5px 9px 4px;
+    }
+
+    .tea-result-panel.has-guide {
+        padding-right: 9px;
+    }
+
+    .tea-result-panel h1 {
+        font-size: 20px;
+    }
+
     .tea-result-layout {
-        grid-template-columns: 210px 1fr;
+        grid-template-columns: minmax(154px, 0.75fr) minmax(0, 1.25fr);
+        gap: 6px;
+    }
+
+    .tea-result-art {
+        max-height: 126px;
+    }
+
+    .tea-result-copy .station-copy {
+        font-size: 10px;
+        line-height: 1.25;
+    }
+
+    .tea-result-panel .station-guide-result {
+        width: 100%;
+        max-height: 66%;
     }
 }
 
