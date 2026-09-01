@@ -47,6 +47,11 @@
         'assets/images/station-fire/wood-large.png'
     ];
 
+    const STATION_TEA_URLS = [
+        'assets/images/station-tea/ingredient-sprites.png',
+        'assets/images/station-tea/tool-sprites.png'
+    ];
+
     window.MinigameAssets = {
         memoryCardImageUrls: MEMORY_CARD_URLS.slice(),
         memoryEmojiToImageUrl: Object.assign({}, MEMORY_EMOJI_TO_IMAGE),
@@ -66,6 +71,10 @@
 
         getStationFirePreloadUrls: function () {
             return STATION_FIRE_URLS.slice();
+        },
+
+        getStationTeaPreloadUrls: function () {
+            return STATION_TEA_URLS.slice();
         }
     };
 })();

@@ -5,23 +5,53 @@ const StationDemoGame = {
     animationId: null,
     timers: [],
     keyHandler: null,
+    fireMusic: null,
+    fireMusicSrc: 'assets/sounds/picking-tea-girl.mp3',
+    fireMusicStarted: false,
+    fireDurationMs: 60000,
+    fireAssetUrls: null,
+    teaTimerId: null,
+    teaStageDurationMs: 30000,
+    teaImageUrls: [
+        'assets/images/station-tea/ingredient-sprites.png',
+        'assets/images/station-tea/tool-sprites.png'
+    ],
+    fireImageUrls: [
+        'assets/images/station-fire/stove.png',
+        'assets/images/station-fire/fire-small.png',
+        'assets/images/station-fire/fire-large.png',
+        'assets/images/station-fire/wood-small.png',
+        'assets/images/station-fire/wood-large.png'
+    ],
+    fireBeatTimes: [
+        2.670, 3.646, 5.108, 6.594, 7.570, 8.545,
+        9.776, 11.471, 12.423, 13.468, 14.466, 15.859,
+        17.136, 18.390, 19.365, 20.341, 21.362, 22.314,
+        23.290, 24.265, 25.263, 26.239, 27.237, 28.212,
+        29.187, 30.186, 31.184, 32.136, 33.112, 34.110,
+        35.085, 36.061, 37.036, 38.034, 39.033, 40.008,
+        40.983, 41.958, 42.934, 43.932, 44.931, 45.906,
+        46.881, 47.856, 48.832, 49.853, 50.805, 51.780,
+        52.779, 53.754, 54.753, 55.705, 56.703, 57.702,
+        58.654, 59.675
+    ],
 
     stations: {
         fire: {
             kicker: '關卡一 / 站點 1',
             title: '灶台生火',
             subtitle: '看準節拍添柴，讓火候維持在剛好的溫度。',
-            intro: '木柴會沿著節奏軌道移動。當木柴進入金色火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；火候超過綠色區間右側時，按「噴水」少量降火。最多可以失誤 5 次。',
+            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；添柴時火候在綠色區間會獲得較多分，火候太高還添柴會扣分。火候超過綠色區間右側時，按「噴水」少量降火。',
             success: '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
             fail: '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
         },
         tea: {
             kicker: '關卡二 / 站點 2',
-            title: '擂茶研磨',
-            subtitle: '依照順序加入材料，研磨出一碗香氣完整的擂茶。',
-            intro: '照著提示順序完成：茶葉、芝麻、花生、研磨、盛碗。點錯會扣穩定度，時間內完成就能解鎖擂茶小知識。',
-            success: '擂茶小知識：擂茶需要耐心和順序，從材料到力道都會影響香氣。阿公笑著說：「慢慢來，香味才會出來。」',
-            fail: '順序有點亂了。重新看一次材料提示，照著節奏慢慢完成。',
+            title: '擂茶料理',
+            subtitle: '看著指定順序，把食材逐一研磨、切好，完成一組擂茶。',
+            intro: '先依照上方順序，把五種食材拖進石臼，每一種都要畫滿 5 圈；接著把四種配菜拖上砧板，每一種連點 10 刀。兩段各有 30 秒，拖錯會提示正確材料，時間到也會協助補完，不會卡關。',
+            success: '擂茶小知識：擂茶把茶葉、香草、花生與芝麻耐心擂成茶膏，再配上切細的蔬菜與豆腐，是一碗兼具香氣與口感的客家料理。',
+            fail: '',
         }
     },
 
@@ -33,6 +63,7 @@ const StationDemoGame = {
         showScene('game-container');
         this.hideLegacyGameUi();
         this.createShell(stationId);
+        if (stationId === 'fire') this.startFireMusic();
         this.showIntro(stationId);
     },
 
@@ -84,21 +115,22 @@ const StationDemoGame = {
         this.container.querySelector('.station-primary').addEventListener('click', () => {
             this.playClick();
             if (stationId === 'fire') {
-                const fireAssets = window.MinigameAssets && typeof window.MinigameAssets.getStationFirePreloadUrls === 'function'
-                    ? window.MinigameAssets.getStationFirePreloadUrls()
-                    : [];
-                if (fireAssets.length > 0 && typeof LoadingManager !== 'undefined') {
-                    LoadingManager.showAndLoad(fireAssets, () => this.startFireGame());
-                } else {
-                    this.startFireGame();
-                }
+                this.startFireMusic();
+                this.prepareFireAssets()
+                    .then(() => this.startFireGame())
+                    .catch((error) => this.showFireLoadError(error));
             }
-            if (stationId === 'tea') this.startTeaGame();
+            if (stationId === 'tea') {
+                this.prepareTeaAssets()
+                    .then(() => this.startTeaGame())
+                    .catch((error) => this.showTeaLoadError(error));
+            }
         });
         this.container.querySelector('.station-secondary').addEventListener('click', () => this.close());
     },
 
     startFireGame() {
+        this.syncFireMusicToGameStart();
         this.state = {
             stationId: 'fire',
             score: 0,
@@ -106,53 +138,59 @@ const StationDemoGame = {
             fire: 50,
             judged: 0,
             beats: [],
-            startedAt: performance.now(),
+            startedAt: 0,
             nextBeatIndex: 0,
             nextSpawnAt: 0,
-            totalBeats: 18,
+            totalBeats: this.fireBeatTimes.length,
             idealMin: 45,
             idealMax: 72,
             safeMin: 30,
             safeMax: 88,
-            stableMs: 0,
             unstableMs: 0,
             maxMistakes: 5,
             mistakesRemaining: 5,
-            lastTickAt: performance.now(),
+            durationMs: this.fireDurationMs,
+            lastTickAt: 0,
             finished: false,
-            lastResult: '等木柴進入金色火圈再添柴',
+            lastResult: '等木柴進入灶台火圈再添柴',
         };
 
+        const stoveImage = this.getFireAsset('assets/images/station-fire/stove.png');
+        const smallFlameImage = this.getFireAsset('assets/images/station-fire/fire-small.png');
+
         this.container.innerHTML = `
-            <div class="station-play">
+            <div class="station-play is-preparing">
                 <div class="station-hud">
                     <div>${this.station.kicker}</div>
                     <div>分數 <span data-score>0</span></div>
                     <div>火候 <span data-fire>50</span>%</div>
-                    <div>穩定 <span data-stable>0</span>%</div>
-                    <div>還可失誤 <span data-mistakes>5</span> 次</div>
+                    <div>時間 <span data-time>60</span> 秒</div>
                 </div>
-                <div class="fire-stage" aria-label="灶台火候">
-                    <img class="fire-stove-img" src="assets/images/station-fire/stove.png" alt="灶台">
-                    <img class="fire-flame-img" data-flame src="assets/images/station-fire/fire-small.png" alt="火焰">
-                </div>
+                <button type="button" class="station-corner-exit" data-exit aria-label="返回入口">返回</button>
                 <div class="fire-help-row">
-                    <span>木柴進入金色火圈：按添柴</span>
+                    <span>木柴進入灶台火圈：按添柴</span>
                     <span data-water-hint>火候超過 72%：按噴水</span>
                 </div>
                 <div class="fire-track" aria-label="節奏軌道">
-                    <div class="fire-target">添柴點</div>
+                    <div class="fire-danger-alert" data-fire-danger>快要火燒厝了</div>
+                    <div class="fire-target">
+                        <img class="fire-stove-img" src="${stoveImage}" alt="灶台">
+                        <img class="fire-flame-img" data-flame src="${smallFlameImage}" alt="火焰">
+                        <div class="fire-water-burst" data-water-effect aria-hidden="true">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
                 </div>
                 <div class="fire-meter">
                     <div class="fire-ideal-zone"></div>
                     <span></span>
                 </div>
-                <div class="station-feedback">等木柴進入金色火圈再添柴</div>
+                <div class="station-feedback">等木柴進入灶台火圈再添柴</div>
+                <div class="fire-score-layer" data-score-layer aria-hidden="true"></div>
                 <div class="station-actions compact">
                     <button type="button" class="station-primary" data-hit>添柴</button>
-                    <button type="button" class="station-water" data-water>噴水</button>
-                    <button type="button" class="station-secondary" data-exit>返回入口</button>
                 </div>
+                <button type="button" class="station-water station-water-fixed" data-water>噴水</button>
             </div>
         `;
 
@@ -171,38 +209,218 @@ const StationDemoGame = {
         };
         window.addEventListener('keydown', this.keyHandler);
 
-        this.animationId = requestAnimationFrame((time) => this.tickFire(time));
+        this.renderFireHud();
+        this.waitForFireGameReady()
+            .then(() => this.beginFireLoop())
+            .catch((error) => this.showFireLoadError(error));
+    },
+
+    beginFireLoop() {
+        if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
+        const play = this.container.querySelector('.station-play');
+        if (play) play.classList.remove('is-preparing');
+        if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
+
+        this.animationId = requestAnimationFrame((time) => {
+            if (!this.state || this.state.finished) return;
+            this.state.startedAt = time;
+            this.state.lastTickAt = time;
+            this.renderFireHud();
+            this.animationId = requestAnimationFrame((nextTime) => this.tickFire(nextTime));
+        });
+    },
+
+    waitForFireGameReady() {
+        if (typeof LoadingManager !== 'undefined') {
+            LoadingManager.loadingScreen.style.display = 'flex';
+            LoadingManager.updateProgress(100);
+        }
+
+        const domImages = Array.from(this.container.querySelectorAll('.fire-stove-img, .fire-flame-img'));
+        const domReady = domImages.map((img) => this.waitForImageElement(img));
+
+        return Promise.all(domReady).then(() => new Promise((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }));
+    },
+
+    waitForImageElement(img) {
+        return new Promise((resolve, reject) => {
+            let done = false;
+            const finish = (error) => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                img.onload = null;
+                img.onerror = null;
+                if (error) reject(error);
+                else resolve();
+            };
+            const verify = () => {
+                if (!img.complete || img.naturalWidth <= 0) {
+                    finish(new Error(`圖片無法顯示：${img.alt || img.src}`));
+                    return;
+                }
+                if (typeof img.decode === 'function') {
+                    img.decode().then(() => finish()).catch(() => finish(new Error(`圖片解碼失敗：${img.alt || img.src}`)));
+                } else {
+                    finish();
+                }
+            };
+            const timeoutId = setTimeout(() => finish(new Error(`圖片顯示逾時：${img.alt || img.src}`)), 12000);
+            if (img.complete && img.naturalWidth > 0) {
+                verify();
+                return;
+            }
+            img.onload = verify;
+            img.onerror = () => finish(new Error(`圖片載入失敗：${img.alt || img.src}`));
+        });
+    },
+
+    prepareFireAssets() {
+        if (this.fireAssetUrls && this.fireImageUrls.every((src) => this.fireAssetUrls.has(src))) {
+            return Promise.resolve();
+        }
+
+        if (typeof LoadingManager !== 'undefined' && LoadingManager.loadingScreen) {
+            LoadingManager.loadingScreen.style.display = 'flex';
+            LoadingManager.updateProgress(0);
+        }
+
+        this.releaseFireAssets();
+        const loadedAssets = new Map();
+        let loadedCount = 0;
+        return Promise.all(this.fireImageUrls.map((src) => this.fetchDecodedFireImage(src).then((objectUrl) => {
+            loadedAssets.set(src, objectUrl);
+            loadedCount++;
+            if (typeof LoadingManager !== 'undefined') {
+                LoadingManager.updateProgress(Math.round((loadedCount / this.fireImageUrls.length) * 100));
+            }
+        }))).then(() => {
+            this.fireAssetUrls = loadedAssets;
+        }).catch((error) => {
+            loadedAssets.forEach((url) => URL.revokeObjectURL(url));
+            throw error;
+        });
+    },
+
+    fetchDecodedFireImage(src, attempt = 0) {
+        return fetch(src, { cache: attempt === 0 ? 'force-cache' : 'reload' })
+            .then((response) => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${src}`);
+                return response.blob();
+            })
+            .then((blob) => {
+                if (!blob.type.startsWith('image/') || blob.size === 0) {
+                    throw new Error(`圖片資料無效：${src}`);
+                }
+                return this.decodeFireBlob(blob, src);
+            })
+            .catch((error) => {
+                if (attempt < 1) return this.fetchDecodedFireImage(src, attempt + 1);
+                throw error;
+            });
+    },
+
+    decodeFireBlob(blob, src) {
+        return new Promise((resolve, reject) => {
+            const objectUrl = URL.createObjectURL(blob);
+            const img = new Image();
+            let done = false;
+            const finish = (error) => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                img.onload = null;
+                img.onerror = null;
+                if (error) {
+                    URL.revokeObjectURL(objectUrl);
+                    reject(error);
+                    return;
+                }
+                resolve(objectUrl);
+            };
+            const verify = () => {
+                if (img.naturalWidth <= 0) {
+                    finish(new Error(`圖片解碼後沒有尺寸：${src}`));
+                    return;
+                }
+                if (typeof img.decode === 'function') {
+                    img.decode().then(() => finish()).catch(() => finish(new Error(`圖片解碼失敗：${src}`)));
+                } else {
+                    finish();
+                }
+            };
+            const timeoutId = setTimeout(() => finish(new Error(`圖片解碼逾時：${src}`)), 12000);
+            img.onload = verify;
+            img.onerror = () => finish(new Error(`圖片載入失敗：${src}`));
+            img.src = objectUrl;
+        });
+    },
+
+    getFireAsset(src) {
+        return this.fireAssetUrls && this.fireAssetUrls.get(src) || src;
+    },
+
+    releaseFireAssets() {
+        if (!this.fireAssetUrls) return;
+        this.fireAssetUrls.forEach((url) => URL.revokeObjectURL(url));
+        this.fireAssetUrls = null;
+    },
+
+    showFireLoadError(error) {
+        if (window.Logger) window.Logger.error('關卡一圖片準備失敗:', error);
+        if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
+        if (!this.container) return;
+        this.container.innerHTML = `
+            <section class="station-panel station-intro-panel">
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>圖片還沒載入完成</h1>
+                <p class="station-copy">目前網路沒有把灶台與木柴圖片完整送達，請按下方按鈕重新載入。</p>
+                <div class="station-actions">
+                    <button type="button" class="station-primary" data-retry-load>重新載入</button>
+                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                </div>
+            </section>
+        `;
+        this.container.querySelector('[data-retry-load]').addEventListener('click', () => {
+            this.startFireMusic();
+            this.prepareFireAssets()
+                .then(() => this.startFireGame())
+                .catch((retryError) => this.showFireLoadError(retryError));
+        });
+        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
     },
 
     tickFire(time) {
         if (!this.state || this.state.finished) return;
 
-        const elapsed = time - this.state.startedAt;
+        const elapsed = this.getFireElapsedMs(time);
         const delta = Math.min(80, time - this.state.lastTickAt);
         this.state.lastTickAt = time;
 
         while (
             this.state.nextBeatIndex < this.state.totalBeats &&
-            elapsed >= this.state.nextSpawnAt
+            elapsed >= this.getFireSpawnAt(this.state.nextBeatIndex)
         ) {
             this.spawnFireBeat(time);
-            this.state.nextSpawnAt += this.getFireSpawnEvery(this.state.nextBeatIndex);
             this.state.nextBeatIndex++;
         }
 
         const track = this.container.querySelector('.fire-track');
         const trackWidth = track ? track.clientWidth : 1;
-        const targetX = trackWidth * 0.76;
+        const targetX = this.getFireTargetX(trackWidth);
         const stillActive = [];
 
         this.state.beats.forEach((beat) => {
-            const progress = (time - beat.spawnedAt) / beat.travelMs;
-            const x = progress * trackWidth;
+            const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
+            const startX = trackWidth + beat.el.offsetWidth;
+            const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
 
-            if (!beat.hit && x > targetX + 100) {
+            if (!beat.hit && x < targetX - 100) {
                 beat.hit = true;
-                this.applyFireScore('木柴錯過了', -6, -10, true, true);
+                this.applyFireScore('木柴錯過了', -8, -10, true, true);
                 beat.el.remove();
                 return;
             }
@@ -215,11 +433,8 @@ const StationDemoGame = {
         this.updateFireStability(delta);
         this.renderFireHud();
 
-        if (this.state.judged >= this.state.totalBeats && this.state.beats.length === 0) {
-            const totalMs = time - this.state.startedAt;
-            const stableRatio = totalMs > 0 ? this.state.stableMs / totalMs : 0;
-            const success = stableRatio >= 0.45 && this.isFireInSafeRange();
-            this.showResult(success);
+        if (elapsed >= this.state.durationMs) {
+            this.showFireResult();
             return;
         }
 
@@ -233,8 +448,8 @@ const StationDemoGame = {
         const beat = document.createElement('div');
         beat.className = `fire-beat ${type === 'big' ? 'big' : 'small'}`;
         const woodImage = type === 'big'
-            ? 'assets/images/station-fire/wood-large.png'
-            : 'assets/images/station-fire/wood-small.png';
+            ? this.getFireAsset('assets/images/station-fire/wood-large.png')
+            : this.getFireAsset('assets/images/station-fire/wood-small.png');
         beat.innerHTML = `
             <img src="${woodImage}" alt="${type === 'big' ? '大柴' : '小柴'}">
             <span>${type === 'big' ? '大柴' : '小柴'}</span>
@@ -243,7 +458,8 @@ const StationDemoGame = {
         this.state.beats.push({
             el: beat,
             type,
-            spawnedAt: time,
+            spawnedAtMs: this.getFireSpawnAt(this.state.nextBeatIndex),
+            targetAtMs: this.fireBeatTimes[this.state.nextBeatIndex] * 1000,
             travelMs: this.getFireTravelMs(this.state.nextBeatIndex),
             hit: false
         });
@@ -254,7 +470,7 @@ const StationDemoGame = {
 
         const track = this.container.querySelector('.fire-track');
         const trackWidth = track ? track.clientWidth : 1;
-        const targetX = trackWidth * 0.76;
+        const targetX = this.getFireTargetX(trackWidth);
         let best = null;
         let bestDistance = Infinity;
 
@@ -269,22 +485,33 @@ const StationDemoGame = {
         });
 
         if (!best) {
-            this.applyFireScore('太早了，等木柴進火圈', -2, -3, false, true);
+            this.applyFireScore('太早了，等木柴進火圈', -8, -3, false, true);
             return;
         }
 
         if (bestDistance > 120) {
             best.hit = true;
             best.el.remove();
-            this.applyFireScore('沒對準火圈', -4, -8, true, true);
+            this.applyFireScore('沒對準火圈', -12, -8, true, true);
             return;
         }
 
         best.hit = true;
         best.el.remove();
-        if (bestDistance <= 38) this.applyFireScore(`剛剛好：${best.type === 'big' ? '大柴' : '小柴'}`, 90, best.type === 'big' ? 13 : 7);
-        else if (bestDistance <= 82) this.applyFireScore(`有添到：${best.type === 'big' ? '大柴' : '小柴'}`, 60, best.type === 'big' ? 9 : 4);
-        else this.applyFireScore('沒對準火圈', -4, -8, true, true);
+        const woodLabel = best.type === 'big' ? '大柴' : '小柴';
+        const fireDelta = best.type === 'big' ? 13 : 7;
+        const basePoints = bestDistance <= 38 ? 55 : 35;
+        const timingLabel = bestDistance <= 38 ? '剛剛好' : '有添到';
+
+        if (this.state.fire > this.state.idealMax) {
+            this.applyFireScore(`火太旺還添${woodLabel}`, -25, fireDelta, true, true);
+        } else if (this.isFireInIdealRange()) {
+            this.applyFireScore(`${timingLabel}：${woodLabel}，火候正好`, basePoints + 45, fireDelta);
+        } else if (this.state.fire < this.state.idealMin) {
+            this.applyFireScore(`${timingLabel}：${woodLabel}，把火拉回來`, basePoints + 15, fireDelta);
+        } else {
+            this.applyFireScore(`${timingLabel}：${woodLabel}`, basePoints, fireDelta);
+        }
     },
 
     applyFireScore(label, points, fireDelta, countJudgement = true, countMistake = false) {
@@ -293,20 +520,31 @@ const StationDemoGame = {
         if (countMistake) this.state.mistakesRemaining = Math.max(0, this.state.mistakesRemaining - 1);
         this.state.score = Math.max(0, this.state.score + points);
         this.state.fire = Math.max(0, Math.min(100, this.state.fire + fireDelta));
-        const feedback = countMistake ? `${label}，還可失誤 ${this.state.mistakesRemaining} 次` : label;
+        const feedback = countMistake ? `${label}，扣分但繼續` : label;
         this.state.lastResult = feedback;
         this.container.querySelector('.station-feedback').textContent = feedback;
+        this.showFireScorePop(points);
         this.playClick();
         this.renderFireHud();
-        if (this.state.mistakesRemaining <= 0) this.showResult(false);
     },
 
     sprayWater() {
         if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
-        this.state.fire = Math.max(0, this.state.fire - 5);
+        const wasTooHot = this.state.fire > this.state.idealMax;
+        const wasSafe = this.isFireInSafeRange();
+        this.state.fire = Math.max(0, this.state.fire - 7);
+        const points = wasTooHot ? (wasSafe ? 12 : 20) : -8;
+        this.state.score = Math.max(0, this.state.score + points);
+        const waterEffect = this.container.querySelector('[data-water-effect]');
+        if (waterEffect) {
+            waterEffect.classList.remove('active');
+            void waterEffect.offsetWidth;
+            waterEffect.classList.add('active');
+        }
         this.container.querySelector('.station-feedback').textContent = this.state.fire > this.state.idealMax
             ? '噴水降火，再按一次可以更穩'
-            : '噴水降火，回到綠色區間就先停';
+            : wasTooHot ? '噴水降火，火候回穩' : '火候還不用噴水';
+        this.showFireScorePop(points);
         this.playClick();
         this.renderFireHud();
     },
@@ -316,14 +554,21 @@ const StationDemoGame = {
         return Math.max(0, Math.min(1, index / (this.state.totalBeats - 1)));
     },
 
-    getFireSpawnEvery(index) {
-        const progress = this.getFireProgress(index);
-        return 1380 - (progress * 420);
+    getFireTravelMs(index) {
+        return index < 4 ? 2100 : 1950;
     },
 
-    getFireTravelMs(index) {
-        const progress = this.getFireProgress(index);
-        return 3100 - (progress * 860);
+    getFireSpawnAt(index) {
+        return Math.max(0, (this.fireBeatTimes[index] * 1000) - this.getFireTravelMs(index));
+    },
+
+    getFireElapsedMs(time) {
+        if (!this.state.startedAt) return 0;
+        return time - this.state.startedAt;
+    },
+
+    getFireTargetX(trackWidth) {
+        return trackWidth * 0.24;
     },
 
     updateFireStability(delta) {
@@ -332,15 +577,12 @@ const StationDemoGame = {
         this.state.fire = Math.max(0, Math.min(100, this.state.fire + (drift * delta)));
 
         if (inIdeal) {
-            this.state.stableMs += delta;
             this.state.unstableMs = Math.max(0, this.state.unstableMs - delta * 0.4);
         } else {
             this.state.unstableMs += delta;
         }
 
-        if (!this.isFireInSafeRange() && this.state.unstableMs > 3200) {
-            this.showResult(false);
-        }
+        if (!this.isFireInSafeRange() && this.state.unstableMs > 3200) this.state.unstableMs = 3200;
     },
 
     isFireInIdealRange() {
@@ -354,19 +596,18 @@ const StationDemoGame = {
     renderFireHud() {
         const score = this.container.querySelector('[data-score]');
         const fire = this.container.querySelector('[data-fire]');
-        const stable = this.container.querySelector('[data-stable]');
-        const mistakes = this.container.querySelector('[data-mistakes]');
+        const time = this.container.querySelector('[data-time]');
         const meter = this.container.querySelector('.fire-meter span');
         const idealZone = this.container.querySelector('.fire-ideal-zone');
         const waterHint = this.container.querySelector('[data-water-hint]');
         const waterButton = this.container.querySelector('[data-water]');
+        const dangerAlert = this.container.querySelector('[data-fire-danger]');
         const flame = this.container.querySelector('[data-flame]');
         if (score) score.textContent = this.state.score;
         if (fire) fire.textContent = Math.round(this.state.fire);
-        if (mistakes) mistakes.textContent = this.state.mistakesRemaining;
-        if (stable) {
-            const elapsed = Math.max(1, performance.now() - this.state.startedAt);
-            stable.textContent = Math.min(100, Math.round((this.state.stableMs / elapsed) * 100));
+        if (time) {
+            const elapsed = this.getFireElapsedMs(performance.now());
+            time.textContent = Math.max(0, Math.ceil((this.state.durationMs - elapsed) / 1000));
         }
         if (meter) meter.style.width = `${this.state.fire}%`;
         if (idealZone) {
@@ -376,108 +617,483 @@ const StationDemoGame = {
         const needsWater = this.state.fire > this.state.idealMax;
         if (waterHint) waterHint.classList.toggle('active', needsWater);
         if (waterButton) waterButton.classList.toggle('needs-water', needsWater);
+        if (dangerAlert) dangerAlert.classList.toggle('active', this.state.fire > this.state.safeMax);
         if (flame) {
-            flame.src = this.state.fire > this.state.idealMax
-                ? 'assets/images/station-fire/fire-large.png'
-                : 'assets/images/station-fire/fire-small.png';
-            flame.style.transform = `translateX(-50%) scale(${0.62 + (this.state.fire / 130)})`;
+            const flameSrc = this.state.fire > this.state.idealMax
+                ? this.getFireAsset('assets/images/station-fire/fire-large.png')
+                : this.getFireAsset('assets/images/station-fire/fire-small.png');
+            if (flame.src !== flameSrc) flame.src = flameSrc;
+            const flameScale = 0.55 + (this.state.fire / 75);
+            flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
     },
 
+    showFireScorePop(points, prefix = '') {
+        if (!this.container || !Number.isFinite(points)) return;
+        const layer = this.container.querySelector('[data-score-layer]');
+        if (!layer) return;
+        const pop = document.createElement('div');
+        pop.className = `fire-score-pop ${points >= 0 ? 'positive' : 'negative'}`;
+        const sign = points >= 0 ? '+' : '';
+        pop.textContent = `${prefix ? `${prefix} ` : ''}${sign}${points}`;
+        const offsetX = 42 + (Math.random() * 16);
+        const offsetY = 42 + (Math.random() * 18);
+        pop.style.left = `${offsetX}%`;
+        pop.style.top = `${offsetY}%`;
+        layer.appendChild(pop);
+        this.timers.push(setTimeout(() => {
+            if (pop.parentNode) pop.remove();
+        }, 900));
+    },
+
+    getTeaStageConfig(stageId) {
+        const stages = {
+            grind: {
+                title: '小遊戲一・研磨食材',
+                verb: '研磨',
+                instruction: '依照順序拖進石臼，每一種食材畫滿 5 圈',
+                target: 5,
+                unit: '圈',
+                toolClass: 'grind',
+                items: [
+                    { id: 'basil', name: '九層塔', sprite: 0 },
+                    { id: 'mint', name: '薄荷', sprite: 1 },
+                    { id: 'kuding', name: '苦刺心', sprite: 2 },
+                    { id: 'peanut', name: '花生', sprite: 3 },
+                    { id: 'sesame', name: '芝麻', sprite: 4 }
+                ]
+            },
+            chop: {
+                title: '小遊戲二・切配菜',
+                verb: '切料',
+                instruction: '依照順序拖上砧板，每一種食材快速連點 10 刀',
+                target: 10,
+                unit: '刀',
+                toolClass: 'chop',
+                items: [
+                    { id: 'long-bean', name: '長豆', sprite: 5 },
+                    { id: 'radish', name: '菜脯', sprite: 6 },
+                    { id: 'tree-veg', name: '樹仔菜', sprite: 7 },
+                    { id: 'tofu', name: '豆腐', sprite: 8 }
+                ]
+            }
+        };
+        return stages[stageId];
+    },
+
+    shuffleTeaItems(items) {
+        const shuffled = items.map((item) => ({ ...item }));
+        for (let index = shuffled.length - 1; index > 0; index--) {
+            const swapIndex = Math.floor(Math.random() * (index + 1));
+            [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+        }
+        return shuffled;
+    },
+
+    prepareTeaAssets() {
+        return Promise.all(this.teaImageUrls.map((src) => new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = resolve;
+            image.onerror = () => reject(new Error(`無法載入 ${src}`));
+            image.src = src;
+        })));
+    },
+
+    showTeaLoadError(error) {
+        if (window.Logger) window.Logger.error('關卡二圖片準備失敗:', error);
+        if (!this.container) return;
+        this.container.innerHTML = `
+            <section class="station-panel station-result-panel">
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>素材載入失敗</h1>
+                <p class="station-copy">請確認網路後再試一次，或先返回入口。</p>
+                <div class="station-actions">
+                    <button type="button" class="station-primary" data-retry-load>重新載入</button>
+                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                </div>
+            </section>
+        `;
+        this.container.querySelector('[data-retry-load]').addEventListener('click', () => {
+            this.prepareTeaAssets()
+                .then(() => this.startTeaGame())
+                .catch((retryError) => this.showTeaLoadError(retryError));
+        });
+        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
+    },
+
     startTeaGame() {
+        this.clearTeaTimer();
+        const grind = this.getTeaStageConfig('grind');
+        const chop = this.getTeaStageConfig('chop');
         this.state = {
             stationId: 'tea',
-            sequence: ['茶葉', '芝麻', '花生', '研磨', '盛碗'],
-            current: 0,
-            stability: 100,
-            startedAt: Date.now(),
-            duration: 45,
-            finished: false,
+            phase: 'grind',
+            orders: {
+                grind: this.shuffleTeaItems(grind.items),
+                chop: this.shuffleTeaItems(chop.items)
+            },
+            completed: { grind: [], chop: [] },
+            autoCompleted: { grind: false, chop: false },
+            currentIndex: 0,
+            processing: false,
+            activeItemId: null,
+            actionProgress: 0,
+            rotationAngle: 0,
+            lastPointerAngle: null,
+            timeLeft: 30,
+            stageDeadline: 0,
+            transitioning: false,
+            feedback: '先看上方順序，把第一種食材拖下來',
+            finished: false
         };
+        this.renderTeaStage();
+        this.startTeaTimer();
+    },
+
+    renderTeaStage() {
+        if (!this.container || !this.state || this.state.stationId !== 'tea') return;
+        const config = this.getTeaStageConfig(this.state.phase);
+        const order = this.state.orders[this.state.phase];
+        const completed = this.state.completed[this.state.phase];
+        const expected = order[this.state.currentIndex];
+        const orderMarkup = order.map((item, index) => {
+            const status = completed.includes(item.id)
+                ? 'done'
+                : index === this.state.currentIndex ? 'current' : '';
+            return `<span class="${status}"><b>${index + 1}</b>${item.name}${status === 'done' ? ' ✓' : ''}</span>`;
+        }).join('');
+        const cardsMarkup = config.items.map((item) => {
+            const column = item.sprite % 3;
+            const row = Math.floor(item.sprite / 3);
+            const isDone = completed.includes(item.id);
+            const isActive = this.state.activeItemId === item.id;
+            return `
+                <button type="button" class="tea-ingredient-card${isDone ? ' done' : ''}${isActive ? ' active' : ''}"
+                    data-tea-item="${item.id}" aria-label="拖曳${item.name}"
+                    style="--tea-sprite-x:${column * 50}%;--tea-sprite-y:${row * 50}%">
+                    <span class="tea-ingredient-art" aria-hidden="true"></span>
+                    <span class="tea-ingredient-name">${item.name}</span>
+                </button>
+            `;
+        }).join('');
+        const progressText = this.state.processing
+            ? `${this.state.actionProgress}/${config.target} ${config.unit}`
+            : `等待 ${expected ? expected.name : '完成'}`;
+        const progressPercent = this.state.processing
+            ? Math.min(100, this.state.actionProgress / config.target * 100)
+            : 0;
 
         this.container.innerHTML = `
-            <div class="station-play">
-                <div class="station-hud">
-                    <div>${this.station.kicker}</div>
-                    <div>步驟 <span data-step>1</span>/5</div>
-                    <div>穩定度 <span data-stability>100</span>%</div>
+            <div class="station-play tea-play">
+                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                <div class="station-hud tea-hud">
+                    <span>${config.title}</span>
+                    <span>進度 ${Math.min(this.state.currentIndex + 1, order.length)}/${order.length}</span>
+                    <span class="tea-timer${this.state.timeLeft <= 5 ? ' urgent' : ''}">剩餘 <b data-tea-time>${Math.ceil(this.state.timeLeft)}</b> 秒</span>
                 </div>
-                <div class="tea-board">
-                    <div class="tea-mortar">
-                        <div class="tea-pestle"></div>
-                        <div class="tea-bowl-text">擂茶石臼</div>
+                <div class="tea-instruction">${config.instruction}</div>
+                <div class="tea-order" aria-label="正確順序">${orderMarkup}</div>
+                <div class="tea-game-area">
+                    <div class="tea-ingredient-grid" style="--tea-item-count:${config.items.length}">${cardsMarkup}</div>
+                    <div class="tea-workspace">
+                        <div class="tea-drop-zone ${config.toolClass}${this.state.processing ? ' processing' : ''}" data-tea-drop>
+                            <span class="tea-tool-art" aria-hidden="true"></span>
+                            <span class="tea-target-label">${this.state.processing && expected ? `${expected.name}・${config.verb}` : `拖到這裡${config.verb}`}</span>
+                            <span class="tea-action-progress">${progressText}</span>
+                            <span class="tea-action-meter"><i style="width:${progressPercent}%"></i></span>
+                        </div>
                     </div>
-                    <div class="tea-sequence"></div>
-                    <div class="tea-buttons"></div>
                 </div>
-                <div class="station-feedback">照順序完成材料與動作</div>
-                <div class="station-actions compact">
-                    <button type="button" class="station-secondary" data-exit>返回入口</button>
-                </div>
+                <div class="station-feedback tea-feedback" aria-live="polite">${this.state.feedback}</div>
             </div>
         `;
 
         this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
-        this.renderTeaGame();
-    },
-
-    renderTeaGame() {
-        const sequenceEl = this.container.querySelector('.tea-sequence');
-        const buttonsEl = this.container.querySelector('.tea-buttons');
-        const labels = ['茶葉', '芝麻', '花生', '研磨', '盛碗'];
-
-        sequenceEl.innerHTML = this.state.sequence.map((item, index) => `
-            <span class="${index < this.state.current ? 'done' : index === this.state.current ? 'current' : ''}">${item}</span>
-        `).join('');
-
-        buttonsEl.innerHTML = labels.map((label) => `
-            <button type="button" data-tea-action="${label}">${label}</button>
-        `).join('');
-
-        buttonsEl.querySelectorAll('button').forEach((button) => {
-            button.addEventListener('click', () => this.handleTeaAction(button.dataset.teaAction));
+        this.container.querySelectorAll('[data-tea-item]').forEach((card) => {
+            const item = config.items.find((candidate) => candidate.id === card.dataset.teaItem);
+            if (!item || completed.includes(item.id) || item.id === this.state.activeItemId) return;
+            this.bindTeaIngredientDrag(card, item);
         });
-
-        this.updateTeaHud();
+        if (this.state.processing) {
+            if (this.state.phase === 'grind') this.bindTeaGrinding();
+            if (this.state.phase === 'chop') this.bindTeaChopping();
+        }
     },
 
-    handleTeaAction(label) {
-        if (!this.state || this.state.finished) return;
+    bindTeaIngredientDrag(card, item) {
+        card.addEventListener('pointerdown', (event) => {
+            if (!this.state || this.state.finished || this.state.transitioning) return;
+            if (this.state.processing) {
+                const active = this.state.orders[this.state.phase][this.state.currentIndex];
+                this.flashTeaError(`請先完成${active.name}的${this.getTeaStageConfig(this.state.phase).verb}`, item.id);
+                return;
+            }
+            event.preventDefault();
+            const startX = event.clientX;
+            const startY = event.clientY;
+            let moved = false;
+            card.setPointerCapture(event.pointerId);
+            card.classList.add('dragging');
 
-        const expected = this.state.sequence[this.state.current];
-        if (label === expected) {
-            this.state.current++;
-            this.container.querySelector('.station-feedback').textContent = `${label} 完成`;
-            this.container.querySelector('.tea-pestle').classList.add('moving');
+            const move = (moveEvent) => {
+                if (moveEvent.pointerId !== event.pointerId) return;
+                const offsetX = moveEvent.clientX - startX;
+                const offsetY = moveEvent.clientY - startY;
+                moved = moved || Math.abs(offsetX) + Math.abs(offsetY) > 8;
+                card.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.08)`;
+            };
+            const finish = (finishEvent) => {
+                if (finishEvent.pointerId !== event.pointerId) return;
+                card.removeEventListener('pointermove', move);
+                card.removeEventListener('pointerup', finish);
+                card.removeEventListener('pointercancel', cancel);
+                card.classList.remove('dragging');
+                card.style.transform = '';
+                const dropZone = this.container?.querySelector('[data-tea-drop]');
+                if (!dropZone || !moved) return;
+                const bounds = dropZone.getBoundingClientRect();
+                const inside = finishEvent.clientX >= bounds.left && finishEvent.clientX <= bounds.right
+                    && finishEvent.clientY >= bounds.top && finishEvent.clientY <= bounds.bottom;
+                if (inside) this.handleTeaDrop(item);
+            };
+            const cancel = (cancelEvent) => {
+                if (cancelEvent.pointerId !== event.pointerId) return;
+                card.removeEventListener('pointermove', move);
+                card.removeEventListener('pointerup', finish);
+                card.removeEventListener('pointercancel', cancel);
+                card.classList.remove('dragging');
+                card.style.transform = '';
+            };
+            card.addEventListener('pointermove', move);
+            card.addEventListener('pointerup', finish);
+            card.addEventListener('pointercancel', cancel);
+        });
+    },
+
+    handleTeaDrop(item) {
+        if (!this.state || this.state.processing || this.state.transitioning) return;
+        const expected = this.state.orders[this.state.phase][this.state.currentIndex];
+        if (!expected || item.id !== expected.id) {
+            this.flashTeaError(`順序錯誤，下一個是${expected ? expected.name : '指定食材'}`, item.id);
+            return;
+        }
+        const config = this.getTeaStageConfig(this.state.phase);
+        this.state.processing = true;
+        this.state.activeItemId = item.id;
+        this.state.actionProgress = 0;
+        this.state.rotationAngle = 0;
+        this.state.lastPointerAngle = null;
+        this.state.feedback = `${item.name}已放入，開始${config.verb}`;
+        this.playClick();
+        this.renderTeaStage();
+    },
+
+    flashTeaError(message, itemId) {
+        if (!this.container) return;
+        this.playWrong();
+        const feedback = this.container.querySelector('.tea-feedback');
+        const card = this.container.querySelector(`[data-tea-item="${itemId}"]`);
+        const dropZone = this.container.querySelector('[data-tea-drop]');
+        if (feedback) feedback.textContent = message;
+        if (card) card.classList.add('error');
+        if (dropZone) dropZone.classList.add('error');
+        this.timers.push(setTimeout(() => {
+            if (card) card.classList.remove('error');
+            if (dropZone) dropZone.classList.remove('error');
+        }, 620));
+    },
+
+    bindTeaGrinding() {
+        const target = this.container.querySelector('[data-tea-drop]');
+        if (!target) return;
+        const getAngle = (event) => {
+            const bounds = target.getBoundingClientRect();
+            return Math.atan2(event.clientY - (bounds.top + bounds.height / 2), event.clientX - (bounds.left + bounds.width / 2)) * 180 / Math.PI;
+        };
+        target.addEventListener('pointerdown', (event) => {
+            if (!this.state?.processing) return;
+            event.preventDefault();
+            target.setPointerCapture(event.pointerId);
+            this.state.lastPointerAngle = getAngle(event);
+            target.classList.add('gesturing');
+        });
+        target.addEventListener('pointermove', (event) => {
+            if (!this.state?.processing || this.state.lastPointerAngle === null) return;
+            event.preventDefault();
+            const angle = getAngle(event);
+            let delta = angle - this.state.lastPointerAngle;
+            if (delta > 180) delta -= 360;
+            if (delta < -180) delta += 360;
+            this.state.lastPointerAngle = angle;
+            // 手機快速畫圈時 pointermove 取樣可能較疏，允許單次最多 120 度的有效位移。
+            if (Math.abs(delta) < 1 || Math.abs(delta) > 120) return;
+            this.state.rotationAngle += Math.abs(delta);
+            while (this.state.rotationAngle >= 360 && this.state.actionProgress < 5) {
+                this.state.rotationAngle -= 360;
+                this.state.actionProgress++;
+                this.playClick();
+                target.classList.remove('tea-pulse');
+                void target.offsetWidth;
+                target.classList.add('tea-pulse');
+                this.updateTeaActionProgress();
+                if (this.state.actionProgress >= 5) {
+                    this.completeTeaItem();
+                    return;
+                }
+            }
+        });
+        const endGesture = (event) => {
+            if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
+            if (this.state) this.state.lastPointerAngle = null;
+            target.classList.remove('gesturing');
+        };
+        target.addEventListener('pointerup', endGesture);
+        target.addEventListener('pointercancel', endGesture);
+    },
+
+    bindTeaChopping() {
+        const target = this.container.querySelector('[data-tea-drop]');
+        if (!target) return;
+        target.addEventListener('pointerdown', (event) => {
+            if (!this.state?.processing || this.state.transitioning) return;
+            event.preventDefault();
+            this.state.actionProgress++;
             this.playClick();
-            this.timers.push(setTimeout(() => {
-                const pestle = this.container?.querySelector('.tea-pestle');
-                if (pestle) pestle.classList.remove('moving');
-            }, 260));
-        } else {
-            this.state.stability = Math.max(0, this.state.stability - 18);
-            this.container.querySelector('.station-feedback').textContent = `順序不對，下一步是 ${expected}`;
-            this.playWrong();
-        }
-
-        if (this.state.current >= this.state.sequence.length) {
-            this.showResult(this.state.stability >= 45);
-            return;
-        }
-
-        if (this.state.stability <= 0) {
-            this.showResult(false);
-            return;
-        }
-
-        this.renderTeaGame();
+            target.classList.remove('tea-chop-hit');
+            void target.offsetWidth;
+            target.classList.add('tea-chop-hit');
+            this.updateTeaActionProgress();
+            if (this.state.actionProgress >= 10) this.completeTeaItem();
+        });
     },
 
-    updateTeaHud() {
-        const step = this.container.querySelector('[data-step]');
-        const stability = this.container.querySelector('[data-stability]');
-        if (step) step.textContent = Math.min(this.state.current + 1, this.state.sequence.length);
-        if (stability) stability.textContent = this.state.stability;
+    updateTeaActionProgress() {
+        if (!this.container || !this.state) return;
+        const config = this.getTeaStageConfig(this.state.phase);
+        const label = this.container.querySelector('.tea-action-progress');
+        const meter = this.container.querySelector('.tea-action-meter i');
+        if (label) label.textContent = `${this.state.actionProgress}/${config.target} ${config.unit}`;
+        if (meter) meter.style.width = `${Math.min(100, this.state.actionProgress / config.target * 100)}%`;
+    },
+
+    completeTeaItem() {
+        if (!this.state || !this.state.processing || this.state.transitioning) return;
+        const phase = this.state.phase;
+        const config = this.getTeaStageConfig(phase);
+        const item = this.state.orders[phase][this.state.currentIndex];
+        this.state.completed[phase].push(item.id);
+        this.state.currentIndex++;
+        this.state.processing = false;
+        this.state.activeItemId = null;
+        this.state.actionProgress = 0;
+        this.state.feedback = `${item.name}${config.verb}完成！`;
+        if (this.state.currentIndex >= this.state.orders[phase].length) {
+            this.state.transitioning = true;
+            this.renderTeaStage();
+            this.timers.push(setTimeout(() => this.completeTeaStage(), 700));
+            return;
+        }
+        const next = this.state.orders[phase][this.state.currentIndex];
+        this.state.feedback += ` 下一個是${next.name}`;
+        this.renderTeaStage();
+    },
+
+    startTeaTimer() {
+        this.clearTeaTimer();
+        if (!this.state) return;
+        this.state.timeLeft = this.teaStageDurationMs / 1000;
+        this.state.stageDeadline = Date.now() + this.teaStageDurationMs;
+        this.teaTimerId = setInterval(() => {
+            if (!this.state || this.state.finished || this.state.transitioning) return;
+            this.state.timeLeft = Math.max(0, (this.state.stageDeadline - Date.now()) / 1000);
+            const time = this.container?.querySelector('[data-tea-time]');
+            const timer = this.container?.querySelector('.tea-timer');
+            if (time) time.textContent = Math.ceil(this.state.timeLeft);
+            if (timer) timer.classList.toggle('urgent', this.state.timeLeft <= 5);
+            if (this.state.timeLeft <= 0) this.handleTeaTimeout();
+        }, 200);
+    },
+
+    clearTeaTimer() {
+        if (this.teaTimerId) clearInterval(this.teaTimerId);
+        this.teaTimerId = null;
+    },
+
+    handleTeaTimeout() {
+        if (!this.state || this.state.transitioning) return;
+        this.clearTeaTimer();
+        const phase = this.state.phase;
+        const config = this.getTeaStageConfig(phase);
+        this.state.autoCompleted[phase] = true;
+        this.state.completed[phase] = config.items.map((item) => item.id);
+        this.state.currentIndex = this.state.orders[phase].length;
+        this.state.processing = false;
+        this.state.activeItemId = null;
+        this.state.timeLeft = 0;
+        this.state.transitioning = true;
+        this.state.feedback = '時間到，師傅幫你完成剩餘步驟';
+        this.renderTeaStage();
+        this.container.querySelector('.tea-play')?.classList.add('is-auto-completing');
+        this.timers.push(setTimeout(() => this.completeTeaStage(), 1200));
+    },
+
+    completeTeaStage() {
+        if (!this.state || this.state.stationId !== 'tea') return;
+        this.clearTeaTimer();
+        if (this.state.phase === 'grind') {
+            this.state.phase = 'chop';
+            this.state.currentIndex = 0;
+            this.state.processing = false;
+            this.state.activeItemId = null;
+            this.state.actionProgress = 0;
+            this.state.rotationAngle = 0;
+            this.state.lastPointerAngle = null;
+            this.state.transitioning = false;
+            this.state.feedback = '配菜時間！先把第一種食材拖上砧板';
+            this.renderTeaStage();
+            this.startTeaTimer();
+            return;
+        }
+        this.showTeaResult();
+    },
+
+    showTeaResult() {
+        if (!this.state || !this.container) return;
+        this.clearTeaTimer();
+        this.state.finished = true;
+        const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
+        this.container.innerHTML = `
+            <section class="station-panel station-result-panel tea-result-panel">
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>擂茶組合完成</h1>
+                <div class="tea-result-layout">
+                    <div class="tea-result-art" role="img" aria-label="擂茶與配菜組合"></div>
+                    <div class="tea-result-copy">
+                        <p class="station-subtitle">九層塔・薄荷・苦刺心・花生・芝麻</p>
+                        <p class="station-subtitle">長豆・菜脯・樹仔菜・豆腐</p>
+                        <p class="station-copy">${this.station.success}</p>
+                        ${usedHelp ? '<p class="tea-assisted-note">這次有師傅協助補完，下一次試著在倒數內完成吧！</p>' : '<p class="tea-perfect-note">兩段都在時間內完成，手腳真俐落！</p>'}
+                    </div>
+                </div>
+                <div class="station-actions">
+                    <button type="button" class="station-primary" data-retry>再玩一次</button>
+                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                </div>
+            </section>
+        `;
+        this.container.querySelector('[data-retry]').addEventListener('click', () => this.startTeaGame());
+        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
+    },
+
+    showFireResult() {
+        if (!this.state || this.state.stationId !== 'fire') return;
+        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 58) * 2);
+        const mistakeBonus = this.state.mistakesRemaining * 40;
+        const totalScore = Math.round(this.state.score + fireScore + mistakeBonus);
+        const success = totalScore >= 2400 && this.isFireInSafeRange();
+        this.state.score = totalScore;
+        this.station.fireSummary = `分數 ${totalScore}，火候 ${Math.round(this.state.fire)}%，失誤 ${this.state.maxMistakes - this.state.mistakesRemaining} 次。`;
+        this.showResult(success);
     },
 
     showResult(success) {
@@ -485,8 +1101,12 @@ const StationDemoGame = {
         this.state.finished = true;
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
+        this.stopFireMusic();
 
-        const message = success ? this.station.success : this.station.fail;
+        const summary = this.state.stationId === 'fire' && this.station.fireSummary
+            ? `${this.station.fireSummary} `
+            : '';
+        const message = summary + (success ? this.station.success : this.station.fail);
         this.container.innerHTML = `
             <section class="station-panel station-result-panel">
                 <div class="station-kicker-line">${this.station.kicker}</div>
@@ -500,7 +1120,10 @@ const StationDemoGame = {
         `;
 
         this.container.querySelector('[data-retry]').addEventListener('click', () => {
-            if (this.state.stationId === 'fire') this.startFireGame();
+            if (this.state.stationId === 'fire') {
+                this.startFireMusic();
+                this.startFireGame();
+            }
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
@@ -514,10 +1137,13 @@ const StationDemoGame = {
     stop() {
         this.timers.forEach((timer) => clearTimeout(timer));
         this.timers = [];
+        this.clearTeaTimer();
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);
         this.keyHandler = null;
+        this.stopFireMusic();
+        this.releaseFireAssets();
         if (this.container && this.container.parentNode) this.container.remove();
         this.container = null;
         this.state = null;
@@ -529,6 +1155,52 @@ const StationDemoGame = {
 
     playWrong() {
         if (typeof AudioManager !== 'undefined') AudioManager.playSFX('assets/sounds/wrong.mp3');
+    },
+
+    startFireMusic() {
+        if (!this.fireMusic) {
+            this.fireMusic = new Audio(this.fireMusicSrc);
+            this.fireMusic.loop = true;
+            this.fireMusic.volume = 0.55;
+            this.fireMusic.preload = 'auto';
+        }
+
+        this.fireMusic.currentTime = 0;
+        this.fireMusic.play().then(() => {
+            this.fireMusicStarted = true;
+        }).catch((error) => {
+            this.fireMusicStarted = false;
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+        });
+    },
+
+    syncFireMusicToGameStart() {
+        if (!this.fireMusic) {
+            this.startFireMusic();
+            return;
+        }
+
+        try {
+            this.fireMusic.currentTime = 0;
+        } catch (error) {
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂重設失敗:', error);
+        }
+
+        if (this.fireMusic.paused) {
+            this.fireMusic.play().then(() => {
+                this.fireMusicStarted = true;
+            }).catch((error) => {
+                this.fireMusicStarted = false;
+                if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+            });
+        }
+    },
+
+    stopFireMusic() {
+        if (!this.fireMusic) return;
+        this.fireMusic.pause();
+        this.fireMusic.currentTime = 0;
+        this.fireMusicStarted = false;
     }
 };
 

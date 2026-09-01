@@ -2,6 +2,34 @@
 
 // 全域變數記錄選擇的年齡模式
 let gameMode = null; // 'child' 或 'adult'
+let deferredInstallPrompt = null;
+
+function updateAppViewportHeight() {
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+}
+
+updateAppViewportHeight();
+window.addEventListener('resize', updateAppViewportHeight);
+window.addEventListener('orientationchange', () => setTimeout(updateAppViewportHeight, 250));
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateAppViewportHeight);
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    updateInstallButton();
+});
+
+window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    updateInstallButton();
+});
+
+function isStandaloneDisplay() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
 
 // 顯示年齡選擇視窗
 function showAgeSelect() {
@@ -241,6 +269,8 @@ function showIntro() {
 // DOM 載入完成後初始化
 document.addEventListener('DOMContentLoaded', async function() {
     if (window.Logger) window.Logger.info('📌 DOM 載入完成');
+    updateAppViewportHeight();
+    setupInstallButton();
 
     // ✅ 載入關卡狀態
     loadChapterStatus();
@@ -292,6 +322,28 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     bindStationDemoButtons();
 });
+
+function setupInstallButton() {
+    const installBtn = document.getElementById('install-app-btn');
+    if (!installBtn) return;
+
+    installBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        updateInstallButton();
+    });
+
+    updateInstallButton();
+}
+
+function updateInstallButton() {
+    const installBtn = document.getElementById('install-app-btn');
+    if (!installBtn) return;
+    installBtn.hidden = !deferredInstallPrompt || isStandaloneDisplay();
+}
 
 function bindStationDemoButtons() {
     document.querySelectorAll('[data-station-demo]').forEach((button) => {
