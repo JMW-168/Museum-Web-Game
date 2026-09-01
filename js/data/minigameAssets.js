@@ -40,6 +40,8 @@
     }
 
     const STATION_FIRE_URLS = [
+        'assets/images/station-fire/background.webp',
+        'assets/images/characters/grandma.png',
         'assets/images/station-fire/stove.png',
         'assets/images/station-fire/fire-small.png',
         'assets/images/station-fire/fire-large.png',
@@ -48,6 +50,8 @@
     ];
 
     const STATION_TEA_URLS = [
+        'assets/images/station-tea/background.webp',
+        'assets/images/characters/grandpa.png',
         'assets/images/station-tea/ingredient-sprites.png',
         'assets/images/station-tea/tool-sprites.png',
         'assets/images/station-tea/grind-tool-sprites.png',

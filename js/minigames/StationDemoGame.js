@@ -6,7 +6,7 @@ const StationDemoGame = {
     timers: [],
     keyHandler: null,
     fireMusic: null,
-    fireMusicSrc: 'assets/sounds/picking-tea-girl.mp3',
+    fireMusicSrc: 'assets/sounds/station-fire-theme.mp3',
     fireMusicStarted: false,
     fireDurationMs: 60000,
     fireAssetUrls: null,
@@ -27,23 +27,26 @@ const StationDemoGame = {
         'assets/images/defense/level1/stone.png'
     ],
     fireImageUrls: [
+        'assets/images/station-fire/background.webp',
+        'assets/images/characters/grandma.png',
         'assets/images/station-fire/stove.png',
         'assets/images/station-fire/fire-small.png',
         'assets/images/station-fire/fire-large.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png'
     ],
+    // 由甲方影片音軌的 onset 分析產生；前 12 秒取主拍，之後加入半拍增加密度。
     fireBeatTimes: [
-        2.670, 3.646, 5.108, 6.594, 7.570, 8.545,
-        9.776, 11.471, 12.423, 13.468, 14.466, 15.859,
-        17.136, 18.390, 19.365, 20.341, 21.362, 22.314,
-        23.290, 24.265, 25.263, 26.239, 27.237, 28.212,
-        29.187, 30.186, 31.184, 32.136, 33.112, 34.110,
-        35.085, 36.061, 37.036, 38.034, 39.033, 40.008,
-        40.983, 41.958, 42.934, 43.932, 44.931, 45.906,
-        46.881, 47.856, 48.832, 49.853, 50.805, 51.780,
-        52.779, 53.754, 54.753, 55.705, 56.703, 57.702,
-        58.654, 59.675
+        2.694, 4.226, 5.747, 7.291, 8.824, 10.344, 11.889,
+        12.655, 13.421, 14.176, 14.942, 15.720, 16.498, 17.264,
+        18.030, 18.820, 19.563, 20.341, 21.107, 21.862, 22.605,
+        23.382, 24.149, 24.903, 25.704, 26.471, 27.225, 27.980,
+        28.688, 29.524, 30.232, 31.057, 31.811, 32.578, 33.355,
+        34.122, 34.900, 35.608, 36.339, 37.152, 37.941, 38.708,
+        39.404, 40.240, 40.995, 41.761, 42.516, 43.294, 44.060,
+        44.838, 45.616, 46.370, 47.148, 47.914, 48.692, 49.435,
+        50.190, 50.968, 51.722, 52.489, 53.255, 54.021, 54.787,
+        55.554, 56.308, 57.086, 57.841, 58.619, 59.385
     ],
 
     stations: {
@@ -54,6 +57,8 @@ const StationDemoGame = {
             intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；添柴時火候在綠色區間會獲得較多分，火候太高還添柴會扣分。火候超過綠色區間右側時，按「噴水」少量降火。',
             success: '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
             fail: '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
+            guideImage: 'assets/images/characters/grandma.png',
+            guideAlt: '阿嬤',
         },
         tea: {
             kicker: '關卡二 / 站點 2',
@@ -62,6 +67,8 @@ const StationDemoGame = {
             intro: '先從移動軌道中依照上方順序挑出五種食材，避開柴火與石頭，拖進石臼後讓研磨棒沿著碗緣畫滿 5 圈；接著把四種配菜拖上砧板，每一種連點 10 刀。兩段各有 1 分鐘，拖錯只會放不進來，不扣分也不扣時間。',
             success: '擂茶小知識：擂茶把茶葉、香草、花生與芝麻耐心擂成茶膏，再配上切細的蔬菜與豆腐，是一碗兼具香氣與口感的客家料理。',
             fail: '',
+            guideImage: 'assets/images/characters/grandpa.png',
+            guideAlt: '阿公',
         }
     },
 
@@ -73,7 +80,6 @@ const StationDemoGame = {
         showScene('game-container');
         this.hideLegacyGameUi();
         this.createShell(stationId);
-        if (stationId === 'fire') this.startFireMusic();
         this.showIntro(stationId);
     },
 
@@ -109,8 +115,11 @@ const StationDemoGame = {
     },
 
     showIntro(stationId) {
+        const guide = this.station.guideImage
+            ? `<img class="station-guide station-guide-intro" src="${this.station.guideImage}" alt="${this.station.guideAlt}">`
+            : '';
         this.container.innerHTML = `
-            <section class="station-panel station-intro-panel">
+            <section class="station-panel station-intro-panel ${guide ? 'has-guide' : ''}">
                 <div class="station-kicker-line">${this.station.kicker}</div>
                 <h1>${this.station.title}</h1>
                 <p class="station-subtitle">${this.station.subtitle}</p>
@@ -119,6 +128,7 @@ const StationDemoGame = {
                     <button type="button" class="station-primary">開始挑戰</button>
                     <button type="button" class="station-secondary">返回入口</button>
                 </div>
+                ${guide}
             </section>
         `;
 
@@ -140,7 +150,6 @@ const StationDemoGame = {
     },
 
     startFireGame() {
-        this.syncFireMusicToGameStart();
         this.state = {
             stationId: 'fire',
             score: 0,
@@ -231,13 +240,17 @@ const StationDemoGame = {
         if (play) play.classList.remove('is-preparing');
         if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
 
-        this.animationId = requestAnimationFrame((time) => {
-            if (!this.state || this.state.finished) return;
-            this.state.startedAt = time;
-            this.state.lastTickAt = time;
-            this.renderFireHud();
-            this.animationId = requestAnimationFrame((nextTime) => this.tickFire(nextTime));
-        });
+        this.syncFireMusicToGameStart()
+            .then(() => {
+                this.animationId = requestAnimationFrame((time) => {
+                    if (!this.state || this.state.finished) return;
+                    this.state.startedAt = time;
+                    this.state.lastTickAt = time;
+                    this.renderFireHud();
+                    this.animationId = requestAnimationFrame((nextTime) => this.tickFire(nextTime));
+                });
+            })
+            .catch((error) => this.showFireLoadError(error));
     },
 
     waitForFireGameReady() {
@@ -385,8 +398,8 @@ const StationDemoGame = {
         this.container.innerHTML = `
             <section class="station-panel station-intro-panel">
                 <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>圖片還沒載入完成</h1>
-                <p class="station-copy">目前網路沒有把灶台與木柴圖片完整送達，請按下方按鈕重新載入。</p>
+                <h1>關卡素材還沒載入完成</h1>
+                <p class="station-copy">目前網路沒有把圖片或音樂完整送達，請按下方按鈕重新載入。</p>
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry-load>重新載入</button>
                     <button type="button" class="station-secondary" data-back>返回入口</button>
@@ -534,7 +547,7 @@ const StationDemoGame = {
         this.state.lastResult = feedback;
         this.container.querySelector('.station-feedback').textContent = feedback;
         this.showFireScorePop(points);
-        this.playClick();
+        this.playFireWoodSound(points >= 0);
         this.renderFireHud();
     },
 
@@ -555,7 +568,6 @@ const StationDemoGame = {
             ? '噴水降火，再按一次可以更穩'
             : wasTooHot ? '噴水降火，火候回穩' : '火候還不用噴水';
         this.showFireScorePop(points);
-        this.playClick();
         this.renderFireHud();
     },
 
@@ -574,6 +586,9 @@ const StationDemoGame = {
 
     getFireElapsedMs(time) {
         if (!this.state.startedAt) return 0;
+        if (this.fireMusicStarted && this.fireMusic && !this.fireMusic.paused) {
+            return this.fireMusic.currentTime * 1000;
+        }
         return time - this.state.startedAt;
     },
 
@@ -1098,6 +1113,8 @@ const StationDemoGame = {
         target.addEventListener('pointerdown', (event) => {
             if (!this.state?.processing) return;
             event.preventDefault();
+            // 在使用者手勢內先解鎖 AudioContext，避免首次研磨時瀏覽器保持靜音。
+            this.getTeaAudioContext();
             target.setPointerCapture(event.pointerId);
             this.state.lastPointerAngle = getAngle(event);
             this.updateTeaPestle(this.state.lastPointerAngle);
@@ -1280,7 +1297,7 @@ const StationDemoGame = {
         this.state.finished = true;
         const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
         this.container.innerHTML = `
-            <section class="station-panel station-result-panel tea-result-panel">
+            <section class="station-panel station-result-panel tea-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
                 <h1>擂茶組合完成</h1>
                 <div class="tea-result-layout">
@@ -1296,6 +1313,7 @@ const StationDemoGame = {
                     <button type="button" class="station-primary" data-retry>再玩一次</button>
                     <button type="button" class="station-secondary" data-back>返回入口</button>
                 </div>
+                <img class="station-guide station-guide-result" src="${this.station.guideImage}" alt="${this.station.guideAlt}">
             </section>
         `;
         this.container.querySelector('[data-retry]').addEventListener('click', () => this.startTeaGame());
@@ -1325,7 +1343,7 @@ const StationDemoGame = {
             : '';
         const message = summary + (success ? this.station.success : this.station.fail);
         this.container.innerHTML = `
-            <section class="station-panel station-result-panel">
+            <section class="station-panel station-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
                 <h1>${success ? '挑戰成功' : '再試一次'}</h1>
                 <p class="station-copy">${message}</p>
@@ -1333,6 +1351,7 @@ const StationDemoGame = {
                     <button type="button" class="station-primary" data-retry>再玩一次</button>
                     <button type="button" class="station-secondary" data-back>返回入口</button>
                 </div>
+                <img class="station-guide station-guide-result" src="${this.station.guideImage}" alt="${this.station.guideAlt}">
             </section>
         `;
 
@@ -1403,22 +1422,57 @@ const StationDemoGame = {
         return source;
     },
 
-    playTeaGrindSound(delta = 12) {
-        const now = performance.now();
-        if (now - this.lastTeaGrindSoundAt < 68) return;
-        this.lastTeaGrindSoundAt = now;
+    playFireWoodSound(strong = true) {
         const context = this.getTeaAudioContext();
         if (!context) return;
         const startAt = context.currentTime;
-        const duration = 0.1;
+        const duration = strong ? 0.14 : 0.1;
+
+        const knock = context.createOscillator();
+        const knockGain = context.createGain();
+        knock.type = 'triangle';
+        knock.frequency.setValueAtTime(strong ? 150 : 120, startAt);
+        knock.frequency.exponentialRampToValueAtTime(strong ? 62 : 54, startAt + duration);
+        knockGain.gain.setValueAtTime(strong ? 0.24 : 0.16, startAt);
+        knockGain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        knock.connect(knockGain).connect(context.destination);
+
+        const texture = this.createTeaNoiseSource(context, duration * 0.75);
+        const textureFilter = context.createBiquadFilter();
+        const textureGain = context.createGain();
+        textureFilter.type = 'bandpass';
+        textureFilter.frequency.setValueAtTime(strong ? 620 : 480, startAt);
+        textureFilter.Q.setValueAtTime(0.9, startAt);
+        textureGain.gain.setValueAtTime(strong ? 0.1 : 0.065, startAt);
+        textureGain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration * 0.75);
+        texture.connect(textureFilter).connect(textureGain).connect(context.destination);
+
+        knock.start(startAt);
+        knock.stop(startAt + duration);
+        texture.start(startAt);
+        texture.stop(startAt + duration * 0.75);
+    },
+
+    playTeaGrindSound(delta = 12) {
+        const now = performance.now();
+        if (now - this.lastTeaGrindSoundAt < 45) return;
+        this.lastTeaGrindSoundAt = now;
+        const context = this.getTeaAudioContext();
+        if (!context) return;
+        if (context.state !== 'running') {
+            context.resume().catch(() => {});
+            return;
+        }
+        const startAt = context.currentTime;
+        const duration = 0.14;
         const source = this.createTeaNoiseSource(context, duration);
         const filter = context.createBiquadFilter();
         const gain = context.createGain();
         filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(360 + Math.min(420, delta * 8), startAt);
-        filter.Q.setValueAtTime(0.8, startAt);
+        filter.frequency.setValueAtTime(280 + Math.min(520, delta * 9), startAt);
+        filter.Q.setValueAtTime(0.55, startAt);
         gain.gain.setValueAtTime(0.0001, startAt);
-        gain.gain.exponentialRampToValueAtTime(0.075, startAt + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.24, startAt + 0.012);
         gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
         source.connect(filter).connect(gain).connect(context.destination);
         source.start(startAt);
@@ -1460,12 +1514,12 @@ const StationDemoGame = {
         if (!this.fireMusic) {
             this.fireMusic = new Audio(this.fireMusicSrc);
             this.fireMusic.loop = true;
-            this.fireMusic.volume = 0.55;
+            this.fireMusic.volume = 0.20;
             this.fireMusic.preload = 'auto';
         }
 
         this.fireMusic.currentTime = 0;
-        this.fireMusic.play().then(() => {
+        return this.fireMusic.play().then(() => {
             this.fireMusicStarted = true;
         }).catch((error) => {
             this.fireMusicStarted = false;
@@ -1475,8 +1529,7 @@ const StationDemoGame = {
 
     syncFireMusicToGameStart() {
         if (!this.fireMusic) {
-            this.startFireMusic();
-            return;
+            return this.startFireMusic();
         }
 
         try {
@@ -1485,14 +1538,13 @@ const StationDemoGame = {
             if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂重設失敗:', error);
         }
 
-        if (this.fireMusic.paused) {
-            this.fireMusic.play().then(() => {
-                this.fireMusicStarted = true;
-            }).catch((error) => {
-                this.fireMusicStarted = false;
-                if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
-            });
-        }
+        return this.fireMusic.play().then(() => {
+            this.fireMusicStarted = true;
+        }).catch((error) => {
+            this.fireMusicStarted = false;
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+            throw error;
+        });
     },
 
     stopFireMusic() {
