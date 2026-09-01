@@ -23,6 +23,251 @@
         url('../assets/images/station-tea/background.webp') center / cover no-repeat;
 }
 
+.combined-story {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: default;
+}
+
+.combined-story-character-stage {
+    position: absolute;
+    inset: 2% 0 27%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.combined-story-character {
+    height: 128%;
+    width: auto;
+    max-width: 78%;
+    object-fit: contain;
+    object-position: center top;
+    filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
+}
+
+.combined-dialogue-box {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(10px, 3vh, 28px);
+    z-index: 4;
+    width: min(92%, 1040px);
+    min-height: 124px;
+    max-height: 38%;
+    padding: 22px 28px 18px;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    overflow: auto;
+    color: #fff;
+    background: rgba(12, 15, 15, 0.91);
+    border: 3px solid #b38b3d;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.62);
+    cursor: pointer;
+}
+
+.combined-dialogue-box:focus-visible {
+    outline: 3px solid #ffd700;
+    outline-offset: 3px;
+}
+
+.combined-dialogue-box.has-action {
+    padding-right: clamp(150px, 22vw, 230px);
+}
+
+.combined-dialogue-speaker {
+    position: absolute;
+    top: 8px;
+    left: 22px;
+    min-width: 104px;
+    padding: 7px 18px;
+    border: 2px solid #d5b257;
+    border-radius: 10px;
+    background: #4b3020;
+    color: #ffd76a;
+    font-size: clamp(17px, 2vw, 23px);
+    line-height: 1.2;
+    text-align: center;
+}
+
+.combined-dialogue-cue {
+    display: inline-block;
+    margin-left: 8px;
+    color: #f3dfae;
+    font-size: 0.72em;
+    font-weight: 400;
+}
+
+.combined-dialogue-text {
+    min-height: 2.8em;
+    padding-top: 34px;
+    color: #fff9e9;
+    font-size: clamp(18px, 2.35vw, 26px);
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+}
+
+.combined-dialogue-indicator {
+    display: none;
+    position: absolute;
+    right: 22px;
+    bottom: 14px;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 13px solid #ffd700;
+    animation: combined-dialogue-pulse 0.9s ease-in-out infinite;
+}
+
+.combined-dialogue-box.is-complete:not(.has-action) .combined-dialogue-indicator {
+    display: block;
+}
+
+.combined-story-action {
+    position: absolute;
+    right: 20px;
+    bottom: 16px;
+    min-width: 126px;
+    margin: 0;
+}
+
+.combined-story-action[hidden] {
+    display: none;
+}
+
+.combined-story.is-narration .combined-dialogue-speaker {
+    background: #30373a;
+}
+
+.combined-story.is-narration .combined-dialogue-text {
+    font-style: italic;
+    color: #f4ead2;
+}
+
+.station-coach-line {
+    position: absolute;
+    top: clamp(44px, 15%, 92px);
+    left: 50%;
+    z-index: 30;
+    width: max-content;
+    max-width: min(76%, 720px);
+    padding: 9px 16px;
+    transform: translateX(-50%);
+    border: 2px solid rgba(255, 215, 0, 0.68);
+    border-radius: 12px;
+    background: rgba(18, 26, 27, 0.94);
+    color: #fff5d7;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42);
+    font-size: clamp(13px, 1.75vw, 18px);
+    line-height: 1.4;
+    text-align: center;
+    pointer-events: none;
+    animation: combined-coach-in 0.24s ease-out;
+}
+
+.station-coach-line strong {
+    color: #ffd76a;
+}
+
+@keyframes combined-dialogue-pulse {
+    0%, 100% { opacity: 0.45; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(4px); }
+}
+
+@keyframes combined-coach-in {
+    from { opacity: 0; transform: translate(-50%, -8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .combined-story-character-stage {
+        inset: 1% 0 31%;
+    }
+
+    .combined-story-character {
+        height: 135%;
+    }
+
+    .combined-dialogue-box {
+        bottom: 7px;
+        min-height: 106px;
+        max-height: 42%;
+        padding: 17px 18px 12px;
+        border-width: 2px;
+        border-radius: 12px;
+    }
+
+    .combined-dialogue-box.has-action {
+        padding-right: 142px;
+    }
+
+    .combined-dialogue-speaker {
+        top: 6px;
+        left: 14px;
+        min-width: 82px;
+        padding: 5px 12px;
+        font-size: clamp(14px, 2vw, 18px);
+    }
+
+    .combined-dialogue-text {
+        min-height: 2.6em;
+        padding-top: 27px;
+        font-size: clamp(15px, 2.15vw, 20px);
+        line-height: 1.4;
+    }
+
+    .combined-story-action {
+        right: 12px;
+        bottom: 10px;
+        min-width: 112px;
+        padding: 7px 10px;
+        font-size: 13px;
+    }
+
+    .station-coach-line {
+        top: 40px;
+        max-width: 72%;
+        padding: 6px 10px;
+        font-size: clamp(11px, 1.65vw, 15px);
+    }
+}
+
+@media (orientation: landscape) and (max-height: 410px) {
+    .combined-story-character-stage {
+        inset: 0 0 35%;
+    }
+
+    .combined-story-character {
+        height: 142%;
+    }
+
+    .combined-dialogue-box {
+        min-height: 96px;
+        max-height: 46%;
+        padding: 14px 14px 9px;
+    }
+
+    .combined-dialogue-box.has-action {
+        padding-right: 128px;
+    }
+
+    .combined-dialogue-text {
+        padding-top: 25px;
+        font-size: clamp(13px, 2vw, 17px);
+        line-height: 1.32;
+    }
+
+    .combined-story-action {
+        min-width: 102px;
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+}
+
 .station-panel,
 .station-play {
     width: min(82%, 860px);
