@@ -11,6 +11,18 @@
         url('../assets/images/intro/封面.jpg') center / cover no-repeat;
 }
 
+.station-demo-fire {
+    background:
+        linear-gradient(rgba(9, 15, 16, 0.5), rgba(9, 15, 16, 0.72)),
+        url('../assets/images/station-fire/background.webp') center / cover no-repeat;
+}
+
+.station-demo-tea {
+    background:
+        linear-gradient(rgba(9, 15, 16, 0.5), rgba(9, 15, 16, 0.72)),
+        url('../assets/images/station-tea/background.webp') center / cover no-repeat;
+}
+
 .station-panel,
 .station-play {
     width: min(82%, 860px);
@@ -26,6 +38,30 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.station-panel.has-guide {
+    position: relative;
+    padding-right: clamp(150px, 25vw, 250px);
+    overflow: hidden;
+}
+
+.station-guide {
+    position: absolute;
+    right: clamp(8px, 2vw, 22px);
+    bottom: 0;
+    z-index: 0;
+    width: clamp(125px, 23%, 220px);
+    max-height: 92%;
+    object-fit: contain;
+    object-position: bottom right;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.38));
+}
+
+.station-panel.has-guide > :not(.station-guide) {
+    position: relative;
+    z-index: 1;
 }
 
 .station-kicker-line {
@@ -710,6 +746,681 @@
     gap: clamp(8px, 1.8vh, 16px);
 }
 
+/* 關卡二：擂茶料理 */
+.station-demo-tea .tea-play {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    padding: clamp(9px, 2vh, 18px) clamp(14px, 3vw, 34px);
+    border: 0;
+    background: linear-gradient(180deg, rgba(8, 24, 24, 0.6), rgba(20, 36, 39, 0.78));
+    box-shadow: none;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    gap: clamp(6px, 1.25vh, 11px);
+    overflow: hidden;
+}
+
+@media (max-height: 480px), (max-width: 720px) {
+    .station-panel.has-guide {
+        padding-right: clamp(112px, 22vw, 170px);
+    }
+
+    .station-guide {
+        width: clamp(96px, 20%, 145px);
+        max-height: 86%;
+    }
+}
+
+.station-demo-tea .tea-hud {
+    padding-left: 10px;
+    padding-right: 78px;
+    align-items: center;
+}
+
+.tea-hud > span {
+    padding: 5px 9px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    background: rgba(0, 0, 0, 0.24);
+}
+
+.tea-timer.urgent {
+    color: #fff08a;
+    border-color: #ff7b68;
+    animation: tea-timer-pulse 0.58s ease-in-out infinite alternate;
+}
+
+.tea-instruction {
+    color: #f5d58e;
+    text-align: center;
+    font-size: clamp(13px, 1.9vw, 18px);
+    line-height: 1.25;
+}
+
+.tea-order {
+    display: flex;
+    justify-content: center;
+    gap: clamp(5px, 1vw, 10px);
+    min-width: 0;
+}
+
+.tea-order span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 5px clamp(7px, 1.4vw, 14px);
+    border: 2px solid rgba(255, 255, 255, 0.24);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.26);
+    color: #efe4cd;
+    font-size: clamp(11px, 1.55vw, 15px);
+    white-space: nowrap;
+}
+
+.tea-order span b {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    font-size: 11px;
+}
+
+.tea-order span.current {
+    color: #2b2110;
+    border-color: #fff2a8;
+    background: #ffd75a;
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.36);
+}
+
+.tea-order span.done {
+    color: #eaffed;
+    border-color: rgba(135, 239, 153, 0.75);
+    background: rgba(64, 132, 78, 0.9);
+}
+
+.tea-game-area {
+    display: grid;
+    grid-template-rows: minmax(76px, 0.62fr) minmax(134px, 1.38fr);
+    gap: clamp(6px, 1.3vh, 12px);
+    min-height: 0;
+}
+
+.tea-ingredient-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--tea-item-count), minmax(68px, 1fr));
+    gap: clamp(6px, 1.2vw, 12px);
+    width: min(94%, 920px);
+    min-height: 0;
+    margin: 0 auto;
+}
+
+.tea-moving-track {
+    position: relative;
+    width: min(96%, 980px);
+    min-height: 0;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 2px solid rgba(255, 215, 90, 0.34);
+    border-radius: 16px;
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 88px),
+        linear-gradient(90deg, rgba(29, 48, 44, 0.88), rgba(64, 82, 61, 0.8));
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.28);
+}
+
+.tea-moving-track::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255, 220, 116, 0.44), transparent);
+    pointer-events: none;
+}
+
+.tea-track-hint {
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 243, 201, 0.32);
+    font-size: clamp(10px, 1.35vw, 13px);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.tea-ingredient-card {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 3px 5px 5px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 215, 0, 0.42);
+    border-radius: 12px;
+    background: linear-gradient(155deg, rgba(71, 91, 75, 0.96), rgba(28, 45, 42, 0.98));
+    color: #fff7de;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.26);
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    transition: opacity 0.18s ease, border-color 0.18s ease, filter 0.18s ease;
+}
+
+.tea-moving-item {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    width: clamp(72px, 9vw, 102px);
+    height: calc(100% - 8px);
+    min-height: 0;
+    transform: translate(-50%, -50%);
+    will-change: left, transform;
+}
+
+.tea-moving-item.selected {
+    z-index: 4;
+    border-color: #78e9ff;
+    filter: brightness(1.15);
+    box-shadow: 0 0 0 3px rgba(120, 233, 255, 0.22), 0 7px 18px rgba(0, 0, 0, 0.38);
+}
+
+.tea-drag-ghost {
+    position: absolute;
+    z-index: 2147483647;
+    margin: 0;
+    transform: none;
+    pointer-events: none;
+    cursor: grabbing;
+    border-color: #fff2a8;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.62);
+}
+
+.tea-decoy {
+    border-color: rgba(213, 174, 129, 0.58);
+    background: linear-gradient(155deg, rgba(83, 71, 59, 0.96), rgba(37, 42, 40, 0.98));
+}
+
+.tea-decoy-art {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    pointer-events: none;
+}
+
+.tea-decoy-art img {
+    display: block;
+    width: 88%;
+    height: 88%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.42));
+}
+
+.tea-ingredient-card.dragging {
+    cursor: grabbing;
+    z-index: 20;
+    border-color: #fff2a8;
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.48);
+}
+
+.tea-ingredient-card.active {
+    border-color: #7de7ff;
+    filter: brightness(1.12);
+}
+
+.tea-ingredient-card.done {
+    opacity: 0.38;
+    filter: grayscale(0.72);
+    pointer-events: none;
+}
+
+.tea-ingredient-card.done::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #8dff9f;
+    font-size: clamp(26px, 4vw, 46px);
+    font-weight: 900;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.72);
+}
+
+.tea-ingredient-card.error {
+    border-color: #ff766d;
+    animation: tea-card-error 0.42s ease-in-out;
+}
+
+.tea-ingredient-art {
+    display: block;
+    min-height: 0;
+    background-image: url('../assets/images/station-tea/ingredient-sprites.png');
+    background-repeat: no-repeat;
+    background-size: 300% 300%;
+    background-position: var(--tea-sprite-x) var(--tea-sprite-y);
+    filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.4));
+    pointer-events: none;
+}
+
+.tea-ingredient-name {
+    display: block;
+    font-size: clamp(11px, 1.45vw, 14px);
+    line-height: 1.1;
+    pointer-events: none;
+}
+
+.tea-workspace {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+}
+
+.tea-drop-zone {
+    position: relative;
+    width: min(68vw, 560px);
+    height: 100%;
+    min-height: 150px;
+    max-height: 270px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 26px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.18) 72%);
+    touch-action: none;
+    user-select: none;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+.tea-drop-zone.processing {
+    background: radial-gradient(circle, rgba(119, 199, 133, 0.14), rgba(0, 0, 0, 0.24) 72%);
+}
+
+.tea-drop-zone.error {
+    background: rgba(154, 36, 27, 0.34);
+    box-shadow: inset 0 0 0 3px #ff6e65;
+    animation: tea-drop-error 0.42s ease-in-out;
+}
+
+.tea-cutting-board-art,
+.tea-knife-art {
+    position: absolute;
+    background-image: url('../assets/images/station-tea/chop-tool-sprites-v2.png');
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.4));
+    pointer-events: none;
+}
+
+.tea-cutting-board-art {
+    z-index: 1;
+    inset: 0 11% 25px;
+    background-position: 0% 50%;
+}
+
+.tea-knife-art {
+    z-index: 4;
+    left: 52%;
+    top: 45%;
+    width: min(34%, 155px);
+    aspect-ratio: 1;
+    background-position: 100% 50%;
+    transform: translate(-50%, -50%) rotate(-8deg);
+    transform-origin: 70% 75%;
+}
+
+.tea-mortar-art,
+.tea-pestle-art {
+    position: absolute;
+    z-index: 1;
+    background-image: url('../assets/images/station-tea/grind-tool-sprites.png');
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.42));
+    pointer-events: none;
+}
+
+.tea-mortar-art {
+    inset: -4px 14% 22px;
+    background-position: 0% 50%;
+}
+
+.tea-liquid {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 54%;
+    width: 23%;
+    height: 5px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(206, 255, 154, 0.7);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 32% 30%, rgba(239, 255, 179, 0.94) 0 3%, transparent 4%),
+        radial-gradient(circle at 68% 60%, rgba(246, 226, 132, 0.86) 0 4%, transparent 5%),
+        radial-gradient(ellipse, #91bd31, #367b28 72%);
+    box-shadow: inset 0 3px 7px rgba(232, 255, 176, 0.28), 0 2px 4px rgba(0, 0, 0, 0.42);
+    opacity: 0;
+    transition: width 0.16s ease, height 0.16s ease, opacity 0.16s ease;
+    pointer-events: none;
+}
+
+.tea-pestle-art {
+    --tea-pestle-x: 50%;
+    --tea-pestle-y: 48%;
+    z-index: 4;
+    left: var(--tea-pestle-x);
+    top: var(--tea-pestle-y);
+    width: min(30%, 118px);
+    aspect-ratio: 1;
+    background-position: 100% 50%;
+    transform: translate(-50%, -78%) rotate(28deg);
+    transform-origin: 50% 78%;
+    transition: filter 0.12s ease;
+    will-change: left, top;
+}
+
+.tea-processing-ingredient {
+    position: absolute;
+    z-index: 3;
+    display: block;
+    width: min(23%, 105px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.42));
+    pointer-events: none;
+}
+
+.tea-processing-ingredient.grind {
+    left: 50%;
+    top: 57%;
+    width: min(18%, 78px);
+}
+
+.tea-processing-ingredient.chop {
+    left: 46%;
+    top: 49%;
+}
+
+.tea-processing-ingredient .tea-ingredient-art {
+    width: 100%;
+    height: 100%;
+}
+
+.tea-target-label,
+.tea-action-progress {
+    position: absolute;
+    z-index: 8;
+    bottom: 7px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(8, 18, 18, 0.82);
+    color: #fff1bd;
+    font-size: clamp(11px, 1.45vw, 14px);
+    line-height: 1.1;
+    pointer-events: none;
+}
+
+.tea-target-label {
+    left: 8px;
+}
+
+.tea-action-progress {
+    right: 8px;
+    color: #8ff0ff;
+}
+
+.tea-action-meter {
+    position: absolute;
+    z-index: 8;
+    left: 18%;
+    right: 18%;
+    bottom: 33px;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+}
+
+.tea-action-meter i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #73d9b2, #ffe16e);
+    transition: width 0.16s ease;
+}
+
+.tea-drop-zone.gesturing .tea-pestle-art {
+    filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.42)) brightness(1.08);
+}
+
+.tea-drop-zone.tea-pulse .tea-liquid {
+    filter: brightness(1.18) saturate(1.12);
+}
+
+.tea-drop-zone.tea-chop-hit .tea-knife-art {
+    animation: tea-tool-chop 0.13s ease-out;
+}
+
+.station-demo-tea .tea-feedback {
+    min-height: 22px;
+    font-size: clamp(15px, 2.15vw, 22px);
+    line-height: 1.1;
+}
+
+.tea-play.is-auto-completing .tea-order span {
+    animation: tea-auto-complete 0.52s ease-in-out alternate 2;
+}
+
+.tea-result-panel {
+    width: min(92%, 980px);
+}
+
+.tea-result-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.9fr) 1.1fr;
+    gap: clamp(14px, 3vw, 30px);
+    align-items: center;
+}
+
+.tea-result-art {
+    width: 100%;
+    aspect-ratio: 1.18;
+    background: url('../assets/images/station-tea/tool-sprites.png') 100% 50% / 300% 100% no-repeat;
+    filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4));
+}
+
+.tea-result-copy .station-subtitle {
+    margin-bottom: 7px;
+    font-size: clamp(14px, 1.9vw, 18px);
+}
+
+.tea-assisted-note,
+.tea-perfect-note {
+    margin: 10px 0 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: clamp(13px, 1.75vw, 16px);
+}
+
+.tea-assisted-note {
+    color: #ffe9a9;
+    background: rgba(147, 92, 20, 0.34);
+}
+
+.tea-perfect-note {
+    color: #c8ffd1;
+    background: rgba(47, 125, 65, 0.34);
+}
+
+@keyframes tea-card-error {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-9px); }
+    75% { transform: translateX(9px); }
+}
+
+@keyframes tea-drop-error {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.97); }
+}
+
+@keyframes tea-tool-chop {
+    0% { transform: translate(-50%, calc(-50% - 9px)) rotate(-11deg); }
+    100% { transform: translate(-50%, -50%) rotate(-8deg); }
+}
+
+@keyframes tea-auto-complete {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.6); }
+}
+
+@keyframes tea-timer-pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.06); }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .station-demo-tea .tea-play {
+        padding: 7px 12px;
+        gap: 4px;
+    }
+
+    .station-demo-tea .tea-hud {
+        padding-right: 64px;
+    }
+
+    .tea-hud > span,
+    .tea-order span {
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+    .tea-order span b {
+        width: 15px;
+        height: 15px;
+        font-size: 9px;
+    }
+
+    .tea-game-area {
+        grid-template-rows: minmax(62px, 0.58fr) minmax(108px, 1.42fr);
+        gap: 4px;
+    }
+
+    .tea-ingredient-grid {
+        width: min(88%, 760px);
+        gap: 6px;
+    }
+
+    .tea-ingredient-card {
+        padding: 2px 4px 3px;
+        border-radius: 8px;
+    }
+
+    .tea-drop-zone {
+        width: min(58vw, 430px);
+        min-height: 120px;
+        border-radius: 15px;
+    }
+
+    .tea-cutting-board-art {
+        inset: 0 10% 22px;
+    }
+
+    .tea-mortar-art {
+        inset: -3px 14% 20px;
+    }
+
+    .tea-knife-art {
+        width: min(32%, 125px);
+    }
+
+    .tea-target-label,
+    .tea-action-progress {
+        bottom: 4px;
+        padding: 3px 7px;
+        font-size: 10px;
+    }
+
+    .tea-action-meter {
+        bottom: 25px;
+        height: 5px;
+    }
+
+    .station-demo-tea .tea-feedback {
+        min-height: 17px;
+        font-size: 13px;
+    }
+
+    .tea-result-panel {
+        padding: 10px 16px;
+    }
+
+    .tea-result-panel h1 {
+        font-size: clamp(28px, 5vw, 40px);
+    }
+
+    .tea-result-art {
+        max-height: 210px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+    .station-demo-tea .tea-instruction {
+        font-size: 11px;
+    }
+
+    .tea-order span {
+        font-size: 9px;
+    }
+
+    .tea-game-area {
+        grid-template-rows: 51px minmax(82px, 1fr);
+    }
+
+    .tea-ingredient-grid {
+        width: min(82%, 650px);
+    }
+
+    .tea-ingredient-name {
+        font-size: 9px;
+    }
+
+    .tea-drop-zone {
+        width: min(50vw, 340px);
+        min-height: 96px;
+    }
+
+    .tea-cutting-board-art {
+        inset: 0 12% 20px;
+    }
+
+    .tea-mortar-art {
+        inset: -2px 16% 18px;
+    }
+
+    .tea-knife-art {
+        width: min(30%, 104px);
+    }
+
+    .tea-result-layout {
+        grid-template-columns: 210px 1fr;
+    }
+}
+
+.station-demo-fire .station-play.is-preparing {
+    visibility: hidden;
+}
+
 .station-demo-fire .station-hud {
     padding-right: 86px;
 }
@@ -904,6 +1615,32 @@
     line-height: 1.15;
 }
 
+.fire-score-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.fire-score-pop {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: clamp(26px, 4.4vw, 54px);
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.72);
+    animation: fire-score-pop 0.86s ease-out forwards;
+}
+
+.fire-score-pop.positive {
+    color: #80ff9b;
+}
+
+.fire-score-pop.negative {
+    color: #ff7771;
+}
+
 .station-demo-fire .station-actions.compact {
     position: absolute;
     left: clamp(18px, 7vw, 92px);
@@ -939,6 +1676,12 @@
 @keyframes fire-danger-pulse {
     from { filter: brightness(1); }
     to { filter: brightness(1.35); }
+}
+
+@keyframes fire-score-pop {
+    0% { opacity: 0; transform: translate(-50%, -18%) scale(0.82); }
+    18% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+    100% { opacity: 0; transform: translate(-50%, -118%) scale(0.9); }
 }
 
 @media (orientation: landscape) and (max-height: 560px) {

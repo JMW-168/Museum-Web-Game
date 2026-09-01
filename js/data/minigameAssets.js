@@ -40,11 +40,25 @@
     }
 
     const STATION_FIRE_URLS = [
+        'assets/images/station-fire/background.webp',
+        'assets/images/characters/grandma.png',
         'assets/images/station-fire/stove.png',
         'assets/images/station-fire/fire-small.png',
         'assets/images/station-fire/fire-large.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png'
+    ];
+
+    const STATION_TEA_URLS = [
+        'assets/images/station-tea/background.webp',
+        'assets/images/characters/grandpa.png',
+        'assets/images/station-tea/ingredient-sprites.png',
+        'assets/images/station-tea/tool-sprites.png',
+        'assets/images/station-tea/grind-tool-sprites.png',
+        'assets/images/station-tea/chop-tool-sprites-v2.png',
+        'assets/images/station-fire/wood-small.png',
+        'assets/images/station-fire/wood-large.png',
+        'assets/images/defense/level1/stone.png'
     ];
 
     window.MinigameAssets = {
@@ -66,6 +80,10 @@
 
         getStationFirePreloadUrls: function () {
             return STATION_FIRE_URLS.slice();
+        },
+
+        getStationTeaPreloadUrls: function () {
+            return STATION_TEA_URLS.slice();
         }
     };
 })();
