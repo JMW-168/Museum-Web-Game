@@ -592,6 +592,56 @@ h2 {
     background: rgba(58, 85, 83, 0.95);
 }
 
+.station-entry-combined {
+    border-color: rgba(255, 215, 0, 0.9);
+    background: linear-gradient(135deg, rgba(73, 50, 29, 0.94), rgba(31, 62, 58, 0.94));
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.12), 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+.station-entry-combined:hover {
+    background: linear-gradient(135deg, rgba(101, 70, 39, 0.96), rgba(42, 83, 77, 0.96));
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    #level-select h2 {
+        margin: 4px 0;
+    }
+
+    #level-select .station-entry-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        width: min(94%, 1080px);
+        max-width: 1080px;
+        margin: 6px auto;
+    }
+
+    #level-select .station-entry {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 150px;
+        padding: 10px 12px !important;
+    }
+
+    #level-select .station-kicker {
+        width: 100%;
+        text-align: left;
+        font-size: clamp(11px, 1.5vw, 14px);
+    }
+
+    #level-select .station-title {
+        margin-top: 5px;
+        font-size: clamp(19px, 2.8vw, 25px);
+    }
+
+    #level-select .station-desc {
+        font-size: clamp(11px, 1.5vw, 14px);
+        line-height: 1.35;
+    }
+}
+
 .station-kicker {
     grid-area: kicker;
     color: #ffd700;

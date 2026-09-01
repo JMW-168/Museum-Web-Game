@@ -85,7 +85,7 @@
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
             <h2>選擇遊戲入口</h2>
-            <div class="level-buttons">
+            <div class="level-buttons station-entry-list">
                 <button id="station-fire-btn" class="station-entry" type="button" data-station-demo="fire">
                     <span class="station-kicker">關卡一 / 站點 1</span>
                     <span class="station-title">灶台生火</span>
@@ -95,6 +95,11 @@
                     <span class="station-kicker">關卡二 / 站點 2</span>
                     <span class="station-title">擂茶料理</span>
                     <span class="station-desc">從流動隊列依序拖曳食材，避開柴火與石頭，完成研磨與切料。</span>
+                </button>
+                <button id="station-combined-btn" class="station-entry station-entry-combined" type="button" data-station-demo="combined">
+                    <span class="station-kicker">完整體驗</span>
+                    <span class="station-title">合併版</span>
+                    <span class="station-desc">跟著阿嬤與阿公的故事，依序完成灶台生火與擂茶料理。</span>
                 </button>
             </div>
             <button class="back-btn" onclick="showScene('start-menu')">返回</button>
@@ -172,6 +177,7 @@
     <script src="js/data/chapter3_child.js"></script>
     <!-- 問答題庫 -->
     <script src="js/data/quizQuestions.js"></script>
+    <script src="js/data/stationCombinedStory.js"></script>
     
     <!-- 5. 小遊戲 -->
     <!-- <script src="js/minigames/PuzzleGame.js"></script> -->

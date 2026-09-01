@@ -14,6 +14,11 @@ const StationDemoGame = {
     teaAnimationId: null,
     teaAudioContext: null,
     lastTeaGrindSoundAt: 0,
+    mode: null,
+    dialogueTimer: null,
+    dialogueTyping: false,
+    dialogueTextTarget: null,
+    dialogueFullText: '',
     teaStageDurationMs: 60000,
     teaSpawnIntervalMs: 975,
     teaTravelMs: 1950,
@@ -74,6 +79,17 @@ const StationDemoGame = {
 
     start(stationId) {
         this.stop();
+        if (stationId === 'combined') {
+            this.mode = 'combined';
+            this.station = this.stations.fire;
+            showScene('game-container');
+            this.hideLegacyGameUi();
+            this.createShell('fire');
+            this.showCombinedDialogue('opening', () => this.startCombinedFire());
+            return;
+        }
+
+        this.mode = 'standalone';
         this.station = this.stations[stationId];
         if (!this.station) return;
 
@@ -112,6 +128,179 @@ const StationDemoGame = {
         this.container = document.createElement('div');
         this.container.className = `station-demo station-demo-${stationId}`;
         parent.appendChild(this.container);
+    },
+
+    setShellTheme(stationId) {
+        if (!this.container) return;
+        this.container.classList.remove('station-demo-fire', 'station-demo-tea');
+        this.container.classList.add(`station-demo-${stationId}`);
+    },
+
+    showCombinedDialogue(sectionId, onComplete) {
+        const section = window.StationCombinedStory?.sections?.[sectionId];
+        if (!section || !this.container) {
+            if (window.Logger) window.Logger.error('找不到合併版劇情段落:', sectionId);
+            this.close();
+            return;
+        }
+
+        this.clearCombinedTyping();
+        this.state = null;
+        this.setShellTheme(section.theme);
+        let lineIndex = 0;
+
+        const renderLine = () => {
+            const line = section.lines[lineIndex];
+            const characterMarkup = line.image
+                ? `<img class="combined-story-character" src="${line.image}" alt="${line.speaker}">`
+                : '';
+            const cueMarkup = line.cue ? `<span class="combined-dialogue-cue">（${line.cue}）</span>` : '';
+            const actionMarkup = line.actionLabel
+                ? `<button type="button" class="station-primary combined-story-action" data-story-action hidden>${line.actionLabel}</button>`
+                : '';
+
+            this.container.innerHTML = `
+                <section class="combined-story${line.narration ? ' is-narration' : ''}">
+                    <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                    <div class="combined-story-character-stage">${characterMarkup}</div>
+                    <div class="combined-dialogue-box${line.actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="繼續對話">
+                        <div class="combined-dialogue-speaker">${line.speaker}${cueMarkup}</div>
+                        <div class="combined-dialogue-text" aria-live="polite"></div>
+                        <span class="combined-dialogue-indicator" aria-hidden="true"></span>
+                        ${actionMarkup}
+                    </div>
+                </section>
+            `;
+
+            const dialogueBox = this.container.querySelector('[data-dialogue-advance]');
+            const action = this.container.querySelector('[data-story-action]');
+            const advance = () => {
+                if (this.dialogueTyping) {
+                    this.finishCombinedTyping();
+                    return;
+                }
+                if (line.actionLabel) return;
+                if (lineIndex < section.lines.length - 1) {
+                    lineIndex++;
+                    renderLine();
+                    return;
+                }
+                onComplete();
+            };
+
+            dialogueBox.addEventListener('click', advance);
+            dialogueBox.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                advance();
+            });
+            this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
+            if (action) {
+                action.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.playClick();
+                    onComplete();
+                });
+            }
+            this.typeCombinedLine(line, action);
+        };
+
+        renderLine();
+    },
+
+    typeCombinedLine(line, action) {
+        this.clearCombinedTyping();
+        const target = this.container?.querySelector('.combined-dialogue-text');
+        if (!target) return;
+        const characters = Array.from(line.text || '');
+        let index = 0;
+        this.dialogueTyping = true;
+        this.dialogueTextTarget = target;
+        this.dialogueFullText = line.text || '';
+        target.textContent = '';
+
+        this.dialogueTimer = setInterval(() => {
+            if (!this.dialogueTextTarget) return;
+            if (index >= characters.length) {
+                this.finishCombinedTyping();
+                return;
+            }
+            this.dialogueTextTarget.textContent += characters[index];
+            if (index % 3 === 0 && line.voice && typeof AudioManager !== 'undefined') {
+                const sound = line.voice === 'female'
+                    ? 'assets/sounds/sfx-blipfemale.wav'
+                    : 'assets/sounds/sfx-blipmale.wav';
+                AudioManager.playSFX(sound, 0.08);
+            }
+            index++;
+        }, 42);
+
+        if (action) action.hidden = true;
+    },
+
+    finishCombinedTyping() {
+        if (this.dialogueTimer) clearInterval(this.dialogueTimer);
+        this.dialogueTimer = null;
+        if (this.dialogueTextTarget) this.dialogueTextTarget.textContent = this.dialogueFullText;
+        this.dialogueTyping = false;
+        const box = this.container?.querySelector('.combined-dialogue-box');
+        const action = this.container?.querySelector('[data-story-action]');
+        if (box) box.classList.add('is-complete');
+        if (action) action.hidden = false;
+    },
+
+    clearCombinedTyping() {
+        if (this.dialogueTimer) clearInterval(this.dialogueTimer);
+        this.dialogueTimer = null;
+        this.dialogueTyping = false;
+        this.dialogueTextTarget = null;
+        this.dialogueFullText = '';
+    },
+
+    startCombinedFire() {
+        this.station = this.stations.fire;
+        this.setShellTheme('fire');
+        this.startFireMusic();
+        this.prepareFireAssets()
+            .then(() => this.startFireGame())
+            .catch((error) => this.showFireLoadError(error));
+    },
+
+    finishCombinedFire() {
+        if (!this.state) return;
+        this.state.finished = true;
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+        this.stopFireMusic();
+        this.releaseFireAssets();
+        this.showCombinedDialogue('afterFire', () => {
+            this.station = this.stations.tea;
+            this.showCombinedDialogue('beforeTea', () => this.startCombinedTea());
+        });
+    },
+
+    startCombinedTea() {
+        this.station = this.stations.tea;
+        this.setShellTheme('tea');
+        this.prepareTeaAssets()
+            .then(() => this.startTeaGame())
+            .catch((error) => this.showTeaLoadError(error));
+    },
+
+    showCoachMessage(coachingId) {
+        if (this.mode !== 'combined' || !this.container) return;
+        const coaching = window.StationCombinedStory?.coaching?.[coachingId];
+        const play = this.container.querySelector('.station-play');
+        if (!coaching || !play) return;
+        const oldMessage = play.querySelector('.station-coach-line');
+        if (oldMessage) oldMessage.remove();
+        const message = document.createElement('div');
+        message.className = 'station-coach-line';
+        const speaker = document.createElement('strong');
+        speaker.textContent = `${coaching.speaker}：`;
+        message.append(speaker, document.createTextNode(coaching.text));
+        play.appendChild(message);
+        this.timers.push(setTimeout(() => message.remove(), 6200));
     },
 
     showIntro(stationId) {
@@ -247,6 +436,10 @@ const StationDemoGame = {
                     this.state.startedAt = time;
                     this.state.lastTickAt = time;
                     this.renderFireHud();
+                    if (this.mode === 'combined' && !this.state.coachShown) {
+                        this.state.coachShown = true;
+                        this.timers.push(setTimeout(() => this.showCoachMessage('fire'), 2600));
+                    }
                     this.animationId = requestAnimationFrame((nextTime) => this.tickFire(nextTime));
                 });
             })
@@ -1085,6 +1278,10 @@ const StationDemoGame = {
         this.state.feedback = `${item.name}已放入，開始${config.verb}`;
         this.playClick();
         this.renderTeaStage();
+        if (this.mode === 'combined' && this.state.phase === 'grind' && this.state.currentIndex === 0 && !this.state.coachShown) {
+            this.state.coachShown = true;
+            this.showCoachMessage('tea');
+        }
     },
 
     flashTeaError(message, itemId) {
@@ -1295,6 +1492,10 @@ const StationDemoGame = {
         if (!this.state || !this.container) return;
         this.clearTeaTimer();
         this.state.finished = true;
+        if (this.mode === 'combined') {
+            this.showCombinedDialogue('afterTea', () => this.close());
+            return;
+        }
         const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
         this.container.innerHTML = `
             <section class="station-panel station-result-panel tea-result-panel has-guide">
@@ -1328,6 +1529,10 @@ const StationDemoGame = {
         const success = totalScore >= 2400 && this.isFireInSafeRange();
         this.state.score = totalScore;
         this.station.fireSummary = `分數 ${totalScore}，火候 ${Math.round(this.state.fire)}%，失誤 ${this.state.maxMistakes - this.state.mistakesRemaining} 次。`;
+        if (this.mode === 'combined') {
+            this.finishCombinedFire();
+            return;
+        }
         this.showResult(success);
     },
 
@@ -1373,6 +1578,7 @@ const StationDemoGame = {
     stop() {
         this.timers.forEach((timer) => clearTimeout(timer));
         this.timers = [];
+        this.clearCombinedTyping();
         this.clearTeaTimer();
         this.stopTeaTrack();
         if (this.animationId) cancelAnimationFrame(this.animationId);
@@ -1388,6 +1594,7 @@ const StationDemoGame = {
         if (this.container && this.container.parentNode) this.container.remove();
         this.container = null;
         this.state = null;
+        this.mode = null;
     },
 
     playClick() {
