@@ -11,10 +11,20 @@ const StationDemoGame = {
     fireDurationMs: 60000,
     fireAssetUrls: null,
     teaTimerId: null,
-    teaStageDurationMs: 30000,
+    teaAnimationId: null,
+    teaAudioContext: null,
+    lastTeaGrindSoundAt: 0,
+    teaStageDurationMs: 60000,
+    teaSpawnIntervalMs: 975,
+    teaTravelMs: 1950,
     teaImageUrls: [
         'assets/images/station-tea/ingredient-sprites.png',
-        'assets/images/station-tea/tool-sprites.png'
+        'assets/images/station-tea/tool-sprites.png',
+        'assets/images/station-tea/grind-tool-sprites.png',
+        'assets/images/station-tea/chop-tool-sprites-v2.png',
+        'assets/images/station-fire/wood-small.png',
+        'assets/images/station-fire/wood-large.png',
+        'assets/images/defense/level1/stone.png'
     ],
     fireImageUrls: [
         'assets/images/station-fire/stove.png',
@@ -49,7 +59,7 @@ const StationDemoGame = {
             kicker: '關卡二 / 站點 2',
             title: '擂茶料理',
             subtitle: '看著指定順序，把食材逐一研磨、切好，完成一組擂茶。',
-            intro: '先依照上方順序，把五種食材拖進石臼，每一種都要畫滿 5 圈；接著把四種配菜拖上砧板，每一種連點 10 刀。兩段各有 30 秒，拖錯會提示正確材料，時間到也會協助補完，不會卡關。',
+            intro: '先從移動軌道中依照上方順序挑出五種食材，避開柴火與石頭，拖進石臼後讓研磨棒沿著碗緣畫滿 5 圈；接著把四種配菜拖上砧板，每一種連點 10 刀。兩段各有 1 分鐘，拖錯只會放不進來，不扣分也不扣時間。',
             success: '擂茶小知識：擂茶把茶葉、香草、花生與芝麻耐心擂成茶膏，再配上切細的蔬菜與豆腐，是一碗兼具香氣與口感的客家料理。',
             fail: '',
         }
@@ -651,7 +661,7 @@ const StationDemoGame = {
             grind: {
                 title: '小遊戲一・研磨食材',
                 verb: '研磨',
-                instruction: '依照順序拖進石臼，每一種食材畫滿 5 圈',
+                instruction: '從流動軌道依序拖進石臼，每一種食材畫滿 5 圈',
                 target: 5,
                 unit: '圈',
                 toolClass: 'grind',
@@ -666,7 +676,7 @@ const StationDemoGame = {
             chop: {
                 title: '小遊戲二・切配菜',
                 verb: '切料',
-                instruction: '依照順序拖上砧板，每一種食材快速連點 10 刀',
+                instruction: '從流動軌道依序拖上砧板，每一種食材快速連點 10 刀',
                 target: 10,
                 unit: '刀',
                 toolClass: 'chop',
@@ -723,6 +733,7 @@ const StationDemoGame = {
 
     startTeaGame() {
         this.clearTeaTimer();
+        this.stopTeaTrack();
         const grind = this.getTeaStageConfig('grind');
         const chop = this.getTeaStageConfig('chop');
         this.state = {
@@ -740,7 +751,13 @@ const StationDemoGame = {
             actionProgress: 0,
             rotationAngle: 0,
             lastPointerAngle: null,
-            timeLeft: 30,
+            movingItems: [],
+            teaSpawnPatternIndex: 0,
+            teaIngredientSpawnCount: 0,
+            teaDecoySpawnCount: 0,
+            teaLastSpawnAt: 0,
+            teaLastFrameAt: 0,
+            timeLeft: this.teaStageDurationMs / 1000,
             stageDeadline: 0,
             transitioning: false,
             feedback: '先看上方順序，把第一種食材拖下來',
@@ -752,6 +769,7 @@ const StationDemoGame = {
 
     renderTeaStage() {
         if (!this.container || !this.state || this.state.stationId !== 'tea') return;
+        this.stopTeaTrack();
         const config = this.getTeaStageConfig(this.state.phase);
         const order = this.state.orders[this.state.phase];
         const completed = this.state.completed[this.state.phase];
@@ -762,26 +780,36 @@ const StationDemoGame = {
                 : index === this.state.currentIndex ? 'current' : '';
             return `<span class="${status}"><b>${index + 1}</b>${item.name}${status === 'done' ? ' ✓' : ''}</span>`;
         }).join('');
-        const cardsMarkup = config.items.map((item) => {
-            const column = item.sprite % 3;
-            const row = Math.floor(item.sprite / 3);
-            const isDone = completed.includes(item.id);
-            const isActive = this.state.activeItemId === item.id;
-            return `
-                <button type="button" class="tea-ingredient-card${isDone ? ' done' : ''}${isActive ? ' active' : ''}"
-                    data-tea-item="${item.id}" aria-label="拖曳${item.name}"
-                    style="--tea-sprite-x:${column * 50}%;--tea-sprite-y:${row * 50}%">
-                    <span class="tea-ingredient-art" aria-hidden="true"></span>
-                    <span class="tea-ingredient-name">${item.name}</span>
-                </button>
-            `;
-        }).join('');
+        const ingredientSourceMarkup = '<div class="tea-moving-track" data-tea-track aria-label="移動食材軌道"><span class="tea-track-hint">拖曳目前指定食材・避開柴火和石頭</span></div>';
         const progressText = this.state.processing
             ? `${this.state.actionProgress}/${config.target} ${config.unit}`
             : `等待 ${expected ? expected.name : '完成'}`;
         const progressPercent = this.state.processing
             ? Math.min(100, this.state.actionProgress / config.target * 100)
             : 0;
+        const liquidPercent = this.getTeaLiquidPercent();
+        const activeItem = this.state.processing
+            ? config.items.find((item) => item.id === this.state.activeItemId)
+            : null;
+        const activeIngredientMarkup = activeItem
+            ? `<span class="tea-processing-ingredient ${this.state.phase}" aria-label="${activeItem.name}"
+                    style="--tea-sprite-x:${(activeItem.sprite % 3) * 50}%;--tea-sprite-y:${Math.floor(activeItem.sprite / 3) * 50}%">
+                    <span class="tea-ingredient-art" aria-hidden="true"></span>
+               </span>`
+            : '';
+        const toolMarkup = this.state.phase === 'grind'
+            ? `
+                <span class="tea-mortar-art" aria-hidden="true"></span>
+                <span class="tea-liquid" data-tea-liquid aria-hidden="true"
+                    style="width:${23 + liquidPercent * 0.08}%;height:${5 + liquidPercent * 0.16}px;opacity:${Math.min(1, liquidPercent / 14)}"></span>
+                ${activeIngredientMarkup}
+                <span class="tea-pestle-art" data-tea-pestle aria-hidden="true"></span>
+            `
+            : `
+                <span class="tea-cutting-board-art" aria-hidden="true"></span>
+                ${activeIngredientMarkup}
+                <span class="tea-knife-art" aria-hidden="true"></span>
+            `;
 
         this.container.innerHTML = `
             <div class="station-play tea-play">
@@ -794,10 +822,10 @@ const StationDemoGame = {
                 <div class="tea-instruction">${config.instruction}</div>
                 <div class="tea-order" aria-label="正確順序">${orderMarkup}</div>
                 <div class="tea-game-area">
-                    <div class="tea-ingredient-grid" style="--tea-item-count:${config.items.length}">${cardsMarkup}</div>
+                    ${ingredientSourceMarkup}
                     <div class="tea-workspace">
                         <div class="tea-drop-zone ${config.toolClass}${this.state.processing ? ' processing' : ''}" data-tea-drop>
-                            <span class="tea-tool-art" aria-hidden="true"></span>
+                            ${toolMarkup}
                             <span class="tea-target-label">${this.state.processing && expected ? `${expected.name}・${config.verb}` : `拖到這裡${config.verb}`}</span>
                             <span class="tea-action-progress">${progressText}</span>
                             <span class="tea-action-meter"><i style="width:${progressPercent}%"></i></span>
@@ -809,46 +837,201 @@ const StationDemoGame = {
         `;
 
         this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
-        this.container.querySelectorAll('[data-tea-item]').forEach((card) => {
-            const item = config.items.find((candidate) => candidate.id === card.dataset.teaItem);
-            if (!item || completed.includes(item.id) || item.id === this.state.activeItemId) return;
-            this.bindTeaIngredientDrag(card, item);
-        });
+        this.startTeaTrack();
         if (this.state.processing) {
             if (this.state.phase === 'grind') this.bindTeaGrinding();
             if (this.state.phase === 'chop') this.bindTeaChopping();
         }
     },
 
-    bindTeaIngredientDrag(card, item) {
+    startTeaTrack() {
+        if (!this.state || this.state.finished || !['grind', 'chop'].includes(this.state.phase)) return;
+        this.stopTeaTrack();
+        this.state.movingItems = [];
+        this.state.teaLastFrameAt = 0;
+        this.state.teaLastSpawnAt = 0;
+        this.teaAnimationId = requestAnimationFrame((time) => this.tickTeaTrack(time));
+    },
+
+    stopTeaTrack() {
+        if (this.teaAnimationId) cancelAnimationFrame(this.teaAnimationId);
+        this.teaAnimationId = null;
+        if (!this.state?.movingItems) return;
+        this.state.movingItems.forEach((entry) => {
+            if (entry.el?.parentNode) entry.el.remove();
+        });
+        this.state.movingItems = [];
+    },
+
+    tickTeaTrack(time) {
+        if (!this.state || this.state.finished || !['grind', 'chop'].includes(this.state.phase)) {
+            this.teaAnimationId = null;
+            return;
+        }
+        const track = this.container?.querySelector('[data-tea-track]');
+        if (!track) {
+            this.teaAnimationId = null;
+            return;
+        }
+        if (!this.state.teaLastFrameAt) {
+            this.state.teaLastFrameAt = time;
+            this.state.teaLastSpawnAt = time - this.teaSpawnIntervalMs;
+        }
+        const delta = Math.min(80, time - this.state.teaLastFrameAt);
+        this.state.teaLastFrameAt = time;
+        if (time - this.state.teaLastSpawnAt >= this.teaSpawnIntervalMs) {
+            this.spawnTeaTrackItem(track);
+            this.state.teaLastSpawnAt = time;
+        }
+
+        const trackWidth = Math.max(1, track.clientWidth);
+        const speed = (trackWidth * (1 - 0.24)) / this.teaTravelMs;
+        const active = [];
+        this.state.movingItems.forEach((entry) => {
+            if (!entry.dragging) entry.x -= speed * delta;
+            if (entry.el?.isConnected) entry.el.style.left = `${entry.x}px`;
+            const halfWidth = Math.max(36, (entry.el?.offsetWidth || 72) / 2);
+            if (entry.x >= -halfWidth || entry.dragging) active.push(entry);
+            else if (entry.el?.parentNode) entry.el.remove();
+        });
+        this.state.movingItems = active;
+        this.teaAnimationId = requestAnimationFrame((nextTime) => this.tickTeaTrack(nextTime));
+    },
+
+    spawnTeaTrackItem(track) {
+        if (!this.state || !track) return;
+        this.state.teaSpawnPatternIndex++;
+        const shouldSpawnDecoy = Math.random() < (1 / 3);
+        const item = shouldSpawnDecoy ? this.getTeaDecoyItem() : this.getTeaMovingIngredient();
+        if (!item) return;
+
+        const instanceId = `${item.id}-${Date.now()}-${this.state.teaSpawnPatternIndex}`;
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = `tea-ingredient-card tea-moving-item${item.isDecoy ? ' tea-decoy' : ''}`;
+        card.dataset.teaItem = item.id;
+        card.dataset.teaInstance = instanceId;
+        card.setAttribute('aria-label', `拖曳${item.name}`);
+        if (item.isDecoy) {
+            card.innerHTML = `
+                <span class="tea-decoy-art" aria-hidden="true"><img src="${item.image}" alt=""></span>
+                <span class="tea-ingredient-name">${item.name}</span>
+            `;
+        } else {
+            const column = item.sprite % 3;
+            const row = Math.floor(item.sprite / 3);
+            card.style.setProperty('--tea-sprite-x', `${column * 50}%`);
+            card.style.setProperty('--tea-sprite-y', `${row * 50}%`);
+            card.innerHTML = `
+                <span class="tea-ingredient-art" aria-hidden="true"></span>
+                <span class="tea-ingredient-name">${item.name}</span>
+            `;
+        }
+        track.appendChild(card);
+        const entry = {
+            el: card,
+            item: { ...item, instanceId },
+            x: track.clientWidth + Math.max(38, card.offsetWidth / 2),
+            dragging: false
+        };
+        card.style.left = `${entry.x}px`;
+        this.state.movingItems.push(entry);
+        this.bindTeaIngredientDrag(card, entry.item, entry);
+    },
+
+    getTeaMovingIngredient() {
+        if (!this.state) return null;
+        const phase = this.state.phase;
+        const config = this.getTeaStageConfig(phase);
+        const completed = this.state.completed[phase];
+        const available = config.items.filter((item) => !completed.includes(item.id) && item.id !== this.state.activeItemId);
+        if (!available.length) return null;
+        const expected = this.state.orders[phase][this.state.currentIndex];
+        const shouldPrioritizeExpected = !this.state.processing && Math.random() < 0.58;
+        this.state.teaIngredientSpawnCount++;
+        if (shouldPrioritizeExpected && expected) return { ...expected, isDecoy: false };
+        const alternatives = expected ? available.filter((item) => item.id !== expected.id) : available;
+        const pool = alternatives.length ? alternatives : available;
+        return { ...pool[Math.floor(Math.random() * pool.length)], isDecoy: false };
+    },
+
+    getTeaDecoyItem() {
+        if (!this.state) return null;
+        const decoys = [
+            { id: 'wood-small', name: '小柴', image: 'assets/images/station-fire/wood-small.png' },
+            { id: 'stone', name: '石頭', image: 'assets/images/defense/level1/stone.png' },
+            { id: 'wood-large', name: '大柴', image: 'assets/images/station-fire/wood-large.png' }
+        ];
+        const item = decoys[this.state.teaDecoySpawnCount++ % decoys.length];
+        return { ...item, isDecoy: true };
+    },
+
+    bindTeaIngredientDrag(card, item, movingEntry = null) {
         card.addEventListener('pointerdown', (event) => {
             if (!this.state || this.state.finished || this.state.transitioning) return;
             if (this.state.processing) {
                 const active = this.state.orders[this.state.phase][this.state.currentIndex];
-                this.flashTeaError(`請先完成${active.name}的${this.getTeaStageConfig(this.state.phase).verb}`, item.id);
+                this.flashTeaError(`請先完成${active.name}的${this.getTeaStageConfig(this.state.phase).verb}`, item.instanceId || item.id);
                 return;
             }
             event.preventDefault();
             const startX = event.clientX;
             const startY = event.clientY;
+            const startRect = card.getBoundingClientRect();
+            const dragLayerRect = this.container.getBoundingClientRect();
             let moved = false;
-            card.setPointerCapture(event.pointerId);
-            card.classList.add('dragging');
+            let dragGhost = null;
+            this.container.querySelectorAll('.tea-moving-item.selected').forEach((selected) => {
+                selected.classList.remove('selected');
+            });
+            card.classList.add('selected');
+            if (movingEntry) movingEntry.dragging = true;
+            try {
+                card.setPointerCapture(event.pointerId);
+            } catch (error) {
+                if (window.Logger) window.Logger.warn('關卡二拖曳無法鎖定指標，改用全域追蹤:', error);
+            }
 
             const move = (moveEvent) => {
                 if (moveEvent.pointerId !== event.pointerId) return;
                 const offsetX = moveEvent.clientX - startX;
                 const offsetY = moveEvent.clientY - startY;
-                moved = moved || Math.abs(offsetX) + Math.abs(offsetY) > 8;
-                card.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.08)`;
+                if (!moved && Math.abs(offsetX) + Math.abs(offsetY) <= 8) return;
+                if (!moved) {
+                    moved = true;
+                    card.classList.add('dragging');
+                    dragGhost = card.cloneNode(true);
+                    dragGhost.classList.add('tea-drag-ghost');
+                    dragGhost.classList.remove('selected');
+                    dragGhost.removeAttribute('data-tea-item');
+                    dragGhost.removeAttribute('data-tea-instance');
+                    dragGhost.setAttribute('aria-hidden', 'true');
+                    dragGhost.style.left = `${startRect.left - dragLayerRect.left}px`;
+                    dragGhost.style.top = `${startRect.top - dragLayerRect.top}px`;
+                    dragGhost.style.width = `${startRect.width}px`;
+                    dragGhost.style.height = `${startRect.height}px`;
+                    this.container.appendChild(dragGhost);
+                    card.style.visibility = 'hidden';
+                }
+                dragGhost.style.left = `${startRect.left - dragLayerRect.left + offsetX}px`;
+                dragGhost.style.top = `${startRect.top - dragLayerRect.top + offsetY}px`;
+            };
+            const cleanup = () => {
+                window.removeEventListener('pointermove', move);
+                window.removeEventListener('pointerup', finish);
+                window.removeEventListener('pointercancel', cancel);
+                if (card.hasPointerCapture?.(event.pointerId)) card.releasePointerCapture(event.pointerId);
+                card.classList.remove('dragging');
+                card.style.visibility = '';
+                if (dragGhost?.parentNode) dragGhost.remove();
+                dragGhost = null;
+                if (movingEntry) {
+                    movingEntry.dragging = false;
+                }
             };
             const finish = (finishEvent) => {
                 if (finishEvent.pointerId !== event.pointerId) return;
-                card.removeEventListener('pointermove', move);
-                card.removeEventListener('pointerup', finish);
-                card.removeEventListener('pointercancel', cancel);
-                card.classList.remove('dragging');
-                card.style.transform = '';
+                cleanup();
                 const dropZone = this.container?.querySelector('[data-tea-drop]');
                 if (!dropZone || !moved) return;
                 const bounds = dropZone.getBoundingClientRect();
@@ -858,23 +1041,24 @@ const StationDemoGame = {
             };
             const cancel = (cancelEvent) => {
                 if (cancelEvent.pointerId !== event.pointerId) return;
-                card.removeEventListener('pointermove', move);
-                card.removeEventListener('pointerup', finish);
-                card.removeEventListener('pointercancel', cancel);
-                card.classList.remove('dragging');
-                card.style.transform = '';
+                cleanup();
             };
-            card.addEventListener('pointermove', move);
-            card.addEventListener('pointerup', finish);
-            card.addEventListener('pointercancel', cancel);
+            window.addEventListener('pointermove', move);
+            window.addEventListener('pointerup', finish);
+            window.addEventListener('pointercancel', cancel);
         });
     },
 
     handleTeaDrop(item) {
         if (!this.state || this.state.processing || this.state.transitioning) return;
+        if (item.isDecoy) {
+            const destination = this.state.phase === 'grind' ? '擂缽' : '砧板';
+            this.flashTeaError(`${item.name}不能放進${destination}`, item.instanceId || item.id);
+            return;
+        }
         const expected = this.state.orders[this.state.phase][this.state.currentIndex];
         if (!expected || item.id !== expected.id) {
-            this.flashTeaError(`順序錯誤，下一個是${expected ? expected.name : '指定食材'}`, item.id);
+            this.flashTeaError(`順序錯誤，下一個是${expected ? expected.name : '指定食材'}`, item.instanceId || item.id);
             return;
         }
         const config = this.getTeaStageConfig(this.state.phase);
@@ -892,7 +1076,8 @@ const StationDemoGame = {
         if (!this.container) return;
         this.playWrong();
         const feedback = this.container.querySelector('.tea-feedback');
-        const card = this.container.querySelector(`[data-tea-item="${itemId}"]`);
+        const card = this.container.querySelector(`[data-tea-instance="${itemId}"]`)
+            || this.container.querySelector(`[data-tea-item="${itemId}"]`);
         const dropZone = this.container.querySelector('[data-tea-drop]');
         if (feedback) feedback.textContent = message;
         if (card) card.classList.add('error');
@@ -915,6 +1100,7 @@ const StationDemoGame = {
             event.preventDefault();
             target.setPointerCapture(event.pointerId);
             this.state.lastPointerAngle = getAngle(event);
+            this.updateTeaPestle(this.state.lastPointerAngle);
             target.classList.add('gesturing');
         });
         target.addEventListener('pointermove', (event) => {
@@ -928,10 +1114,12 @@ const StationDemoGame = {
             // 手機快速畫圈時 pointermove 取樣可能較疏，允許單次最多 120 度的有效位移。
             if (Math.abs(delta) < 1 || Math.abs(delta) > 120) return;
             this.state.rotationAngle += Math.abs(delta);
+            this.updateTeaPestle(angle);
+            this.playTeaGrindSound(Math.abs(delta));
+            this.updateTeaLiquid();
             while (this.state.rotationAngle >= 360 && this.state.actionProgress < 5) {
                 this.state.rotationAngle -= 360;
                 this.state.actionProgress++;
-                this.playClick();
                 target.classList.remove('tea-pulse');
                 void target.offsetWidth;
                 target.classList.add('tea-pulse');
@@ -958,7 +1146,7 @@ const StationDemoGame = {
             if (!this.state?.processing || this.state.transitioning) return;
             event.preventDefault();
             this.state.actionProgress++;
-            this.playClick();
+            this.playTeaChopSound();
             target.classList.remove('tea-chop-hit');
             void target.offsetWidth;
             target.classList.add('tea-chop-hit');
@@ -974,6 +1162,35 @@ const StationDemoGame = {
         const meter = this.container.querySelector('.tea-action-meter i');
         if (label) label.textContent = `${this.state.actionProgress}/${config.target} ${config.unit}`;
         if (meter) meter.style.width = `${Math.min(100, this.state.actionProgress / config.target * 100)}%`;
+        if (this.state.phase === 'grind') this.updateTeaLiquid();
+    },
+
+    getTeaLiquidPercent() {
+        if (!this.state) return 0;
+        const completedTurns = this.state.completed.grind.length * 5;
+        const currentTurns = this.state.phase === 'grind' && this.state.processing
+            ? this.state.actionProgress + (this.state.rotationAngle / 360)
+            : 0;
+        return Math.max(0, Math.min(100, ((completedTurns + currentTurns) / 25) * 100));
+    },
+
+    updateTeaLiquid() {
+        const liquid = this.container?.querySelector('[data-tea-liquid]');
+        if (!liquid) return;
+        const percent = this.getTeaLiquidPercent();
+        liquid.style.width = `${23 + percent * 0.08}%`;
+        liquid.style.height = `${5 + percent * 0.16}px`;
+        liquid.style.opacity = `${Math.min(1, percent / 14)}`;
+    },
+
+    updateTeaPestle(angle) {
+        const pestle = this.container?.querySelector('[data-tea-pestle]');
+        if (!pestle || !Number.isFinite(angle)) return;
+        const radians = angle * Math.PI / 180;
+        const x = 50 + Math.cos(radians) * 20;
+        const y = 54 + Math.sin(radians) * 12;
+        pestle.style.setProperty('--tea-pestle-x', `${x}%`);
+        pestle.style.setProperty('--tea-pestle-y', `${y}%`);
     },
 
     completeTeaItem() {
@@ -1138,12 +1355,17 @@ const StationDemoGame = {
         this.timers.forEach((timer) => clearTimeout(timer));
         this.timers = [];
         this.clearTeaTimer();
+        this.stopTeaTrack();
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         if (this.keyHandler) window.removeEventListener('keydown', this.keyHandler);
         this.keyHandler = null;
         this.stopFireMusic();
         this.releaseFireAssets();
+        if (this.teaAudioContext) {
+            this.teaAudioContext.close().catch(() => {});
+            this.teaAudioContext = null;
+        }
         if (this.container && this.container.parentNode) this.container.remove();
         this.container = null;
         this.state = null;
@@ -1155,6 +1377,83 @@ const StationDemoGame = {
 
     playWrong() {
         if (typeof AudioManager !== 'undefined') AudioManager.playSFX('assets/sounds/wrong.mp3');
+    },
+
+    getTeaAudioContext() {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        if (!this.teaAudioContext || this.teaAudioContext.state === 'closed') {
+            this.teaAudioContext = new AudioContextClass();
+        }
+        if (this.teaAudioContext.state === 'suspended') {
+            this.teaAudioContext.resume().catch(() => {});
+        }
+        return this.teaAudioContext;
+    },
+
+    createTeaNoiseSource(context, duration) {
+        const frameCount = Math.max(1, Math.floor(context.sampleRate * duration));
+        const buffer = context.createBuffer(1, frameCount, context.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let index = 0; index < frameCount; index++) {
+            data[index] = (Math.random() * 2 - 1) * (1 - index / frameCount);
+        }
+        const source = context.createBufferSource();
+        source.buffer = buffer;
+        return source;
+    },
+
+    playTeaGrindSound(delta = 12) {
+        const now = performance.now();
+        if (now - this.lastTeaGrindSoundAt < 68) return;
+        this.lastTeaGrindSoundAt = now;
+        const context = this.getTeaAudioContext();
+        if (!context) return;
+        const startAt = context.currentTime;
+        const duration = 0.1;
+        const source = this.createTeaNoiseSource(context, duration);
+        const filter = context.createBiquadFilter();
+        const gain = context.createGain();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(360 + Math.min(420, delta * 8), startAt);
+        filter.Q.setValueAtTime(0.8, startAt);
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.075, startAt + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        source.connect(filter).connect(gain).connect(context.destination);
+        source.start(startAt);
+        source.stop(startAt + duration);
+    },
+
+    playTeaChopSound() {
+        const context = this.getTeaAudioContext();
+        if (!context) {
+            this.playClick();
+            return;
+        }
+        const startAt = context.currentTime;
+        const duration = 0.075;
+        const noise = this.createTeaNoiseSource(context, duration);
+        const noiseFilter = context.createBiquadFilter();
+        const noiseGain = context.createGain();
+        noiseFilter.type = 'highpass';
+        noiseFilter.frequency.setValueAtTime(1300, startAt);
+        noiseGain.gain.setValueAtTime(0.13, startAt);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        noise.connect(noiseFilter).connect(noiseGain).connect(context.destination);
+
+        const knock = context.createOscillator();
+        const knockGain = context.createGain();
+        knock.type = 'triangle';
+        knock.frequency.setValueAtTime(190, startAt);
+        knock.frequency.exponentialRampToValueAtTime(72, startAt + duration);
+        knockGain.gain.setValueAtTime(0.1, startAt);
+        knockGain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        knock.connect(knockGain).connect(context.destination);
+        noise.start(startAt);
+        noise.stop(startAt + duration);
+        knock.start(startAt);
+        knock.stop(startAt + duration);
     },
 
     startFireMusic() {

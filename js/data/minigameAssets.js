@@ -49,7 +49,12 @@
 
     const STATION_TEA_URLS = [
         'assets/images/station-tea/ingredient-sprites.png',
-        'assets/images/station-tea/tool-sprites.png'
+        'assets/images/station-tea/tool-sprites.png',
+        'assets/images/station-tea/grind-tool-sprites.png',
+        'assets/images/station-tea/chop-tool-sprites-v2.png',
+        'assets/images/station-fire/wood-small.png',
+        'assets/images/station-fire/wood-large.png',
+        'assets/images/defense/level1/stone.png'
     ];
 
     window.MinigameAssets = {
