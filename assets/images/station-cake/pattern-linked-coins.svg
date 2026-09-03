@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+  <title id="title">連錢紋</title>
+  <g fill="none" stroke="#4b2b20" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="72" cy="72" r="48"/>
+    <circle cx="128" cy="72" r="48"/>
+    <circle cx="72" cy="128" r="48"/>
+    <circle cx="128" cy="128" r="48"/>
+    <rect x="82" y="82" width="36" height="36" rx="3"/>
+  </g>
+</svg>

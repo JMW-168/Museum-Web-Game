@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">桃紋</title>
+  <desc id="desc">象徵福壽吉祥的傳統桃形粿印紋樣</desc>
+  <g fill="none" stroke="#4b2618" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M120 43c-8 23-31 31-49 53-19 23-25 61-7 85 14 19 35 26 56 26s42-7 56-26c18-24 12-62-7-85-18-22-41-30-49-53Z"/>
+    <path d="M120 49c-21 22-34 48-34 74 0 35 15 62 34 80 19-18 34-45 34-80 0-26-13-52-34-74Z"/>
+    <path d="M120 72c-15 18-22 38-22 57 0 22 8 42 22 57M120 72c15 18 22 38 22 57 0 22-8 42-22 57"/>
+    <path d="M120 43c13-20 31-28 51-25-5 19-22 32-51 25Z"/>
+  </g>
+</svg>

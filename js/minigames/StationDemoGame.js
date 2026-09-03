@@ -1763,6 +1763,11 @@ const StationDemoGame = {
 };
 
 function startStationDemo(stationId) {
+    if (stationId === 'cake' && window.CakeStationGame) {
+        CakeStationGame.start();
+        return;
+    }
+    if (window.CakeStationGame) CakeStationGame.stop();
     StationDemoGame.start(stationId);
 }
 

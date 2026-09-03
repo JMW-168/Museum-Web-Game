@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+  <title id="title">龜紋</title>
+  <g fill="none" stroke="#4b2b20" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="100" cy="100" rx="57" ry="67"/>
+    <path d="M100 36 67 66l13 38-26 35m46-103 33 30-13 38 26 35M67 66h66M80 104h40M54 139h92M100 36v137"/>
+    <path d="M43 75 22 61m20 63-22 16m137-65 21-14m-20 63 22 16M80 169l-9 19m49-19 9 19"/>
+  </g>
+</svg>

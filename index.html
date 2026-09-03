@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="css/interact-system.css">
     <link rel="stylesheet" href="css/catch-game.css">
     <link rel="stylesheet" href="css/station-demo-game.css">
+    <link rel="stylesheet" href="css/cake-station-game.css?v=30">
 
     <!-- Swiper.js CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -85,7 +86,7 @@
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
             <h2>選擇遊戲入口</h2>
-            <div class="level-buttons station-entry-list">
+            <div class="level-buttons station-entry-list has-cake-station">
                 <button id="station-fire-btn" class="station-entry" type="button" data-station-demo="fire">
                     <span class="station-kicker">關卡一 / 站點 1</span>
                     <span class="station-title">灶台生火</span>
@@ -95,6 +96,11 @@
                     <span class="station-kicker">關卡二 / 站點 2</span>
                     <span class="station-title">擂茶料理</span>
                     <span class="station-desc">從流動隊列依序拖曳食材，避開柴火與石頭，完成研磨與切料。</span>
+                </button>
+                <button id="station-cake-btn" class="station-entry" type="button" data-station-demo="cake">
+                    <span class="station-kicker">關卡四 / 站點 4</span>
+                    <span class="station-title">粿印製作</span>
+                    <span class="station-desc">認識龜、桃、魚與連錢紋，完成拖曳配對後用四面粿印棒壓出紅粿。</span>
                 </button>
                 <button id="station-combined-btn" class="station-entry station-entry-combined" type="button" data-station-demo="combined">
                     <span class="station-kicker">完整體驗</span>
@@ -178,6 +184,7 @@
     <!-- 問答題庫 -->
     <script src="js/data/quizQuestions.js"></script>
     <script src="js/data/stationCombinedStory.js"></script>
+    <script src="js/data/cakePatterns.js?v=30"></script>
     
     <!-- 5. 小遊戲 -->
     <!-- <script src="js/minigames/PuzzleGame.js"></script> -->
@@ -191,6 +198,7 @@
     <script src="js/minigames/InteractSystem.js"></script>
     <script src="js/minigames/PaymentSystem.js"></script>
     <script src="js/minigames/CatchGame.js"></script>
+    <script src="js/minigames/CakeStationGame.js?v=30"></script>
     <script src="js/minigames/StationDemoGame.js"></script>
 
     <!-- 6. 圖文展示系統、蒐集物品系統 -->
