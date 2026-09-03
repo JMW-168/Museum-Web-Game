@@ -609,7 +609,7 @@ h2 {
 
     #level-select .station-entry-list {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 8px;
         width: min(94%, 1080px);
         max-width: 1080px;
