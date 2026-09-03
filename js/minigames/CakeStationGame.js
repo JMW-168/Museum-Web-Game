@@ -54,6 +54,7 @@ const CakeStationGame = {
 
     createShell() {
         const parent = document.getElementById('game-wrapper') || document.body;
+        document.body.classList.add('cake-station-active');
         this.container = document.createElement('div');
         this.container.className = 'station-demo station-demo-cake';
         parent.appendChild(this.container);
@@ -654,6 +655,7 @@ const CakeStationGame = {
         if (this.holdAnimationId) cancelAnimationFrame(this.holdAnimationId);
         this.holdAnimationId = null;
         if (this.container?.parentNode) this.container.remove();
+        document.body.classList.remove('cake-station-active');
         this.container = null;
         this.state = null;
     }
