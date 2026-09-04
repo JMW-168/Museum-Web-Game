@@ -616,7 +616,6 @@ const CakeStationGame = {
                 <div class="cake-result-copy">
                     <div class="station-kicker-line">紅粿完成</div><h1>${pattern.name}</h1>
                     <p class="cake-meaning">${pattern.meaning}</p><p>${pattern.blessing}</p>
-                    <div class="cake-result-data">祝福花紋已記錄：<strong>${pattern.name}</strong></div>
                     <div class="cake-card-actions" aria-label="祝福卡分享與下載">
                         <button type="button" class="station-primary cake-card-action" data-share-card><span aria-hidden="true">↗</span> 分享祝福卡</button>
                         <button type="button" class="station-secondary cake-card-action" data-download-card><span aria-hidden="true">⇩</span> 下載卡片</button>
@@ -653,7 +652,7 @@ const CakeStationGame = {
         context.fillStyle = '#e8ca78';
         context.font = '700 34px "Noto Sans TC", sans-serif';
         context.textAlign = 'center';
-        context.fillText('市場裡的祝福', 540, 125);
+        context.fillText('我在客家博物館想起您', 540, 125);
 
         context.save();
         context.translate(540, 575);
@@ -710,7 +709,7 @@ const CakeStationGame = {
         context.fillText(pattern.blessing, 540, 1135);
         context.fillStyle = '#b9c9bd';
         context.font = '400 26px "Noto Sans TC", sans-serif';
-        context.fillText('Museum Web Game・紅粿祝福卡', 540, 1245);
+        context.fillText('紅粿祝福卡', 540, 1245);
 
         return new Promise((resolve, reject) => canvas.toBlob((blob) => {
             if (blob) resolve(blob);

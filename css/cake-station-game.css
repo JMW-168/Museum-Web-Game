@@ -816,17 +816,6 @@ body.cake-station-active #game-wrapper {
     font-weight: 800;
 }
 
-.cake-result-data {
-    margin-top: 16px;
-    padding: 8px 12px;
-    border-left: 4px solid #d9b45d;
-    color: #dacaa6;
-    background: rgba(0, 0, 0, .22);
-    font-size: clamp(12px, 1.6vw, 15px);
-}
-
-.cake-result-data strong { color: #ffe18b; }
-
 .cake-card-actions {
     display: flex;
     flex-wrap: wrap;
@@ -947,7 +936,6 @@ body.cake-station-active #game-wrapper {
     .cake-serving-leaf { width: min(54vh, 300px); border-width: 3px; }
     .cake-finished-cake { width: min(45vh, 250px); border-width: 4px; box-shadow: inset 7px 8px 12px rgba(255, 182, 157, .2), inset -13px -16px 20px rgba(99, 18, 23, .34), 0 7px 0 #8b2b2d, 0 15px 20px rgba(0, 0, 0, .38); }
     .cake-result-caption { margin-top: 12px; padding: 3px 9px; font-size: 9px; }
-    .cake-result-data { margin-top: 6px; padding: 5px 8px; font-size: 10px; }
     .cake-card-actions { gap: 6px; margin-top: 7px; }
     .cake-card-action { min-width: 124px; padding: 7px 10px; font-size: 11px; }
     .cake-share-feedback { margin-top: 3px; font-size: 9px; }
