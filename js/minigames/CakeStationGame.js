@@ -135,7 +135,7 @@ const CakeStationGame = {
                 <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
                 <div class="cake-heading-row">
                     <div><div class="station-kicker-line">關卡四 / 站點 4</div><h1>花紋連連看</h1></div>
-                    <p>從花紋下方的小點，拖到正確寓意上方的小點。</p>
+                    <p>從花紋卡拖到正確寓意卡，靠近卡片就會自動吸附。</p>
                 </div>
                 <div class="cake-match-board" data-match-board>
                     <svg class="cake-match-lines" data-match-lines aria-hidden="true"><path class="cake-live-line" data-live-line></path></svg>
@@ -149,8 +149,10 @@ const CakeStationGame = {
                 <div class="station-actions cake-actions"><button type="button" class="station-primary" data-to-select ${allMatched ? '' : 'disabled'}>選擇花紋</button></div>
             </section>`;
         this.listen(this.container.querySelector('[data-exit]'), 'click', () => this.close());
+        this.container.querySelectorAll('[data-card-side]').forEach((card) => {
+            this.listen(card, 'pointerdown', (event) => this.startMatchDrag(event));
+        });
         this.container.querySelectorAll('[data-connector]').forEach((connector) => {
-            this.listen(connector, 'pointerdown', (event) => this.startMatchDrag(event));
             this.listen(connector, 'keydown', (event) => this.handleMatchKey(event));
         });
         this.listen(this.container.querySelector('[data-to-select]'), 'click', () => {
@@ -163,19 +165,21 @@ const CakeStationGame = {
 
     startMatchDrag(event) {
         if (!this.state || this.state.resolvingMatch || !event.isPrimary) return;
+        const sourceCard = event.currentTarget.closest('[data-card-side]');
+        const source = sourceCard?.querySelector('[data-connector]');
+        if (!source || source.disabled) return;
         event.preventDefault();
-        const source = event.currentTarget;
         const sourceSide = source.dataset.side;
         const sourceId = source.dataset.patternId;
-        source.setPointerCapture?.(event.pointerId);
-        source.closest('.cake-match-card')?.classList.add('connecting');
+        sourceCard.setPointerCapture?.(event.pointerId);
+        sourceCard.classList.add('connecting');
         const draw = (pointerEvent) => this.drawLiveLine(source, pointerEvent.clientX, pointerEvent.clientY);
         const cleanup = () => {
             source.classList.remove('active');
-            source.closest('.cake-match-card')?.classList.remove('connecting');
-            source.removeEventListener('pointermove', move);
-            source.removeEventListener('pointerup', finish);
-            source.removeEventListener('pointercancel', cancel);
+            sourceCard.classList.remove('connecting');
+            sourceCard.removeEventListener('pointermove', move);
+            sourceCard.removeEventListener('pointerup', finish);
+            sourceCard.removeEventListener('pointercancel', cancel);
         };
         const move = (moveEvent) => {
             if (moveEvent.pointerId !== event.pointerId) return;
@@ -184,13 +188,13 @@ const CakeStationGame = {
         };
         const finish = (finishEvent) => {
             if (finishEvent.pointerId !== event.pointerId) return;
-            const target = document.elementFromPoint(finishEvent.clientX, finishEvent.clientY)?.closest('[data-connector]');
+            const target = this.findMatchTarget(finishEvent.clientX, finishEvent.clientY, sourceSide);
             cleanup();
             this.clearLiveLine();
-            if (target && target.dataset.side !== sourceSide) {
+            if (target) {
                 this.resolveMatch(sourceId, target.dataset.patternId, source, target);
             } else {
-                this.setMatchFeedback('要把線拖到另一排的小點喔。');
+                this.setMatchFeedback('再靠近另一排的卡片一點，就會自動吸附。');
             }
         };
         const cancel = (cancelEvent) => {
@@ -198,10 +202,29 @@ const CakeStationGame = {
             cleanup();
             this.clearLiveLine();
         };
-        source.addEventListener('pointermove', move);
-        source.addEventListener('pointerup', finish);
-        source.addEventListener('pointercancel', cancel);
+        sourceCard.addEventListener('pointermove', move);
+        sourceCard.addEventListener('pointerup', finish);
+        sourceCard.addEventListener('pointercancel', cancel);
         draw(event);
+    },
+
+    findMatchTarget(clientX, clientY, sourceSide) {
+        const hitCard = document.elementFromPoint(clientX, clientY)?.closest('[data-card-side]');
+        const directTarget = hitCard?.querySelector('[data-connector]');
+        if (directTarget && !directTarget.disabled && directTarget.dataset.side !== sourceSide) return directTarget;
+
+        let nearest = null;
+        let nearestDistance = 64;
+        this.container?.querySelectorAll(`[data-connector]:not(:disabled)`).forEach((connector) => {
+            if (connector.dataset.side === sourceSide) return;
+            const rect = connector.getBoundingClientRect();
+            const distance = Math.hypot(clientX - (rect.left + rect.width / 2), clientY - (rect.top + rect.height / 2));
+            if (distance <= nearestDistance) {
+                nearest = connector;
+                nearestDistance = distance;
+            }
+        });
+        return nearest;
     },
 
     handleMatchKey(event) {
@@ -583,11 +606,22 @@ const CakeStationGame = {
         this.removeListeners();
         this.container.innerHTML = `
             <section class="cake-result-panel">
-                <div class="cake-result-art"><div class="cake-finished-cake"><img src="${pattern.cakeImage}" alt="${pattern.name}紅粿"></div></div>
+                <div class="cake-result-art">
+                    <div class="cake-serving-leaf" aria-hidden="true"></div>
+                    <div class="cake-finished-cake cake-finished-${pattern.id}">
+                        <span class="cake-emboss-ring"><img src="${pattern.cakeImage}" alt="${pattern.name}紅粿壓紋"></span>
+                    </div>
+                    <span class="cake-result-caption">剛壓好的${pattern.name}紅粿</span>
+                </div>
                 <div class="cake-result-copy">
                     <div class="station-kicker-line">紅粿完成</div><h1>${pattern.name}</h1>
                     <p class="cake-meaning">${pattern.meaning}</p><p>${pattern.blessing}</p>
-                    <div class="cake-result-data">完成結果：<code>selectedPatternId = "${pattern.id}"</code></div>
+                    <div class="cake-result-data">祝福花紋已記錄：<strong>${pattern.name}</strong></div>
+                    <div class="cake-card-actions" aria-label="祝福卡分享與下載">
+                        <button type="button" class="station-primary cake-card-action" data-share-card><span aria-hidden="true">↗</span> 分享祝福卡</button>
+                        <button type="button" class="station-secondary cake-card-action" data-download-card><span aria-hidden="true">⇩</span> 下載卡片</button>
+                    </div>
+                    <p class="cake-share-feedback" data-share-feedback aria-live="polite"></p>
                     <div class="station-actions cake-actions">
                         <button type="button" class="station-primary" data-again>再做一塊</button>
                         <button type="button" class="station-secondary" data-back>返回入口</button>
@@ -598,7 +632,143 @@ const CakeStationGame = {
             this.playClick();
             this.showSelection();
         });
+        this.listen(this.container.querySelector('[data-share-card]'), 'click', () => this.shareBlessingCard(pattern));
+        this.listen(this.container.querySelector('[data-download-card]'), 'click', () => this.downloadBlessingCard(pattern));
         this.listen(this.container.querySelector('[data-back]'), 'click', () => this.close());
+    },
+
+    async createBlessingCard(pattern) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1350;
+        const context = canvas.getContext('2d');
+        const gradient = context.createLinearGradient(0, 0, 1080, 1350);
+        gradient.addColorStop(0, '#243b31');
+        gradient.addColorStop(1, '#0d1e1c');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 1080, 1350);
+        context.strokeStyle = '#d9b45d';
+        context.lineWidth = 8;
+        context.strokeRect(42, 42, 996, 1266);
+        context.fillStyle = '#e8ca78';
+        context.font = '700 34px "Noto Sans TC", sans-serif';
+        context.textAlign = 'center';
+        context.fillText('市場裡的祝福', 540, 125);
+
+        context.save();
+        context.translate(540, 575);
+        context.rotate(-0.08);
+        context.fillStyle = '#567346';
+        context.beginPath();
+        context.ellipse(0, 95, 390, 155, 0, 0, Math.PI * 2);
+        context.fill();
+        context.strokeStyle = 'rgba(225, 240, 174, .38)';
+        context.lineWidth = 5;
+        context.beginPath();
+        context.moveTo(-330, 100);
+        context.lineTo(330, 88);
+        context.stroke();
+        context.restore();
+
+        const cakeGradient = context.createRadialGradient(425, 405, 30, 540, 555, 330);
+        cakeGradient.addColorStop(0, '#ff9b88');
+        cakeGradient.addColorStop(.58, '#dc514b');
+        cakeGradient.addColorStop(1, '#8e282d');
+        context.fillStyle = '#752328';
+        context.beginPath();
+        context.ellipse(540, 625, 315, 260, -0.03, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = cakeGradient;
+        context.beginPath();
+        context.ellipse(540, 596, 315, 260, -0.03, 0, Math.PI * 2);
+        context.fill();
+        context.strokeStyle = 'rgba(105, 22, 27, .5)';
+        context.lineWidth = 10;
+        context.beginPath();
+        context.ellipse(540, 596, 218, 182, -0.03, 0, Math.PI * 2);
+        context.stroke();
+
+        try {
+            const image = await this.loadCardImage(pattern.cakeImage);
+            context.save();
+            context.globalAlpha = .58;
+            context.filter = 'sepia(1) saturate(2.2) brightness(.48)';
+            context.drawImage(image, 390, 445, 300, 300);
+            context.restore();
+        } catch (error) {
+            console.warn('祝福卡花紋載入失敗', error);
+        }
+
+        context.fillStyle = '#fff4d2';
+        context.font = '900 82px "Noto Serif TC", serif';
+        context.fillText(pattern.name, 540, 985);
+        context.fillStyle = '#f1c65c';
+        context.font = '700 47px "Noto Sans TC", sans-serif';
+        context.fillText(pattern.meaning, 540, 1065);
+        context.fillStyle = '#f7edda';
+        context.font = '400 35px "Noto Sans TC", sans-serif';
+        context.fillText(pattern.blessing, 540, 1135);
+        context.fillStyle = '#b9c9bd';
+        context.font = '400 26px "Noto Sans TC", sans-serif';
+        context.fillText('Museum Web Game・紅粿祝福卡', 540, 1245);
+
+        return new Promise((resolve, reject) => canvas.toBlob((blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('無法產生卡片圖片'));
+        }, 'image/png'));
+    },
+
+    loadCardImage(src) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = src;
+        });
+    },
+
+    async downloadBlessingCard(pattern) {
+        this.setShareFeedback('正在製作卡片…');
+        try {
+            const blob = await this.createBlessingCard(pattern);
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `紅粿祝福卡-${pattern.name}.png`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            this.setShareFeedback('卡片已下載，可以收藏或傳給朋友。');
+        } catch (error) {
+            console.error(error);
+            this.setShareFeedback('卡片製作失敗，請再試一次。');
+        }
+    },
+
+    async shareBlessingCard(pattern) {
+        this.setShareFeedback('正在製作分享卡…');
+        try {
+            const blob = await this.createBlessingCard(pattern);
+            const file = new File([blob], `紅粿祝福卡-${pattern.name}.png`, { type: 'image/png' });
+            if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+                await navigator.share({ title: `${pattern.name}紅粿祝福卡`, text: `${pattern.meaning}｜${pattern.blessing}`, files: [file] });
+                this.setShareFeedback('祝福卡已分享。');
+                return;
+            }
+            await this.downloadBlessingCard(pattern);
+            this.setShareFeedback('此裝置不支援分享面板，已改為下載卡片。');
+        } catch (error) {
+            if (error?.name === 'AbortError') {
+                this.setShareFeedback('已取消分享。');
+                return;
+            }
+            console.error(error);
+            this.setShareFeedback('目前無法分享，請改用下載卡片。');
+        }
+    },
+
+    setShareFeedback(message) {
+        const feedback = this.container?.querySelector('[data-share-feedback]');
+        if (feedback) feedback.textContent = message;
     },
 
     showDataError() {
