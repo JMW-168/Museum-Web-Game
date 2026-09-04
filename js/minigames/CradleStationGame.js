@@ -19,27 +19,9 @@ const CradleStationGame = {
         this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
         if (window.StationDemoGame) window.StationDemoGame.stop();
         showScene('game-container');
-        this.hideLegacyGameUi();
+        if (window.AudioManager) AudioManager.stopBGM();
         this.createShell();
         this.showIntro();
-    },
-
-    hideLegacyGameUi() {
-        const canvas = document.getElementById('gameCanvas');
-        const dialog = document.getElementById('dialog-box');
-        const options = document.getElementById('options-container');
-        const character = document.getElementById('character-image');
-        const backBtn = document.querySelector('#game-container .back-btn');
-        if (canvas) {
-            canvas.style.display = 'none';
-            canvas.classList.remove('minigame-active');
-        }
-        if (dialog) dialog.style.display = 'none';
-        if (options) options.innerHTML = '';
-        if (character) character.style.display = 'none';
-        if (backBtn) backBtn.style.display = 'none';
-        if (window.DialogueSystem) DialogueSystem.endDialogue(true);
-        if (window.AudioManager) AudioManager.stopBGM();
     },
 
     createShell() {

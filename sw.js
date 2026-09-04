@@ -1,39 +1,21 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v38';
+const CACHE_NAME = 'museum-web-game-v39';
 
 // 只預快取核心殼層；大型圖片改由 fetch 時漸進快取，避免手機更新時卡在 loading。
 const urlsToCache = [
   './',
   'index.html',
   'style.css',
-  'css/defense-game.css',
-  'css/memory-game.css',
-  'css/catch-game.css',
   'css/station-demo-game.css',
   'css/cake-station-game.css',
   'js/main.js',
   'js/core/LoadingManager.js',
-  'js/core/GameEngine.js',
   'js/core/AudioManager.js',
   'js/core/SceneManager.js',
-  'js/data/minigameAssets.js',
-  'js/core/Typewriter.js',
-  'js/core/DialogueSystem.js',
-  'js/core/GallerySystem.js',
-  'js/core/CollectionSystem.js',
-  'js/data/chapter1_teen.js',
-  'js/data/chapter1_child.js',
-  'js/data/chapter2_teen.js',
-  'js/data/chapter2_child.js',
-  'js/data/quizQuestions.js',
   'js/data/stationCombinedStory.js',
   'js/data/station34CombinedStory.js',
   'js/data/cakePatterns.js',
-  'js/minigames/DefenseLevels.js',
-  'js/minigames/DefenseGameV2.js',
-  'js/minigames/MemoryGameV2.js',
-  'js/minigames/CatchGame.js',
   'js/minigames/CradleStationGame.js',
   'js/minigames/CakeStationGame.js',
   'js/minigames/Station34CombinedGame.js',

@@ -2,7 +2,7 @@
 
 以地方文化、傳統生活與博物館敘事為主題的瀏覽器互動遊戲原型，支援桌面與行動裝置操作。
 
-目前可分別遊玩四個站點關卡，也可從「關卡一二合併版」或「三四關合併版」依序體驗兩段劇情；專案另保留章節劇情、問答、記憶翻牌、防禦與接物等系統，供後續整合正式展覽內容。
+目前可分別遊玩四個站點關卡，也可從「關卡一二合併版」或「三四關合併版」依序體驗兩段劇情。執行期只載入這六個入口需要的程式與素材。
 
 ## 目前可用狀態
 
@@ -20,7 +20,7 @@
 - 支援滑鼠、觸控操作、操作音效與 16:9 響應式遊戲畫面。
 - 提供 Web App Manifest 與 Service Worker，可在支援的瀏覽器安裝為 PWA。
 
-本專案仍屬可玩原型；部分角色、場景、故事與舊版小遊戲素材仍會持續整理或替換。
+本專案仍屬可玩原型。Issue #25 的舊內容清理已完成實作與內部回歸，尚待使用者最終驗收；第三、四關的正式場景與音效則由 Issue #20 持續追蹤。
 
 ## 線上遊玩
 
@@ -45,7 +45,7 @@ python -m http.server 8765
 
 請務必在含有 `index.html` 的專案根目錄執行伺服器。如果瀏覽器顯示的是資料夾清單，代表伺服器從上一層目錄啟動；請停止伺服器、進入專案根目錄後重新執行指令。
 
-首次載入需要網路連線取得 Swiper 與 ZingTouch 的 CDN 資源。主要遊戲圖片、音效與字型則存放於 repo 內。
+首次載入會連線取得 Google Fonts；主要遊戲圖片、音效與注音字型皆存放於 repo 內。
 
 ## 操作方式
 
@@ -108,11 +108,10 @@ python -m http.server 8765
 
 ### 共用系統
 
-- 章節式對話與選項。
-- 一般版與小朋友版資料。
-- 問答題庫、相簿與收藏系統。
-- 記憶翻牌、防禦、付款、拖曳互動與接物等小遊戲模組。
-- 資源預載、音效管理、錯誤記錄與場景切換。
+- 一般版與小朋友版模式選擇。
+- 兩個合併版各自保留逐字劇情效果，不依賴舊對話系統。
+- 資源載入、音效管理、錯誤記錄與場景切換。
+- Web App Manifest、Service Worker 與安裝提示。
 
 ## 專案結構
 
@@ -122,9 +121,9 @@ python -m http.server 8765
 ├─ style.css                  # 全站與主要場景樣式
 ├─ css/                       # 各小遊戲樣式
 ├─ js/
-│  ├─ core/                   # 場景、對話、音效、載入與狀態系統
-│  ├─ data/                   # 劇情、題庫與素材清單
-│  └─ minigames/              # 各小遊戲模組
+│  ├─ core/                   # 場景、音效、載入與錯誤記錄
+│  ├─ data/                   # 兩個合併劇情與粿印花紋資料
+│  └─ minigames/              # 四站玩法與兩個合併流程
 ├─ assets/                    # 圖片、音效、字型與圖示
 ├─ manifest.json              # PWA Manifest
 └─ sw.js                      # Service Worker 與快取版本
@@ -139,7 +138,7 @@ node --check js/minigames/StationDemoGame.js
 node --check js/minigames/CradleStationGame.js
 node --check js/minigames/CakeStationGame.js
 node --check js/minigames/Station34CombinedGame.js
-node --check js/data/minigameAssets.js
+node --check js/main.js
 node scripts/test-combined34-hooks.js
 git diff --check
 ```
@@ -184,6 +183,9 @@ Service Worker 更新後若仍看到舊畫面，可使用 `Ctrl + Shift + R` 強
 ## 後續方向
 
 - 持續替換正式博物館角色、場景、展品與故事內容。
-- 補齊其他關卡入口與既有小遊戲整合。
 - 增加跨裝置與觸控操作測試。
 - 建立可重複執行的瀏覽器自動化測試。
+
+## 清理紀錄
+
+舊章節、問答、圖鑑、收藏、防禦、翻牌、付款、接物及其無入口素材已自目前工作分支移除；此變更尚待最終驗收與合併。盤點依據與保留範圍請見 [Issue #25 清理紀錄](docs/issue-25-legacy-cleanup.md)。
