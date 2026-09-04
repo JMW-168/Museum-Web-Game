@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=38">
     <link rel="stylesheet" href="css/defense-game.css">
     <link rel="stylesheet" href="css/memory-game.css">
     <link rel="stylesheet" href="css/interact-system.css">
@@ -60,28 +60,16 @@
         <div id="start-menu" class="scene">
             <!-- 背景由 CSS 控制，這裡放置 UI 元素 -->
             <div class="title-container">
-                <img src="assets/images/title/title.png" alt="標題" class="start-title-img">
+                <img src="assets/images/title/title-20260904.png" alt="森美蘭客家文化博物館・傳統日常再現" class="start-title-img">
             </div>
             
             <div class="menu-buttons">
-                <div id="startBtn" class="img-btn">
-                    <img src="assets/images/title/enter.png" alt="進入市場">
-                </div>
-                <div id="exitBtn" class="img-btn">
-                    <img src="assets/images/title/leave.png" alt="離開市場">
-                </div>
+                <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button">搭乘時光機</button>
+                <button id="exitBtn" class="time-machine-btn" type="button">回到現實</button>
             </div>
         </div>
 
         <button id="install-app-btn" class="install-app-btn" type="button" hidden>安裝</button>
-
-        <div id="video-scene" class="scene" style="display:none;">
-            <video id="intro-video" width="1280" height="720" style="width:100%; height:100%; object-fit:cover;" playsinline>
-                <source src="assets/videos/intro.mp4" type="video/mp4">
-                您的瀏覽器不支援影片播放。
-            </video>
-            <button id="skip-video-btn" class="skip-btn">跳過</button>
-        </div>
 
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
@@ -182,7 +170,6 @@
     <script src="js/core/DialogueSystem.js"></script>
     
     <!-- 4. 對話資料 -->
-    <script src="js/data/intro.js"></script>
     <!-- 青少年版（一般模式） -->
     <script src="js/data/chapter1_teen.js"></script>
     <script src="js/data/chapter2_teen.js"></script>
@@ -219,13 +206,13 @@
     <script src="js/core/CollectionSystem.js"></script>
     
     <!-- 7. 主入口 - 最後載入 -->
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=38"></script>
     
     <!-- ========== Service Worker 註冊（PWA） ========== -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=38').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);
