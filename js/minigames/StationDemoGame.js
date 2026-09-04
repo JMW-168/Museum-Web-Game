@@ -1767,7 +1767,12 @@ function startStationDemo(stationId) {
         CradleStationGame.start();
         return;
     }
+    if (stationId === 'cake' && window.CakeStationGame) {
+        CakeStationGame.start();
+        return;
+    }
     if (window.CradleStationGame) CradleStationGame.stop();
+    if (window.CakeStationGame) CakeStationGame.stop();
     StationDemoGame.start(stationId);
 }
 

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+  <title id="title">魚紋</title>
+  <g fill="none" stroke="#4b2b20" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 101c34-47 84-54 126-8-37 52-93 52-126 8Z"/>
+    <path d="m35 101-22-35c29 1 43 12 50 28m-28 7-22 35c29-1 43-12 50-28"/>
+    <circle cx="132" cy="90" r="5" fill="#4b2b20"/>
+    <path d="M84 61c10 18 10 58 0 78m31-73c8 16 8 50 0 67M64 81h62m-66 39h68"/>
+  </g>
+</svg>
