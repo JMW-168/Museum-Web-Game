@@ -8,9 +8,15 @@ const CradleStationGame = {
     cycleMs: 2400,
     targetSeconds: 10,
     assistAfterMs: 25000,
+    mode: 'standalone',
+    onComplete: null,
+    onExit: null,
 
-    start() {
+    start(options = {}) {
         this.stop();
+        this.mode = options.mode || 'standalone';
+        this.onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
+        this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
         if (window.StationDemoGame) window.StationDemoGame.stop();
         showScene('game-container');
         this.hideLegacyGameUi();
@@ -282,6 +288,12 @@ const CradleStationGame = {
         this.updateAudioStage('asleep');
         const assisted = this.state.assisted;
         this.removeListeners();
+        const result = { assisted };
+        window.dispatchEvent(new CustomEvent('cradle-station-complete', { detail: result }));
+        if (this.onComplete) {
+            this.onComplete(result);
+            return;
+        }
         this.container.innerHTML = `
             <section class="station-panel station-result-panel cradle-result-panel has-guide">
                 <div class="station-kicker-line">關卡三 / 站點 3</div>
@@ -356,8 +368,10 @@ const CradleStationGame = {
     },
 
     close() {
+        const onExit = this.onExit;
         this.stop();
-        showScene('level-select');
+        if (onExit) onExit();
+        else showScene('level-select');
     },
 
     stop() {
@@ -372,6 +386,9 @@ const CradleStationGame = {
         if (this.container?.parentNode) this.container.remove();
         this.container = null;
         this.state = null;
+        this.mode = 'standalone';
+        this.onComplete = null;
+        this.onExit = null;
     }
 };
 

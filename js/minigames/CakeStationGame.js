@@ -5,9 +5,15 @@ const CakeStationGame = {
     timers: [],
     holdAnimationId: null,
     lastResult: null,
+    mode: 'standalone',
+    onComplete: null,
+    onExit: null,
 
-    start() {
+    start(options = {}) {
         this.stop();
+        this.mode = options.mode || 'standalone';
+        this.onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
+        this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
         if (window.StationDemoGame) StationDemoGame.stop();
         showScene('game-container');
         this.hideLegacyGameUi();
@@ -598,6 +604,31 @@ const CakeStationGame = {
         this.lastResult = { selectedPatternId: pattern.id, pattern: { ...pattern } };
         window.selectedPatternId = pattern.id;
         window.dispatchEvent(new CustomEvent('cake-station-complete', { detail: this.lastResult }));
+        if (this.onComplete) {
+            this.onComplete(this.getResult());
+            return;
+        }
+        this.showResult(pattern);
+    },
+
+    showCompletedResult(pattern, options = {}) {
+        if (!pattern) return;
+        this.stop();
+        this.mode = 'combined34-result';
+        this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
+        showScene('game-container');
+        this.hideLegacyGameUi();
+        this.createShell();
+        this.state = {
+            selectedPatternId: pattern.id,
+            makeStep: 'dough',
+            doughPositioned: false,
+            moldFaceIndex: 0,
+            moldPositioned: false,
+            holding: false,
+            holdStartedAt: 0
+        };
+        this.lastResult = { selectedPatternId: pattern.id, pattern: { ...pattern } };
         this.showResult(pattern);
     },
 
@@ -813,8 +844,10 @@ const CakeStationGame = {
     },
 
     close() {
+        const onExit = this.onExit;
         this.stop();
-        showScene('level-select');
+        if (onExit) onExit();
+        else showScene('level-select');
     },
 
     stop() {
@@ -827,6 +860,9 @@ const CakeStationGame = {
         document.body.classList.remove('cake-station-active');
         this.container = null;
         this.state = null;
+        this.mode = 'standalone';
+        this.onComplete = null;
+        this.onExit = null;
     }
 };
 
