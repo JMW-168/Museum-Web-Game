@@ -16,7 +16,7 @@ const CakeStationGame = {
         this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
         if (window.StationDemoGame) StationDemoGame.stop();
         showScene('game-container');
-        this.hideLegacyGameUi();
+        if (window.AudioManager) AudioManager.stopBGM();
         this.createShell();
         this.state = {
             introIndex: 0,
@@ -38,24 +38,6 @@ const CakeStationGame = {
 
     get patterns() {
         return Array.isArray(window.CakePatterns) ? window.CakePatterns : [];
-    },
-
-    hideLegacyGameUi() {
-        const canvas = document.getElementById('gameCanvas');
-        const dialog = document.getElementById('dialog-box');
-        const options = document.getElementById('options-container');
-        const character = document.getElementById('character-image');
-        const backBtn = document.querySelector('#game-container .back-btn');
-        if (canvas) {
-            canvas.style.display = 'none';
-            canvas.classList.remove('minigame-active');
-        }
-        if (dialog) dialog.style.display = 'none';
-        if (options) options.innerHTML = '';
-        if (character) character.style.display = 'none';
-        if (backBtn) backBtn.style.display = 'none';
-        if (window.DialogueSystem) DialogueSystem.endDialogue(true);
-        if (window.AudioManager) AudioManager.stopBGM();
     },
 
     createShell() {

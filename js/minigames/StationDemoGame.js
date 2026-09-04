@@ -29,7 +29,7 @@ const StationDemoGame = {
         'assets/images/station-tea/chop-tool-sprites-v2.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png',
-        'assets/images/defense/level1/stone.png'
+        'assets/images/station-tea/stone.png'
     ],
     fireImageUrls: [
         'assets/images/station-fire/background.webp',
@@ -83,7 +83,7 @@ const StationDemoGame = {
             this.mode = 'combined';
             this.station = this.stations.fire;
             showScene('game-container');
-            this.hideLegacyGameUi();
+            if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
             this.createShell('fire');
             this.showCombinedDialogue('opening', () => this.startCombinedFire());
             return;
@@ -94,33 +94,9 @@ const StationDemoGame = {
         if (!this.station) return;
 
         showScene('game-container');
-        this.hideLegacyGameUi();
+        if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
         this.createShell(stationId);
         this.showIntro(stationId);
-    },
-
-    hideLegacyGameUi() {
-        const canvas = document.getElementById('gameCanvas');
-        const dialog = document.getElementById('dialog-box');
-        const options = document.getElementById('options-container');
-        const character = document.getElementById('character-image');
-        const backBtn = document.querySelector('#game-container .back-btn');
-
-        if (canvas) {
-            canvas.style.display = 'none';
-            canvas.classList.remove('minigame-active');
-        }
-        if (dialog) dialog.style.display = 'none';
-        if (options) options.innerHTML = '';
-        if (character) character.style.display = 'none';
-        if (backBtn) backBtn.style.display = 'none';
-
-        if (typeof DialogueSystem !== 'undefined') {
-            DialogueSystem.endDialogue(true);
-        }
-        if (typeof AudioManager !== 'undefined') {
-            AudioManager.stopBGM();
-        }
     },
 
     createShell(stationId) {
@@ -1167,7 +1143,7 @@ const StationDemoGame = {
         if (!this.state) return null;
         const decoys = [
             { id: 'wood-small', name: '小柴', image: 'assets/images/station-fire/wood-small.png' },
-            { id: 'stone', name: '石頭', image: 'assets/images/defense/level1/stone.png' },
+            { id: 'stone', name: '石頭', image: 'assets/images/station-tea/stone.png' },
             { id: 'wood-large', name: '大柴', image: 'assets/images/station-fire/wood-large.png' }
         ];
         const item = decoys[this.state.teaDecoySpawnCount++ % decoys.length];

@@ -14,17 +14,9 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=38">
-    <link rel="stylesheet" href="css/defense-game.css">
-    <link rel="stylesheet" href="css/memory-game.css">
-    <link rel="stylesheet" href="css/interact-system.css">
-    <link rel="stylesheet" href="css/catch-game.css">
+    <link rel="stylesheet" href="style.css?v=39">
     <link rel="stylesheet" href="css/station-demo-game.css">
-    <link rel="stylesheet" href="css/cake-station-game.css?v=35">
-
-    <!-- Swiper.js CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="css/cake-station-game.css?v=39">
 </head>
 <body>
     <div id="game-wrapper">
@@ -109,30 +101,8 @@
             <button class="back-btn" onclick="showScene('start-menu')">返回</button>
         </div>
 
-        <!-- 遊戲主容器 -->
-        <div id="game-container" class="scene" style="display:none;">
-            <!-- 背景圖層 -->
-            <div id="game-background"></div>
-            
-            <!-- 角色圖片層 -->
-            <div id="character-container">
-                <img id="character-image" src="" alt="角色" style="display:none;">
-            </div>
-            
-            <!-- 遊戲畫布（用小遊戲時顯示） -->
-            <canvas id="gameCanvas" width="1280" height="720" style="display:none;"></canvas>
-            
-            <!-- 對話框 -->
-            <div id="dialog-box" style="display:none;">
-                <div id="npc-name"></div>
-                <div id="dialogue-text"></div>
-            </div>
-            
-            <!-- 選項容器 -->
-            <div id="options-container"></div>
-
-            <button class="back-btn" onclick="showScene('level-select')" style="display:none;">返回選單</button>
-        </div>
+        <!-- 目前站點會建立自己的互動圖層；此場景只負責隱藏入口畫面。 -->
+        <div id="game-container" class="scene" style="display:none;"></div>
         
         <!-- 音效控制（隱藏） -->
         <audio id="bg-music" loop></audio>
@@ -151,68 +121,32 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zingtouch/1.0.6/zingtouch.min.js"></script>
-    
-    <!-- ========== 核心引擎 - 注意載入順序 ========== -->
-    <!-- 1. 最基本的工具 -->
+    <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js"></script>
     <script src="js/core/ErrorReporter.js"></script>
-    <script src="js/data/minigameAssets.js"></script>
     <script src="js/core/LoadingManager.js"></script>
-    <script src="js/core/GameEngine.js"></script>
     <script src="js/core/AudioManager.js"></script>
     <script src="js/core/SceneManager.js"></script>
-    
-    <!-- 2. Typewriter 要在 DialogueSystem 之前 -->
-    <script src="js/core/Typewriter.js"></script>
-    
-    <!-- 3. DialogueSystem 依賴 Typewriter -->
-    <script src="js/core/DialogueSystem.js"></script>
-    
-    <!-- 4. 對話資料 -->
-    <!-- 青少年版（一般模式） -->
-    <script src="js/data/chapter1_teen.js"></script>
-    <script src="js/data/chapter2_teen.js"></script>
-    <script src="js/data/chapter3_teen.js"></script>
-    <!-- 小朋友版 -->
-    <script src="js/data/chapter1_child.js"></script>
-    <script src="js/data/chapter2_child.js"></script>
-    <script src="js/data/chapter3_child.js"></script>
-    <!-- 問答題庫 -->
-    <script src="js/data/quizQuestions.js"></script>
-    <script src="js/data/stationCombinedStory.js"></script>
-    <script src="js/data/station34CombinedStory.js?v=37"></script>
-    <script src="js/data/cakePatterns.js?v=35"></script>
-    
-    <!-- 5. 小遊戲 -->
-    <!-- <script src="js/minigames/PuzzleGame.js"></script> -->
-    <!-- <script src="js/minigames/FindingGame.js"></script> -->
-    <script src="js/minigames/DefenseLevels.js"></script>     <!-- 先載入關卡設定 -->
-    <script src="js/minigames/defense/DefenseTrailRender.js"></script>
-    <script src="js/minigames/defense/DefenseInput.js"></script>
-    <script src="js/minigames/defense/DefenseAttackRunner.js"></script>
-    <script src="js/minigames/DefenseGameV2.js"></script>
-    <script src="js/minigames/MemoryGameV2.js"></script>
-    <script src="js/minigames/InteractSystem.js"></script>
-    <script src="js/minigames/PaymentSystem.js"></script>
-    <script src="js/minigames/CatchGame.js"></script>
-    <script src="js/minigames/CradleStationGame.js"></script>
-    <script src="js/minigames/CakeStationGame.js?v=35"></script>
-    <script src="js/minigames/Station34CombinedGame.js?v=37"></script>
-    <script src="js/minigames/StationDemoGame.js"></script>
 
-    <!-- 6. 圖文展示系統、蒐集物品系統 -->
-    <script src="js/core/GallerySystem.js"></script>
-    <script src="js/core/CollectionSystem.js"></script>
+    <!-- ========== 現行站點資料 ========== -->
+    <script src="js/data/stationCombinedStory.js"></script>
+    <script src="js/data/station34CombinedStory.js?v=39"></script>
+    <script src="js/data/cakePatterns.js?v=39"></script>
     
-    <!-- 7. 主入口 - 最後載入 -->
-    <script src="js/main.js?v=38"></script>
+    <!-- ========== 現行站點玩法 ========== -->
+    <script src="js/minigames/CradleStationGame.js"></script>
+    <script src="js/minigames/CakeStationGame.js?v=39"></script>
+    <script src="js/minigames/Station34CombinedGame.js?v=39"></script>
+    <script src="js/minigames/StationDemoGame.js"></script>
+    
+    <!-- ========== 主入口（最後載入） ========== -->
+    <script src="js/main.js?v=39"></script>
     
     <!-- ========== Service Worker 註冊（PWA） ========== -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=38').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=39').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);

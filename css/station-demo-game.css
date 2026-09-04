@@ -8,7 +8,7 @@
     color: #fff;
     background:
         linear-gradient(rgba(7, 14, 16, 0.84), rgba(7, 14, 16, 0.92)),
-        url('../assets/images/intro/封面.jpg') center / cover no-repeat;
+        url('../assets/images/demo/entry-background.webp') center / cover no-repeat;
 }
 
 .station-demo-fire {
