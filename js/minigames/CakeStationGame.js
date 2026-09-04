@@ -652,7 +652,7 @@ const CakeStationGame = {
         context.fillStyle = '#e8ca78';
         context.font = '700 34px "Noto Sans TC", sans-serif';
         context.textAlign = 'center';
-        context.fillText('我在客家博物館想起您', 540, 125);
+        context.fillText('我在森美蘭客家博物館想起您', 540, 125);
 
         context.save();
         context.translate(540, 575);
