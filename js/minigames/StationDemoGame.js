@@ -1763,6 +1763,11 @@ const StationDemoGame = {
 };
 
 function startStationDemo(stationId) {
+    if (stationId === 'cradle' && window.CradleStationGame) {
+        CradleStationGame.start();
+        return;
+    }
+    if (window.CradleStationGame) CradleStationGame.stop();
     StationDemoGame.start(stationId);
 }
 
