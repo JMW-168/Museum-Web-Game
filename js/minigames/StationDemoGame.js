@@ -1763,11 +1763,18 @@ const StationDemoGame = {
 };
 
 function startStationDemo(stationId) {
+    if (stationId === 'combined34' && window.Station34CombinedGame) {
+        Station34CombinedGame.start();
+        return;
+    }
+    if (window.Station34CombinedGame) Station34CombinedGame.stop();
     if (stationId === 'cradle' && window.CradleStationGame) {
+        if (window.CakeStationGame) CakeStationGame.stop();
         CradleStationGame.start();
         return;
     }
     if (stationId === 'cake' && window.CakeStationGame) {
+        if (window.CradleStationGame) CradleStationGame.stop();
         CakeStationGame.start();
         return;
     }
