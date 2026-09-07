@@ -1,6 +1,6 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v43';
+const CACHE_NAME = 'museum-web-game-v44';
 
 // 只預快取核心殼層；大型圖片改由 fetch 時漸進快取，避免手機更新時卡在 loading。
 const urlsToCache = [
@@ -10,6 +10,9 @@ const urlsToCache = [
   'css/station-demo-game.css',
   'css/cake-station-game.css',
   'js/main.js',
+  'js/i18n/i18n.js',
+  'js/i18n/zh-Hant.js',
+  'js/i18n/zh-Hans.js',
   'js/core/LoadingManager.js',
   'js/core/AudioManager.js',
   'js/core/SceneManager.js',

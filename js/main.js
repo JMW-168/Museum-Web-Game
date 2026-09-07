@@ -2,6 +2,39 @@
 let gameMode = null;
 let deferredInstallPrompt = null;
 
+// ========== 多語系 ==========
+// 簡體字型只在首次切到簡體時載入，避免繁體使用者付出多餘請求。
+function ensureLocaleFont(locale) {
+    if (locale !== 'zh-Hans' || document.getElementById('font-noto-serif-sc')) return;
+    const link = document.createElement('link');
+    link.id = 'font-noto-serif-sc';
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap';
+    document.head.appendChild(link);
+}
+
+function applyLocale(locale) {
+    document.documentElement.setAttribute('lang', locale);
+    ensureLocaleFont(locale);
+    if (window.I18n) I18n.applyStatic();
+    document.querySelectorAll('.lang-btn[data-lang]').forEach((button) => {
+        button.classList.toggle('is-active', button.dataset.lang === locale);
+        button.setAttribute('aria-pressed', String(button.dataset.lang === locale));
+    });
+}
+
+function setupLanguageSwitch() {
+    if (!window.I18n) return;
+    I18n.onChange(applyLocale);
+    document.querySelectorAll('.lang-btn[data-lang]').forEach((button) => {
+        button.addEventListener('click', () => {
+            window.AudioManager?.playSFX('assets/sounds/click.mp3');
+            I18n.setLocale(button.dataset.lang);
+        });
+    });
+    applyLocale(I18n.getLocale());
+}
+
 function updateAppViewportHeight() {
     const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
@@ -92,7 +125,7 @@ function bindStationButtons() {
                 startStationDemo(button.dataset.stationDemo);
                 return;
             }
-            alert('遊戲尚未載入，請重新整理頁面。');
+            alert(window.t ? t('common.notLoaded') : '遊戲尚未載入，請重新整理頁面。');
         });
     });
 }
@@ -102,7 +135,7 @@ function showExitConfirm(callback) {
     const yesButton = document.getElementById('exit-confirm-yes');
     const noButton = document.getElementById('exit-confirm-no');
     if (!dialog || !yesButton || !noButton) {
-        callback?.(confirm('確定要離開遊戲嗎？'));
+        callback?.(confirm(window.t ? t('common.confirmExit') : '確定要離開遊戲嗎？'));
         return;
     }
 
@@ -118,6 +151,8 @@ function showExitConfirm(callback) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     updateAppViewportHeight();
+    window.I18n?.init();
+    setupLanguageSwitch();
     setupInstallButton();
     window.AudioManager?.init();
     window.SceneManager?.init();

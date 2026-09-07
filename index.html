@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=40">
+    <link rel="stylesheet" href="style.css?v=44">
     <link rel="stylesheet" href="css/station-demo-game.css?v=43">
     <link rel="stylesheet" href="css/cake-station-game.css?v=40">
 </head>
@@ -24,81 +24,86 @@
         <div id="loading-screen" style="display: none;">
             <div class="loading-content">
                 <div class="spinner"></div>
-                <p>資源加載中... <span id="loading-progress">0</span>%</p>
+                <p><span data-i18n="loading.text">資源加載中...</span> <span id="loading-progress">0</span>%</p>
             </div>
         </div>
 
         <!-- 新增：年齡選擇視窗 - 層級比標題畫面高，但比旋轉提示低 -->
         <div id="age-select-dialog" class="age-dialog">
             <div class="age-dialog-content">
-                <h2>選擇遊戲模式</h2>
-                <p class="age-subtitle">請選擇適合您的版本</p>
+                <h2 data-i18n="age.title">選擇遊戲模式</h2>
+                <p class="age-subtitle" data-i18n="age.subtitle">請選擇適合您的版本</p>
                 <div class="age-buttons">
                     <button id="age-child" class="age-btn child-btn">
                         <span class="age-icon">🧒</span>
-                        <span class="age-text">小朋友版</span>
-                        <span class="age-desc">附注音・簡單引導</span>
+                        <span class="age-text" data-i18n="age.child.text">小朋友版</span>
+                        <span class="age-desc" data-i18n="age.child.desc">附注音・簡單引導</span>
                     </button>
                     <button id="age-adult" class="age-btn adult-btn">
                         <span class="age-icon">👤</span>
-                        <span class="age-text">一般版</span>
-                        <span class="age-desc">標準文字・完整劇情</span>
+                        <span class="age-text" data-i18n="age.adult.text">一般版</span>
+                        <span class="age-desc" data-i18n="age.adult.desc">標準文字・完整劇情</span>
                     </button>
-                </div>  
+                </div>
             </div>
         </div>
 
         <!-- 起始頁面 -->
         <div id="start-menu" class="scene">
             <!-- 背景由 CSS 控制，這裡放置 UI 元素 -->
-            <div class="title-container">
-                <img src="assets/images/title/title-20260904.png" alt="森美蘭客家文化博物館・傳統日常再現" class="start-title-img">
+            <div class="lang-switch" role="group" aria-label="語言 Language">
+                <button type="button" class="lang-btn" data-lang="zh-Hant" lang="zh-Hant">繁體中文</button>
+                <button type="button" class="lang-btn" data-lang="zh-Hans" lang="zh-Hans">简体中文</button>
             </div>
-            
+
+            <div class="title-container">
+                <img src="assets/images/title/title-20260904.png" data-i18n-attr="alt:title.alt" alt="森美蘭客家文化博物館・傳統日常再現" class="start-title-img">
+            </div>
+
             <div class="menu-buttons">
-                <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button">搭乘時光機</button>
-                <button id="exitBtn" class="time-machine-btn" type="button">回到現實</button>
+                <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="menu.start">搭乘時光機</button>
+                <button id="exitBtn" class="time-machine-btn" type="button" data-i18n="menu.exit">回到現實</button>
             </div>
         </div>
 
-        <button id="install-app-btn" class="install-app-btn" type="button" hidden>安裝</button>
+        <button id="install-app-btn" class="install-app-btn" type="button" hidden data-i18n="install.label">安裝</button>
 
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
-            <h2>選擇遊戲入口</h2>
+            <h2 data-i18n="level.title">選擇遊戲入口</h2>
             <div class="level-buttons station-entry-list has-cake-station">
                 <button id="station-fire-btn" class="station-entry" type="button" data-station-demo="fire">
-                    <span class="station-kicker">關卡一 / 站點 1</span>
-                    <span class="station-title">灶台生火</span>
-                    <span class="station-desc">依節拍加入柴火，控制火候條，認識葉家勤儉與生火日常。</span>
+                    <span class="station-kicker" data-i18n="level.fire.kicker">關卡一 / 站點 1</span>
+                    <span class="station-title" data-i18n="level.fire.title">灶台生火</span>
+                    <span class="station-desc" data-i18n="level.fire.desc">依節拍加入柴火，控制火候條，認識葉家勤儉與生火日常。</span>
                 </button>
                 <button id="station-tea-btn" class="station-entry" type="button" data-station-demo="tea">
-                    <span class="station-kicker">關卡二 / 站點 2</span>
-                    <span class="station-title">擂茶料理</span>
-                    <span class="station-desc">從流動隊列依序拖曳食材，避開柴火與石頭，完成研磨與切料。</span>
+                    <span class="station-kicker" data-i18n="level.tea.kicker">關卡二 / 站點 2</span>
+                    <span class="station-title" data-i18n="level.tea.title">擂茶料理</span>
+                    <span class="station-desc" data-i18n="level.tea.desc">從流動隊列依序拖曳食材，避開柴火與石頭，完成研磨與切料。</span>
                 </button>
                 <button id="station-cradle-btn" class="station-entry" type="button" data-station-demo="cradle">
-                    <span class="station-kicker">關卡三 / 站點 3</span>
-                    <span class="station-title">搖籃哄睡</span>
-                    <span class="station-desc">跟隨左右導引輕搖搖籃，慢慢累積穩定度，讓嬰孩安心睡著。</span>
+                    <span class="station-kicker" data-i18n="level.cradle.kicker">關卡三 / 站點 3</span>
+                    <span class="station-title" data-i18n="level.cradle.title">搖籃哄睡</span>
+                    <span class="station-desc" data-i18n="level.cradle.desc">跟隨左右導引輕搖搖籃，慢慢累積穩定度，讓嬰孩安心睡著。</span>
                 </button>
                 <button id="station-cake-btn" class="station-entry" type="button" data-station-demo="cake">
-                    <span class="station-kicker">關卡四 / 站點 4</span>
-                    <span class="station-title">粿印製作</span>
-                    <span class="station-desc">認識龜、桃、魚與連錢紋，完成拖曳配對後用四面粿印棒壓出紅粿。</span>
+                    <span class="station-kicker" data-i18n="level.cake.kicker">關卡四 / 站點 4</span>
+                    <span class="station-title" data-i18n="level.cake.title">粿印製作</span>
+                    <span class="station-desc" data-i18n="level.cake.desc">認識龜、桃、魚與連錢紋，完成拖曳配對後用四面粿印棒壓出紅粿。</span>
                 </button>
                 <button id="station-combined-btn" class="station-entry station-entry-combined" type="button" data-station-demo="combined">
-                    <span class="station-kicker">劇情體驗</span>
-                    <span class="station-title">關卡一二合併版</span>
-                    <span class="station-desc">跟著阿嬤與阿公的故事，依序完成灶台生火與擂茶料理。</span>
+                    <span class="station-kicker" data-i18n="level.combined12.kicker">劇情體驗</span>
+                    <span class="station-title" data-i18n="level.combined12.title">關卡一二合併版</span>
+                    <span class="station-desc" data-i18n="level.combined12.desc">跟著阿嬤與阿公的故事，依序完成灶台生火與擂茶料理。</span>
                 </button>
                 <button id="station-combined-34-btn" class="station-entry station-entry-combined" type="button" data-station-demo="combined34">
-                    <span class="station-kicker">劇情體驗</span>
-                    <span class="station-title">三四關合併版</span>
-                    <span class="station-desc">從搖籃裡的牽掛走到粿印上的祝福，依序完成搖籃哄睡與粿印製作。</span>
+                    <span class="station-kicker" data-i18n="level.combined34.kicker">劇情體驗</span>
+                    <span class="station-title" data-i18n="level.combined34.title">三四關合併版</span>
+                    <span class="station-desc" data-i18n="level.combined34.desc">從搖籃裡的牽掛走到粿印上的祝福，依序完成搖籃哄睡與粿印製作。</span>
                 </button>
             </div>
-            <button class="back-btn" onclick="showScene('start-menu')">返回</button>
+            <button class="back-btn" onclick="showScene('start-menu')" data-i18n="level.back">返回</button>
         </div>
 
         <!-- 目前站點會建立自己的互動圖層；此場景只負責隱藏入口畫面。 -->
@@ -111,15 +116,20 @@
         <!-- 退出確認彈窗 -->
         <div id="exit-confirm-dialog" class="confirm-dialog" style="display: none;">
             <div class="confirm-dialog-content">
-                <p>你確定要退出嗎？</p>
-                <p class="warning-text">任何未儲存的進度都會遺失</p>
+                <p data-i18n="exit.title">你確定要退出嗎？</p>
+                <p class="warning-text" data-i18n="exit.warning">任何未儲存的進度都會遺失</p>
                 <div class="confirm-dialog-buttons">
-                    <button id="exit-confirm-yes" class="confirm-btn confirm-yes">確認退出</button>
-                    <button id="exit-confirm-no" class="confirm-btn confirm-no">繼續遊戲</button>
+                    <button id="exit-confirm-yes" class="confirm-btn confirm-yes" data-i18n="exit.yes">確認退出</button>
+                    <button id="exit-confirm-no" class="confirm-btn confirm-no" data-i18n="exit.no">繼續遊戲</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
+    <script src="js/i18n/i18n.js?v=44"></script>
+    <script src="js/i18n/zh-Hant.js?v=44"></script>
+    <script src="js/i18n/zh-Hans.js?v=44"></script>
 
     <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js"></script>
@@ -135,20 +145,20 @@
     <script src="js/data/combinedStoryPacing.js?v=43"></script>
 
     <!-- ========== 現行站點玩法 ========== -->
-    <script src="js/minigames/EndingScreen.js?v=43"></script>
+    <script src="js/minigames/EndingScreen.js?v=44"></script>
     <script src="js/minigames/CradleStationGame.js"></script>
     <script src="js/minigames/CakeStationGame.js?v=42"></script>
     <script src="js/minigames/Station34CombinedGame.js?v=43"></script>
     <script src="js/minigames/StationDemoGame.js?v=43"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
-    <script src="js/main.js?v=40"></script>
+    <script src="js/main.js?v=44"></script>
     
     <!-- ========== Service Worker 註冊（PWA） ========== -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=43').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=44').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);
