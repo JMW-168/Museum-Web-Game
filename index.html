@@ -15,7 +15,7 @@
     
     <!-- ========== CSS ========== -->
     <link rel="stylesheet" href="style.css?v=40">
-    <link rel="stylesheet" href="css/station-demo-game.css?v=40">
+    <link rel="stylesheet" href="css/station-demo-game.css?v=43">
     <link rel="stylesheet" href="css/cake-station-game.css?v=40">
 </head>
 <body>
@@ -132,12 +132,14 @@
     <script src="js/data/stationCombinedStory.js"></script>
     <script src="js/data/station34CombinedStory.js?v=40"></script>
     <script src="js/data/cakePatterns.js?v=40"></script>
-    
+    <script src="js/data/combinedStoryPacing.js?v=43"></script>
+
     <!-- ========== 現行站點玩法 ========== -->
+    <script src="js/minigames/EndingScreen.js?v=43"></script>
     <script src="js/minigames/CradleStationGame.js"></script>
     <script src="js/minigames/CakeStationGame.js?v=42"></script>
-    <script src="js/minigames/Station34CombinedGame.js?v=40"></script>
-    <script src="js/minigames/StationDemoGame.js"></script>
+    <script src="js/minigames/Station34CombinedGame.js?v=43"></script>
+    <script src="js/minigames/StationDemoGame.js?v=43"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
     <script src="js/main.js?v=40"></script>
@@ -146,7 +148,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=42').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=43').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);

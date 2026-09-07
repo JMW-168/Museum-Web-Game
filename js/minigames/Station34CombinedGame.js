@@ -1,7 +1,9 @@
 const Station34CombinedGame = {
     container: null,
     dialogueTimer: null,
+    dwellTimer: null,
     dialogueTyping: false,
+    dialogueReady: false,
     dialogueTextTarget: null,
     dialogueFullText: '',
     active: false,
@@ -61,6 +63,7 @@ const Station34CombinedGame = {
                     this.finishTyping();
                     return;
                 }
+                if (!this.dialogueReady) return; // 逐字完成後的防連點短暫停內，忽略前進輸入
                 if (line.actionLabel) return;
                 if (lineIndex < section.lines.length - 1) {
                     lineIndex++;
@@ -78,6 +81,7 @@ const Station34CombinedGame = {
             this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
             if (actionButton) actionButton.addEventListener('click', (event) => {
                 event.stopPropagation();
+                if (!this.dialogueReady) return; // CTA 需等逐字完成且短暫停結束
                 this.playClick();
                 onComplete();
             });
@@ -107,7 +111,7 @@ const Station34CombinedGame = {
                 AudioManager.playSFX(line.voice === 'female' ? 'assets/sounds/sfx-blipfemale.wav' : 'assets/sounds/sfx-blipmale.wav', 0.08);
             }
             index++;
-        }, 42);
+        }, window.CombinedStoryPacing?.charIntervalMs ?? 42);
         if (actionButton) actionButton.hidden = true;
     },
 
@@ -116,16 +120,41 @@ const Station34CombinedGame = {
         this.dialogueTimer = null;
         if (this.dialogueTextTarget) this.dialogueTextTarget.textContent = this.dialogueFullText;
         this.dialogueTyping = false;
+        this.startDwell();
+    },
+
+    startDwell() {
+        if (this.dwellTimer) clearTimeout(this.dwellTimer);
+        this.dialogueReady = false;
+        const box = this.container?.querySelector('.combined-dialogue-box');
+        if (box) {
+            box.classList.add('is-reading');
+            box.classList.remove('is-complete');
+        }
+        const minReadMs = window.CombinedStoryPacing?.minReadMs ?? 1500;
+        this.dwellTimer = setTimeout(() => this.endDwell(), minReadMs);
+    },
+
+    endDwell() {
+        if (this.dwellTimer) clearTimeout(this.dwellTimer);
+        this.dwellTimer = null;
+        this.dialogueReady = true;
         const box = this.container?.querySelector('.combined-dialogue-box');
         const action = this.container?.querySelector('[data-story-action]');
-        if (box) box.classList.add('is-complete');
+        if (box) {
+            box.classList.remove('is-reading');
+            box.classList.add('is-complete');
+        }
         if (action) action.hidden = false;
     },
 
     clearTyping() {
         if (this.dialogueTimer) clearInterval(this.dialogueTimer);
         this.dialogueTimer = null;
+        if (this.dwellTimer) clearTimeout(this.dwellTimer);
+        this.dwellTimer = null;
         this.dialogueTyping = false;
+        this.dialogueReady = false;
         this.dialogueTextTarget = null;
         this.dialogueFullText = '';
     },
@@ -169,7 +198,18 @@ const Station34CombinedGame = {
     showCard(pattern) {
         this.removeShell();
         if (!this.active) return;
-        CakeStationGame.showCompletedResult(pattern, { onExit: () => this.close() });
+        CakeStationGame.showCompletedResult(pattern, { onExit: () => this.showEnding() });
+    },
+
+    showEnding() {
+        const wasActive = this.active;
+        this.stop();
+        if (!wasActive) {
+            showScene('level-select');
+            return;
+        }
+        if (window.EndingScreen) EndingScreen.show(() => showScene('level-select'));
+        else showScene('level-select');
     },
 
     interpolate(text, tokens) {
