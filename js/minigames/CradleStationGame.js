@@ -89,11 +89,6 @@ const CradleStationGame = {
                     <div class="cradle-guide-track" aria-hidden="true">
                         <span class="cradle-guide-dot" data-guide></span>
                     </div>
-                    <div class="cradle-room" aria-hidden="true">
-                        <span class="cradle-window"></span>
-                        <span class="cradle-cabinet"></span>
-                        <span class="cradle-floor"></span>
-                    </div>
                     <div class="cradle-rope cradle-rope-left" data-rope-left></div>
                     <div class="cradle-rope cradle-rope-right" data-rope-right></div>
                     <div class="cradle-sling" data-player>

@@ -5,8 +5,8 @@
     overflow: hidden;
     color: #fff8df;
     background:
-        radial-gradient(circle at 18% 12%, rgba(207, 154, 73, 0.18), transparent 32%),
-        linear-gradient(145deg, #263d37, #111c1a 72%);
+        linear-gradient(rgba(19, 13, 8, 0.42), rgba(12, 9, 6, 0.7)),
+        url('../assets/images/station-cake/background.webp') center 54% / cover no-repeat;
 }
 
 body.cake-station-active #game-wrapper {
