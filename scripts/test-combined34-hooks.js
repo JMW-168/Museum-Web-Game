@@ -150,4 +150,123 @@ function loadGame(relativePath, exportExpression, extras = {}) {
     assert.strictEqual(released.done.length, 0, '放開後不得再觸發完成');
 }
 
-console.log('combined34 hooks ok');
+function makeFakeBox() {
+    const set = new Set();
+    return {
+        classList: {
+            add: (c) => set.add(c),
+            remove: (c) => set.delete(c),
+            contains: (c) => set.has(c)
+        }
+    };
+}
+
+{
+    // 合併劇情最短閱讀停留（Issue #32）：文字完整出現後不可立即前進。
+    const pacing = { charIntervalMs: 42, minReadMs: 20 };
+
+    for (const spec of [
+        { file: 'js/minigames/Station34CombinedGame.js', name: 'Station34CombinedGame', finish: 'finishTyping', end: 'endDwell' },
+        { file: 'js/minigames/StationDemoGame.js', name: 'StationDemoGame', finish: 'finishCombinedTyping', end: 'endCombinedDwell' }
+    ]) {
+        const { game } = loadGame(spec.file, spec.name, { CombinedStoryPacing: pacing });
+        const box = makeFakeBox();
+        const action = { hidden: true };
+        game.container = { querySelector: (sel) => (sel === '[data-story-action]' ? action : box) };
+        game.dialogueTextTarget = { textContent: '' };
+        game.dialogueFullText = '句子';
+        game.dialogueTyping = true;
+
+        game[spec.finish]();
+        assert.strictEqual(game.dialogueTyping, false, `${spec.name}: 逐字結束`);
+        assert.strictEqual(game.dialogueReady, false, `${spec.name}: 停留中不可前進`);
+        assert.strictEqual(box.classList.contains('is-reading'), true, `${spec.name}: 停留中顯示 is-reading`);
+        assert.strictEqual(action.hidden, true, `${spec.name}: 停留中 CTA 仍隱藏`);
+
+        game[spec.end]();
+        assert.strictEqual(game.dialogueReady, true, `${spec.name}: 停留結束後可前進`);
+        assert.strictEqual(box.classList.contains('is-reading'), false, `${spec.name}: 停留結束移除 is-reading`);
+        assert.strictEqual(box.classList.contains('is-complete'), true, `${spec.name}: 停留結束顯示可繼續`);
+        assert.strictEqual(action.hidden, false, `${spec.name}: 停留結束後 CTA 可用`);
+
+        // clearTyping 要一併清掉 dwell timer 並重置狀態
+        game.dialogueReady = true;
+        const clear = spec.name === 'Station34CombinedGame' ? 'clearTyping' : 'clearCombinedTyping';
+        game[clear]();
+        assert.strictEqual(game.dwellTimer, null, `${spec.name}: clear 後清掉 dwellTimer`);
+        assert.strictEqual(game.dialogueReady, false, `${spec.name}: clear 後重置 dialogueReady`);
+    }
+}
+
+{
+    // 通關致謝畫面（Issue #30）：完成合併流程後顯示 Ending；中途離開不進 Ending。
+    const s34 = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
+        showScene: () => {},
+        EndingScreen: { show: (cb) => { s34.shown = cb; } },
+        CradleStationGame: { stop() {} },
+        CakeStationGame: { stop() {} }
+    });
+    s34.game.active = true;
+    s34.game.showEnding();
+    assert.strictEqual(typeof s34.shown, 'function', '三四關完成流程後顯示 Ending');
+    assert.strictEqual(s34.game.active, false, 'showEnding 後停用');
+
+    const s34exit = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
+        showScene: () => {},
+        EndingScreen: { show: () => { throw new Error('中途離開不應顯示 Ending'); } },
+        CradleStationGame: { stop() {} },
+        CakeStationGame: { stop() {} }
+    });
+    s34exit.game.active = false;
+    s34exit.game.showEnding(); // 不應丟出錯誤
+
+    const demo = loadGame('js/minigames/StationDemoGame.js', 'StationDemoGame', {
+        showScene: () => {},
+        EndingScreen: { show: (cb) => { demo.shown = cb; } }
+    });
+    demo.game.stop = () => {};
+    demo.game.showCombinedEnding();
+    assert.strictEqual(typeof demo.shown, 'function', '關卡一二完成流程後顯示 Ending');
+}
+
+{
+    // EndingScreen 本體：顯示時切到 game-container，返回按鈕觸發 onReturn。
+    let clickHandler = null;
+    const button = { addEventListener: (t, h) => { if (t === 'click') clickHandler = h; }, focus() {} };
+    const fakeDoc = {
+        getElementById: () => null,
+        createElement: () => ({ className: '', innerHTML: '', querySelector: () => button }),
+        body: { appendChild() {} }
+    };
+    const scenes = [];
+    const { game } = loadGame('js/minigames/EndingScreen.js', 'EndingScreen', {
+        document: fakeDoc,
+        showScene: (s) => scenes.push(s),
+        AudioManager: { stopBGM() {}, playSFX() {} }
+    });
+    let returned = false;
+    game.show(() => { returned = true; });
+    assert.strictEqual(scenes.includes('game-container'), true, 'Ending 顯示時切到 game-container');
+    assert.strictEqual(typeof clickHandler, 'function', '返回按鈕已綁定');
+    clickHandler();
+    assert.strictEqual(returned, true, '按返回入口觸發 onReturn');
+    assert.strictEqual(game.container, null, '返回後畫面已清除');
+}
+
+{
+    // dwell timer 真的會在 minReadMs 後翻轉 dialogueReady
+    const { game } = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
+        CombinedStoryPacing: { charIntervalMs: 42, minReadMs: 15 }
+    });
+    const box = makeFakeBox();
+    game.container = { querySelector: () => box };
+    game.dialogueTextTarget = { textContent: '' };
+    game.dialogueFullText = '句';
+    game.dialogueTyping = true;
+    game.finishTyping();
+    assert.strictEqual(game.dialogueReady, false, 'dwell 期間 dialogueReady 為 false');
+    setTimeout(() => {
+        assert.strictEqual(game.dialogueReady, true, 'dwell 到點後 dialogueReady 為 true');
+        console.log('combined34 hooks ok');
+    }, 45);
+}
