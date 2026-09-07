@@ -4,6 +4,8 @@ const CakeStationGame = {
     listeners: [],
     timers: [],
     holdAnimationId: null,
+    holdCompleteTimer: null,
+    holdDurationMs: 1000,
     lastResult: null,
     mode: 'standalone',
     onComplete: null,
@@ -552,32 +554,49 @@ const CakeStationGame = {
         this.state.holding = true;
         this.state.holdStartedAt = performance.now();
         this.setMakingFeedback('穩穩按住，不要放開……');
+        this.clearHoldTimers();
+        // 進度條動畫靠 rAF，但「壓滿一秒」的判定改用實際經過時間，
+        // 避免分頁被切到背景時 rAF 被凍結導致按住永遠壓不滿。
         this.holdAnimationId = requestAnimationFrame((time) => this.tickHold(time));
+        this.holdCompleteTimer = setTimeout(() => this.completeHold(), this.holdDurationMs);
     },
 
     tickHold(time) {
         if (!this.state?.holding || !this.container) return;
         const elapsed = time - this.state.holdStartedAt;
-        const percent = Math.min(100, elapsed / 1000 * 100);
+        const percent = Math.min(100, elapsed / this.holdDurationMs * 100);
         const fill = this.container.querySelector('[data-hold-fill]');
         if (fill) fill.style.height = `${percent}%`;
-        if (elapsed >= 1000) {
-            this.state.holding = false;
-            this.holdAnimationId = null;
-            this.finishCake();
+        if (elapsed >= this.holdDurationMs) {
+            this.completeHold();
             return;
         }
         this.holdAnimationId = requestAnimationFrame((nextTime) => this.tickHold(nextTime));
     },
 
-    cancelHold(silent = false) {
+    completeHold() {
+        if (!this.state?.holding) return;
+        this.state.holding = false;
+        this.clearHoldTimers();
+        const fill = this.container?.querySelector('[data-hold-fill]');
+        if (fill) fill.style.height = '100%';
+        this.finishCake();
+    },
+
+    clearHoldTimers() {
         if (this.holdAnimationId) cancelAnimationFrame(this.holdAnimationId);
         this.holdAnimationId = null;
+        if (this.holdCompleteTimer) clearTimeout(this.holdCompleteTimer);
+        this.holdCompleteTimer = null;
+    },
+
+    cancelHold(silent = false) {
+        this.clearHoldTimers();
         if (!this.state?.holding) return;
         this.state.holding = false;
         const fill = this.container?.querySelector('[data-hold-fill]');
         if (fill) fill.style.height = '0%';
-        if (!silent) this.setMakingFeedback('還差一點！要連續按滿一秒，再試一次。');
+        if (!silent) this.setMakingFeedback('還差一點！要按住滿一秒，再試一次。');
     },
 
     finishCake() {
@@ -599,7 +618,6 @@ const CakeStationGame = {
         this.mode = 'combined34-result';
         this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
         showScene('game-container');
-        this.hideLegacyGameUi();
         this.createShell();
         this.state = {
             selectedPatternId: pattern.id,
@@ -836,8 +854,7 @@ const CakeStationGame = {
         this.removeListeners();
         this.timers.forEach((timer) => clearTimeout(timer));
         this.timers = [];
-        if (this.holdAnimationId) cancelAnimationFrame(this.holdAnimationId);
-        this.holdAnimationId = null;
+        this.clearHoldTimers();
         if (this.container?.parentNode) this.container.remove();
         document.body.classList.remove('cake-station-active');
         this.container = null;
