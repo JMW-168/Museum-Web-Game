@@ -2465,27 +2465,11 @@
     }
 }
 
-/* ========== 合併劇情：最短閱讀停留（Issue #32） ========== */
+/* ========== 合併劇情：逐字完成後的看不見短暫停（Issue #32） ========== */
 
-/* 文字完整出現、但仍在最短閱讀停留內：淡化前進提示，不顯示「可繼續」箭頭 */
+/* 文字完整出現、但仍在防連點的短暫停內：先不顯示「可繼續」箭頭，也不加任何提示文字 */
 .combined-dialogue-box.is-reading {
     cursor: default;
-}
-
-.combined-dialogue-box.is-reading::after {
-    content: '閱讀中…';
-    position: absolute;
-    right: 22px;
-    bottom: 12px;
-    color: rgba(255, 249, 233, 0.55);
-    font-size: clamp(12px, 1.5vw, 15px);
-    letter-spacing: 0.08em;
-    pointer-events: none;
-}
-
-.combined-dialogue-box.is-reading.has-action::after {
-    right: auto;
-    left: 28px;
 }
 
 /* ========== 通關致謝畫面（Issue #30） ========== */

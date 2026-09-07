@@ -162,8 +162,8 @@ function makeFakeBox() {
 }
 
 {
-    // 合併劇情最短閱讀停留（Issue #32）：文字完整出現後不可立即前進。
-    const pacing = { charIntervalMs: 42, minReadMs: 20 };
+    // 合併劇情逐字完成後的防連點短暫停（Issue #32）：文字完整出現後不可立即前進。
+    const pacing = { charIntervalMs: 70, minReadMs: 20 };
 
     for (const spec of [
         { file: 'js/minigames/Station34CombinedGame.js', name: 'Station34CombinedGame', finish: 'finishTyping', end: 'endDwell' },
@@ -254,9 +254,9 @@ function makeFakeBox() {
 }
 
 {
-    // dwell timer 真的會在 minReadMs 後翻轉 dialogueReady
+    // 短暫停計時器真的會在 minReadMs 後翻轉 dialogueReady
     const { game } = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
-        CombinedStoryPacing: { charIntervalMs: 42, minReadMs: 15 }
+        CombinedStoryPacing: { charIntervalMs: 70, minReadMs: 15 }
     });
     const box = makeFakeBox();
     game.container = { querySelector: () => box };

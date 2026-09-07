@@ -63,7 +63,7 @@ const Station34CombinedGame = {
                     this.finishTyping();
                     return;
                 }
-                if (!this.dialogueReady) return; // 最短閱讀停留中，忽略前進輸入
+                if (!this.dialogueReady) return; // 逐字完成後的防連點短暫停內，忽略前進輸入
                 if (line.actionLabel) return;
                 if (lineIndex < section.lines.length - 1) {
                     lineIndex++;
@@ -81,7 +81,7 @@ const Station34CombinedGame = {
             this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
             if (actionButton) actionButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                if (!this.dialogueReady) return; // CTA 需等逐字完成且停留結束
+                if (!this.dialogueReady) return; // CTA 需等逐字完成且短暫停結束
                 this.playClick();
                 onComplete();
             });
