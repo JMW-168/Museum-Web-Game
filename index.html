@@ -135,7 +135,7 @@
     
     <!-- ========== 現行站點玩法 ========== -->
     <script src="js/minigames/CradleStationGame.js"></script>
-    <script src="js/minigames/CakeStationGame.js?v=40"></script>
+    <script src="js/minigames/CakeStationGame.js?v=42"></script>
     <script src="js/minigames/Station34CombinedGame.js?v=40"></script>
     <script src="js/minigames/StationDemoGame.js"></script>
     
@@ -146,7 +146,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=40').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=42').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);
