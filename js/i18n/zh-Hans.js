@@ -9,6 +9,17 @@ window.I18n.register('zh-Hans', {
     'menu.start': '搭乘时光机',
     'menu.exit': '回到现实',
 
+    // 共用
+    'common.back': '返回',
+
+    // 引导说明页（1／2 土楼旁白）
+    'intro.narration': '您即将抵达 50 年前的客家土楼，爷爷奶奶家里。请准备好愉悦的心情，开始体验。',
+    'intro.next': '继续',
+
+    // 引导说明页（2／2 爷爷奶奶欢迎）
+    'welcome.text': '欢迎你呀～客人～来里面坐～',
+    'welcome.start': '开始体验',
+
     // 模式选择
     'age.title': '选择游戏模式',
     'age.subtitle': '请选择适合您的版本',
