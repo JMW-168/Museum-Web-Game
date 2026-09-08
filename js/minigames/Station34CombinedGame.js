@@ -8,6 +8,20 @@ const Station34CombinedGame = {
     dialogueFullText: '',
     active: false,
 
+    tr(key, tokens) {
+        return typeof window.t === 'function' ? window.t(key, tokens) : key;
+    },
+
+    localizeLine(sourceLine, tokens) {
+        return {
+            ...sourceLine,
+            speaker: sourceLine.speakerKey ? this.tr(sourceLine.speakerKey) : sourceLine.speaker,
+            cue: sourceLine.cueKey ? this.tr(sourceLine.cueKey) : sourceLine.cue,
+            text: sourceLine.textKey ? this.tr(sourceLine.textKey, tokens) : this.interpolate(sourceLine.text, tokens),
+            actionLabel: sourceLine.actionLabelKey ? this.tr(sourceLine.actionLabelKey) : sourceLine.actionLabel
+        };
+    },
+
     start() {
         this.stop();
         if (window.StationDemoGame) StationDemoGame.stop();
@@ -38,7 +52,7 @@ const Station34CombinedGame = {
 
         const renderLine = () => {
             const sourceLine = section.lines[lineIndex];
-            const line = { ...sourceLine, text: this.interpolate(sourceLine.text, tokens) };
+            const line = this.localizeLine(sourceLine, tokens);
             const character = line.image ? `<img class="combined-story-character" src="${line.image}" alt="${line.speaker}">` : '';
             const cue = line.cue ? `<span class="combined-dialogue-cue">（${line.cue}）</span>` : '';
             const action = line.actionLabel
@@ -46,9 +60,9 @@ const Station34CombinedGame = {
                 : '';
             this.container.innerHTML = `
                 <section class="combined-story${line.narration ? ' is-narration' : ''}">
-                    <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                    <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
                     <div class="combined-story-character-stage">${character}</div>
-                    <div class="combined-dialogue-box${line.actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="繼續對話">
+                    <div class="combined-dialogue-box${line.actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="${this.tr('story.action.continueDialogue')}">
                         <div class="combined-dialogue-speaker">${line.speaker}${cue}</div>
                         <div class="combined-dialogue-text" aria-live="polite"></div>
                         <span class="combined-dialogue-indicator" aria-hidden="true"></span>

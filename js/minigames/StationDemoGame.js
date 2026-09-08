@@ -58,32 +58,52 @@ const StationDemoGame = {
 
     stations: {
         fire: {
-            kicker: '關卡一 / 站點 1',
-            title: '灶台生火',
-            subtitle: '看準節拍添柴，讓火候維持在剛好的溫度。',
-            intro: '木柴會沿著節奏軌道移動。當木柴進入灶台火圈時，按「添柴」或空白鍵。小柴升火少，大柴升火多；添柴時火候在綠色區間會獲得較多分，火候太高還添柴會扣分。火候超過綠色區間右側時，按「噴水」少量降火。',
-            success: '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
-            fail: '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
+            id: 'fire',
             guideImage: 'assets/images/characters/grandma.png',
-            guideAlt: '阿嬤',
+            guideAltKey: 'story.speaker.grandma'
         },
         tea: {
-            kicker: '關卡二 / 站點 2',
-            title: '擂茶料理',
-            subtitle: '看著指定順序，把食材逐一研磨、切好，完成一組擂茶。',
-            intro: '先從移動軌道中依照上方順序挑出五種食材，避開柴火與石頭，拖進石臼後讓研磨棒沿著碗緣畫滿 5 圈；接著把四種配菜拖上砧板，每一種連點 10 刀。兩段各有 1 分鐘，拖錯只會放不進來，不扣分也不扣時間。',
-            success: '擂茶小知識：擂茶把茶葉、香草、花生與芝麻耐心擂成茶膏，再配上切細的蔬菜與豆腐，是一碗兼具香氣與口感的客家料理。',
-            fail: '',
+            id: 'tea',
             guideImage: 'assets/images/characters/grandpa.png',
-            guideAlt: '阿公',
+            guideAltKey: 'story.speaker.grandpa'
         }
+    },
+
+    tr(key, tokens) {
+        return typeof window.t === 'function' ? window.t(key, tokens) : key;
+    },
+
+    getStation(stationId) {
+        const source = this.stations[stationId];
+        if (!source) return null;
+        const prefix = `station.${stationId}`;
+        return {
+            ...source,
+            kicker: this.tr(`${prefix}.kicker`),
+            title: this.tr(`${prefix}.title`),
+            subtitle: this.tr(`${prefix}.subtitle`),
+            intro: this.tr(`${prefix}.intro`),
+            success: this.tr(`${prefix}.success`),
+            fail: stationId === 'fire' ? this.tr('station.fire.fail') : '',
+            guideAlt: this.tr(source.guideAltKey)
+        };
+    },
+
+    localizeStoryLine(sourceLine) {
+        return {
+            ...sourceLine,
+            speaker: sourceLine.speakerKey ? this.tr(sourceLine.speakerKey) : sourceLine.speaker,
+            cue: sourceLine.cueKey ? this.tr(sourceLine.cueKey) : sourceLine.cue,
+            text: sourceLine.textKey ? this.tr(sourceLine.textKey) : sourceLine.text,
+            actionLabel: sourceLine.actionLabelKey ? this.tr(sourceLine.actionLabelKey) : sourceLine.actionLabel
+        };
     },
 
     start(stationId) {
         this.stop();
         if (stationId === 'combined') {
             this.mode = 'combined';
-            this.station = this.stations.fire;
+            this.station = this.getStation('fire');
             showScene('game-container');
             if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
             this.createShell('fire');
@@ -92,7 +112,7 @@ const StationDemoGame = {
         }
 
         this.mode = 'standalone';
-        this.station = this.stations[stationId];
+        this.station = this.getStation(stationId);
         if (!this.station) return;
 
         showScene('game-container');
@@ -128,7 +148,7 @@ const StationDemoGame = {
         let lineIndex = 0;
 
         const renderLine = () => {
-            const line = section.lines[lineIndex];
+            const line = this.localizeStoryLine(section.lines[lineIndex]);
             const characterMarkup = line.image
                 ? `<img class="combined-story-character" src="${line.image}" alt="${line.speaker}">`
                 : '';
@@ -139,9 +159,9 @@ const StationDemoGame = {
 
             this.container.innerHTML = `
                 <section class="combined-story${line.narration ? ' is-narration' : ''}">
-                    <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                    <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
                     <div class="combined-story-character-stage">${characterMarkup}</div>
-                    <div class="combined-dialogue-box${line.actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="繼續對話">
+                    <div class="combined-dialogue-box${line.actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="${this.tr('story.action.continueDialogue')}">
                         <div class="combined-dialogue-speaker">${line.speaker}${cueMarkup}</div>
                         <div class="combined-dialogue-text" aria-live="polite"></div>
                         <span class="combined-dialogue-indicator" aria-hidden="true"></span>
@@ -263,7 +283,7 @@ const StationDemoGame = {
     },
 
     startCombinedFire() {
-        this.station = this.stations.fire;
+        this.station = this.getStation('fire');
         this.setShellTheme('fire');
         this.startFireMusic();
         this.prepareFireAssets()
@@ -279,13 +299,13 @@ const StationDemoGame = {
         this.stopFireMusic();
         this.releaseFireAssets();
         this.showCombinedDialogue('afterFire', () => {
-            this.station = this.stations.tea;
+            this.station = this.getStation('tea');
             this.showCombinedDialogue('beforeTea', () => this.startCombinedTea());
         });
     },
 
     startCombinedTea() {
-        this.station = this.stations.tea;
+        this.station = this.getStation('tea');
         this.setShellTheme('tea');
         this.prepareTeaAssets()
             .then(() => this.startTeaGame())
@@ -302,8 +322,8 @@ const StationDemoGame = {
         const message = document.createElement('div');
         message.className = 'station-coach-line';
         const speaker = document.createElement('strong');
-        speaker.textContent = `${coaching.speaker}：`;
-        message.append(speaker, document.createTextNode(coaching.text));
+        speaker.textContent = `${this.tr(coaching.speakerKey)}：`;
+        message.append(speaker, document.createTextNode(this.tr(coaching.textKey)));
         play.appendChild(message);
         this.timers.push(setTimeout(() => message.remove(), 6200));
     },
