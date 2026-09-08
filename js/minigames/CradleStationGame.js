@@ -12,6 +12,10 @@ const CradleStationGame = {
     onComplete: null,
     onExit: null,
 
+    tr(key, tokens) {
+        return typeof window.t === 'function' ? window.t(key, tokens) : key;
+    },
+
     start(options = {}) {
         this.stop();
         this.mode = options.mode || 'standalone';
@@ -35,15 +39,15 @@ const CradleStationGame = {
         if (!this.container) return;
         this.container.innerHTML = `
             <section class="station-panel station-intro-panel cradle-intro-panel has-guide">
-                <div class="station-kicker-line">關卡三 / 站點 3</div>
-                <h1>搖籃哄睡</h1>
-                <p class="station-subtitle">跟著光點的節奏，輕輕左右搖動搖籃。</p>
-                <p class="station-copy">按住搖籃左右移動，讓搖籃跟著上方導引光點。也可以按住鍵盤左右方向鍵操作。跟得越穩，嬰孩就會漸漸安靜；沒有失敗，慢慢來就好。</p>
+                <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
+                <h1>${this.tr('station.cradle.title')}</h1>
+                <p class="station-subtitle">${this.tr('station.cradle.subtitle')}</p>
+                <p class="station-copy">${this.tr('station.cradle.intro')}</p>
                 <div class="station-actions">
-                    <button type="button" class="station-primary" data-start>開始哄睡</button>
-                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                    <button type="button" class="station-primary" data-start>${this.tr('station.cradle.start')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
-                <img class="station-guide station-guide-intro" src="assets/images/characters/grandma.png" alt="阿嬤">
+                <img class="station-guide station-guide-intro" src="assets/images/characters/grandma.png" alt="${this.tr('story.speaker.grandma')}">
             </section>
         `;
         this.listen(this.container.querySelector('[data-start]'), 'click', () => {
@@ -78,14 +82,14 @@ const CradleStationGame = {
         };
         this.container.innerHTML = `
             <div class="station-play cradle-play">
-                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
                 <div class="station-hud cradle-hud">
-                    <span>搖籃哄睡</span>
-                    <span>穩定度 <b data-progress-text>0%</b></span>
-                    <span data-assist>跟著光點慢慢搖</span>
+                    <span>${this.tr('station.cradle.title')}</span>
+                    <span>${this.tr('station.cradle.stability', { percent: '<b data-progress-text>0</b>' })}</span>
+                    <span data-assist>${this.tr('station.cradle.follow')}</span>
                 </div>
-                <p class="cradle-instruction">按住搖籃左右移動・或按住 ← →</p>
-                <div class="cradle-scene" data-control tabindex="0" role="slider" aria-label="搖籃位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                <p class="cradle-instruction">${this.tr('station.cradle.instruction')}</p>
+                <div class="cradle-scene" data-control tabindex="0" role="slider" aria-label="${this.tr('station.cradle.position')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
                     <div class="cradle-guide-track" aria-hidden="true">
                         <span class="cradle-guide-dot" data-guide></span>
                     </div>
@@ -95,12 +99,12 @@ const CradleStationGame = {
                         <span class="cradle-knot"></span>
                         <span class="cradle-baby" data-baby>😢</span>
                     </div>
-                    <span class="cradle-hand-hint" data-hand-hint>↔ 拖著搖</span>
+                    <span class="cradle-hand-hint" data-hand-hint>${this.tr('station.cradle.drag')}</span>
                 </div>
-                <div class="cradle-progress" aria-label="哄睡穩定度">
+                <div class="cradle-progress" aria-label="${this.tr('station.cradle.progress')}">
                     <span data-progress></span>
                 </div>
-                <div class="station-feedback cradle-feedback" data-feedback aria-live="polite">嬰孩還在哭，跟著光點輕輕搖。</div>
+                <div class="station-feedback cradle-feedback" data-feedback aria-live="polite">${this.tr('station.cradle.crying')}</div>
             </div>
         `;
         const control = this.container.querySelector('[data-control]');
@@ -241,18 +245,18 @@ const CradleStationGame = {
             rightRope.style.transform = `rotate(${angle * 0.42}deg)`;
         }
         if (progress) progress.style.width = `${percent}%`;
-        if (progressText) progressText.textContent = `${percent}%`;
+        if (progressText) progressText.textContent = String(percent);
         if (control) control.setAttribute('aria-valuenow', String(Math.round(this.state.playerPosition * 100)));
-        if (assist) assist.textContent = this.state.assisted ? '阿嬤靠近幫忙：跟隨範圍已放寬' : '跟著光點慢慢搖';
+        if (assist) assist.textContent = this.tr(this.state.assisted ? 'station.cradle.assisted' : 'station.cradle.follow');
 
         const nextStage = percent >= 100 ? 'asleep' : percent >= 35 ? 'calming' : 'crying';
         if (nextStage !== this.state.feedbackStage) this.updateAudioStage(nextStage);
         if (baby) baby.textContent = nextStage === 'calming' ? '😌' : '😢';
         if (feedback) {
-            if (!operating) feedback.textContent = '按住搖籃開始操作，未操作時不會累積穩定度。';
-            else if (gap <= this.state.tolerance && nextStage === 'calming') feedback.textContent = '哭聲漸漸小了，繼續保持這個節奏。';
-            else if (gap <= this.state.tolerance) feedback.textContent = '跟上了，輕輕地繼續搖。';
-            else feedback.textContent = '稍微偏離導引了，穩定度只會慢慢回退。';
+            if (!operating) feedback.textContent = this.tr('station.cradle.idle');
+            else if (gap <= this.state.tolerance && nextStage === 'calming') feedback.textContent = this.tr('station.cradle.calming');
+            else if (gap <= this.state.tolerance) feedback.textContent = this.tr('station.cradle.following');
+            else feedback.textContent = this.tr('station.cradle.offGuide');
         }
         this.container.classList.toggle('cradle-assisted', this.state.assisted);
     },
@@ -273,16 +277,16 @@ const CradleStationGame = {
         }
         this.container.innerHTML = `
             <section class="station-panel station-result-panel cradle-result-panel has-guide">
-                <div class="station-kicker-line">關卡三 / 站點 3</div>
-                <h1>嬰孩睡著了</h1>
+                <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
+                <h1>${this.tr('station.cradle.result.title')}</h1>
                 <div class="cradle-result-baby" aria-hidden="true">😴</div>
-                <p class="station-copy">這只用麵粉袋改成的搖籃，養大了家裡不少人。</p>
-                ${assisted ? '<p class="cradle-assisted-note">阿嬤陪你把節奏放寬了一點，一樣順利哄睡了。</p>' : '<p class="cradle-perfect-note">你穩穩跟上整段節奏，哭聲也慢慢停了。</p>'}
+                <p class="station-copy">${this.tr('station.cradle.result.copy')}</p>
+                ${assisted ? `<p class="cradle-assisted-note">${this.tr('station.cradle.result.assisted')}</p>` : `<p class="cradle-perfect-note">${this.tr('station.cradle.result.perfect')}</p>`}
                 <div class="station-actions">
-                    <button type="button" class="station-primary" data-retry>再玩一次</button>
-                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                    <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
-                <img class="station-guide station-guide-result" src="assets/images/characters/grandma.png" alt="阿嬤">
+                <img class="station-guide station-guide-result" src="assets/images/characters/grandma.png" alt="${this.tr('story.speaker.grandma')}">
             </section>
         `;
         this.listen(this.container.querySelector('[data-retry]'), 'click', () => {
