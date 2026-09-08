@@ -339,8 +339,8 @@ const StationDemoGame = {
                 <p class="station-subtitle">${this.station.subtitle}</p>
                 <p class="station-copy">${this.station.intro}</p>
                 <div class="station-actions">
-                    <button type="button" class="station-primary">開始挑戰</button>
-                    <button type="button" class="station-secondary">返回入口</button>
+                    <button type="button" class="station-primary">${this.tr('game.startChallenge')}</button>
+                    <button type="button" class="station-secondary">${this.tr('game.backToEntrance')}</button>
                 </div>
                 ${guide}
             </section>
@@ -385,7 +385,7 @@ const StationDemoGame = {
             durationMs: this.fireDurationMs,
             lastTickAt: 0,
             finished: false,
-            lastResult: '等木柴進入灶台火圈再添柴',
+            lastResult: this.tr('station.fire.wait'),
         };
 
         const stoveImage = this.getFireAsset('assets/images/station-fire/stove.png');
@@ -395,20 +395,20 @@ const StationDemoGame = {
             <div class="station-play is-preparing">
                 <div class="station-hud">
                     <div>${this.station.kicker}</div>
-                    <div>分數 <span data-score>0</span></div>
-                    <div>火候 <span data-fire>50</span>%</div>
-                    <div>時間 <span data-time>60</span> 秒</div>
+                    <div>${this.tr('station.fire.hud.score')} <span data-score>0</span></div>
+                    <div>${this.tr('station.fire.hud.heat')} <span data-fire>50</span>%</div>
+                    <div>${this.tr('station.fire.hud.time')} <span data-time>60</span> ${this.tr('station.fire.hud.seconds')}</div>
                 </div>
-                <button type="button" class="station-corner-exit" data-exit aria-label="返回入口">返回</button>
+                <button type="button" class="station-corner-exit" data-exit aria-label="${this.tr('game.backToEntrance')}">${this.tr('game.back')}</button>
                 <div class="fire-help-row">
-                    <span>木柴進入灶台火圈：按添柴</span>
-                    <span data-water-hint>火候超過 72%：按噴水</span>
+                    <span>${this.tr('station.fire.help.wood')}</span>
+                    <span data-water-hint>${this.tr('station.fire.help.water')}</span>
                 </div>
-                <div class="fire-track" aria-label="節奏軌道">
-                    <div class="fire-danger-alert" data-fire-danger>快要火燒厝了</div>
+                <div class="fire-track" aria-label="${this.tr('station.fire.track')}">
+                    <div class="fire-danger-alert" data-fire-danger>${this.tr('station.fire.danger')}</div>
                     <div class="fire-target">
-                        <img class="fire-stove-img" src="${stoveImage}" alt="灶台">
-                        <img class="fire-flame-img" data-flame src="${smallFlameImage}" alt="火焰">
+                        <img class="fire-stove-img" src="${stoveImage}" alt="${this.tr('station.fire.stove')}">
+                        <img class="fire-flame-img" data-flame src="${smallFlameImage}" alt="${this.tr('station.fire.flame')}">
                         <div class="fire-water-burst" data-water-effect aria-hidden="true">
                             <span></span><span></span><span></span><span></span>
                         </div>
@@ -418,12 +418,12 @@ const StationDemoGame = {
                     <div class="fire-ideal-zone"></div>
                     <span></span>
                 </div>
-                <div class="station-feedback">等木柴進入灶台火圈再添柴</div>
+                <div class="station-feedback">${this.tr('station.fire.wait')}</div>
                 <div class="fire-score-layer" data-score-layer aria-hidden="true"></div>
                 <div class="station-actions compact">
-                    <button type="button" class="station-primary" data-hit>添柴</button>
+                    <button type="button" class="station-primary" data-hit>${this.tr('station.fire.addWood')}</button>
                 </div>
-                <button type="button" class="station-water station-water-fixed" data-water>噴水</button>
+                <button type="button" class="station-water station-water-fixed" data-water>${this.tr('station.fire.sprayWater')}</button>
             </div>
         `;
 
@@ -616,11 +616,11 @@ const StationDemoGame = {
         this.container.innerHTML = `
             <section class="station-panel station-intro-panel">
                 <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>關卡素材還沒載入完成</h1>
-                <p class="station-copy">目前網路沒有把圖片或音樂完整送達，請按下方按鈕重新載入。</p>
+                <h1>${this.tr('station.fire.load.title')}</h1>
+                <p class="station-copy">${this.tr('station.fire.load.copy')}</p>
                 <div class="station-actions">
-                    <button type="button" class="station-primary" data-retry-load>重新載入</button>
-                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                    <button type="button" class="station-primary" data-retry-load>${this.tr('game.retryLoad')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
             </section>
         `;
@@ -661,7 +661,7 @@ const StationDemoGame = {
 
             if (!beat.hit && x < targetX - 100) {
                 beat.hit = true;
-                this.applyFireScore('木柴錯過了', -8, -10, true, true);
+                this.applyFireScore(this.tr('station.fire.missed'), -8, -10, true, true);
                 beat.el.remove();
                 return;
             }
@@ -692,8 +692,8 @@ const StationDemoGame = {
             ? this.getFireAsset('assets/images/station-fire/wood-large.png')
             : this.getFireAsset('assets/images/station-fire/wood-small.png');
         beat.innerHTML = `
-            <img src="${woodImage}" alt="${type === 'big' ? '大柴' : '小柴'}">
-            <span>${type === 'big' ? '大柴' : '小柴'}</span>
+            <img src="${woodImage}" alt="${this.tr(type === 'big' ? 'station.fire.wood.big' : 'station.fire.wood.small')}">
+            <span>${this.tr(type === 'big' ? 'station.fire.wood.big' : 'station.fire.wood.small')}</span>
         `;
         track.appendChild(beat);
         this.state.beats.push({
@@ -726,32 +726,32 @@ const StationDemoGame = {
         });
 
         if (!best) {
-            this.applyFireScore('太早了，等木柴進火圈', -8, -3, false, true);
+            this.applyFireScore(this.tr('station.fire.tooEarly'), -8, -3, false, true);
             return;
         }
 
         if (bestDistance > 120) {
             best.hit = true;
             best.el.remove();
-            this.applyFireScore('沒對準火圈', -12, -8, true, true);
+            this.applyFireScore(this.tr('station.fire.misaligned'), -12, -8, true, true);
             return;
         }
 
         best.hit = true;
         best.el.remove();
-        const woodLabel = best.type === 'big' ? '大柴' : '小柴';
+        const woodLabel = this.tr(best.type === 'big' ? 'station.fire.wood.big' : 'station.fire.wood.small');
         const fireDelta = best.type === 'big' ? 13 : 7;
         const basePoints = bestDistance <= 38 ? 55 : 35;
-        const timingLabel = bestDistance <= 38 ? '剛剛好' : '有添到';
+        const timingLabel = this.tr(bestDistance <= 38 ? 'station.fire.timing.perfect' : 'station.fire.timing.hit');
 
         if (this.state.fire > this.state.idealMax) {
-            this.applyFireScore(`火太旺還添${woodLabel}`, -25, fireDelta, true, true);
+            this.applyFireScore(this.tr('station.fire.tooHot', { wood: woodLabel }), -25, fireDelta, true, true);
         } else if (this.isFireInIdealRange()) {
-            this.applyFireScore(`${timingLabel}：${woodLabel}，火候正好`, basePoints + 45, fireDelta);
+            this.applyFireScore(this.tr('station.fire.heat.right', { timing: timingLabel, wood: woodLabel }), basePoints + 45, fireDelta);
         } else if (this.state.fire < this.state.idealMin) {
-            this.applyFireScore(`${timingLabel}：${woodLabel}，把火拉回來`, basePoints + 15, fireDelta);
+            this.applyFireScore(this.tr('station.fire.heat.recover', { timing: timingLabel, wood: woodLabel }), basePoints + 15, fireDelta);
         } else {
-            this.applyFireScore(`${timingLabel}：${woodLabel}`, basePoints, fireDelta);
+            this.applyFireScore(this.tr('station.fire.heat.neutral', { timing: timingLabel, wood: woodLabel }), basePoints, fireDelta);
         }
     },
 
@@ -761,7 +761,7 @@ const StationDemoGame = {
         if (countMistake) this.state.mistakesRemaining = Math.max(0, this.state.mistakesRemaining - 1);
         this.state.score = Math.max(0, this.state.score + points);
         this.state.fire = Math.max(0, Math.min(100, this.state.fire + fireDelta));
-        const feedback = countMistake ? `${label}，扣分但繼續` : label;
+        const feedback = countMistake ? this.tr('station.fire.penalty', { label }) : label;
         this.state.lastResult = feedback;
         this.container.querySelector('.station-feedback').textContent = feedback;
         this.showFireScorePop(points);
@@ -783,8 +783,8 @@ const StationDemoGame = {
             waterEffect.classList.add('active');
         }
         this.container.querySelector('.station-feedback').textContent = this.state.fire > this.state.idealMax
-            ? '噴水降火，再按一次可以更穩'
-            : wasTooHot ? '噴水降火，火候回穩' : '火候還不用噴水';
+            ? this.tr('station.fire.water.more')
+            : wasTooHot ? this.tr('station.fire.water.recovered') : this.tr('station.fire.water.notNeeded');
         this.showFireScorePop(points);
         this.renderFireHud();
     },
@@ -892,32 +892,32 @@ const StationDemoGame = {
     getTeaStageConfig(stageId) {
         const stages = {
             grind: {
-                title: '小遊戲一・研磨食材',
-                verb: '研磨',
-                instruction: '從流動軌道依序拖進石臼，每一種食材畫滿 5 圈',
+                title: this.tr('station.tea.grind.title'),
+                verb: this.tr('station.tea.grind.verb'),
+                instruction: this.tr('station.tea.grind.instruction'),
                 target: 5,
-                unit: '圈',
+                unit: this.tr('station.tea.grind.unit'),
                 toolClass: 'grind',
                 items: [
-                    { id: 'basil', name: '九層塔', sprite: 0 },
-                    { id: 'mint', name: '薄荷', sprite: 1 },
-                    { id: 'kuding', name: '苦刺心', sprite: 2 },
-                    { id: 'peanut', name: '花生', sprite: 3 },
-                    { id: 'sesame', name: '芝麻', sprite: 4 }
+                    { id: 'basil', name: this.tr('ingredient.basil'), sprite: 0 },
+                    { id: 'mint', name: this.tr('ingredient.mint'), sprite: 1 },
+                    { id: 'kuding', name: this.tr('ingredient.kuding'), sprite: 2 },
+                    { id: 'peanut', name: this.tr('ingredient.peanut'), sprite: 3 },
+                    { id: 'sesame', name: this.tr('ingredient.sesame'), sprite: 4 }
                 ]
             },
             chop: {
-                title: '小遊戲二・切配菜',
-                verb: '切料',
-                instruction: '從流動軌道依序拖上砧板，每一種食材快速連點 10 刀',
+                title: this.tr('station.tea.chop.title'),
+                verb: this.tr('station.tea.chop.verb'),
+                instruction: this.tr('station.tea.chop.instruction'),
                 target: 10,
-                unit: '刀',
+                unit: this.tr('station.tea.chop.unit'),
                 toolClass: 'chop',
                 items: [
-                    { id: 'long-bean', name: '長豆', sprite: 5 },
-                    { id: 'radish', name: '菜脯', sprite: 6 },
-                    { id: 'tree-veg', name: '樹仔菜', sprite: 7 },
-                    { id: 'tofu', name: '豆腐', sprite: 8 }
+                    { id: 'long-bean', name: this.tr('ingredient.longBean'), sprite: 5 },
+                    { id: 'radish', name: this.tr('ingredient.radish'), sprite: 6 },
+                    { id: 'tree-veg', name: this.tr('ingredient.treeVeg'), sprite: 7 },
+                    { id: 'tofu', name: this.tr('ingredient.tofu'), sprite: 8 }
                 ]
             }
         };
@@ -948,11 +948,11 @@ const StationDemoGame = {
         this.container.innerHTML = `
             <section class="station-panel station-result-panel">
                 <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>素材載入失敗</h1>
-                <p class="station-copy">請確認網路後再試一次，或先返回入口。</p>
+                <h1>${this.tr('station.tea.load.title')}</h1>
+                <p class="station-copy">${this.tr('station.tea.load.copy')}</p>
                 <div class="station-actions">
-                    <button type="button" class="station-primary" data-retry-load>重新載入</button>
-                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                    <button type="button" class="station-primary" data-retry-load>${this.tr('game.retryLoad')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
             </section>
         `;
@@ -993,7 +993,7 @@ const StationDemoGame = {
             timeLeft: this.teaStageDurationMs / 1000,
             stageDeadline: 0,
             transitioning: false,
-            feedback: '先看上方順序，把第一種食材拖下來',
+            feedback: this.tr('station.tea.firstIngredient'),
             finished: false
         };
         this.renderTeaStage();
@@ -1013,10 +1013,10 @@ const StationDemoGame = {
                 : index === this.state.currentIndex ? 'current' : '';
             return `<span class="${status}"><b>${index + 1}</b>${item.name}${status === 'done' ? ' ✓' : ''}</span>`;
         }).join('');
-        const ingredientSourceMarkup = '<div class="tea-moving-track" data-tea-track aria-label="移動食材軌道"><span class="tea-track-hint">拖曳目前指定食材・避開柴火和石頭</span></div>';
+        const ingredientSourceMarkup = `<div class="tea-moving-track" data-tea-track aria-label="${this.tr('station.tea.track')}"><span class="tea-track-hint">${this.tr('station.tea.trackHint')}</span></div>`;
         const progressText = this.state.processing
             ? `${this.state.actionProgress}/${config.target} ${config.unit}`
-            : `等待 ${expected ? expected.name : '完成'}`;
+            : this.tr('station.tea.waiting', { item: expected ? expected.name : this.tr('station.tea.done') });
         const progressPercent = this.state.processing
             ? Math.min(100, this.state.actionProgress / config.target * 100)
             : 0;
@@ -1046,20 +1046,20 @@ const StationDemoGame = {
 
         this.container.innerHTML = `
             <div class="station-play tea-play">
-                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
                 <div class="station-hud tea-hud">
                     <span>${config.title}</span>
-                    <span>進度 ${Math.min(this.state.currentIndex + 1, order.length)}/${order.length}</span>
-                    <span class="tea-timer${this.state.timeLeft <= 5 ? ' urgent' : ''}">剩餘 <b data-tea-time>${Math.ceil(this.state.timeLeft)}</b> 秒</span>
+                    <span>${this.tr('station.tea.progress', { current: Math.min(this.state.currentIndex + 1, order.length), total: order.length })}</span>
+                    <span class="tea-timer${this.state.timeLeft <= 5 ? ' urgent' : ''}">${this.tr('station.tea.remaining', { seconds: `<b data-tea-time>${Math.ceil(this.state.timeLeft)}</b>` })}</span>
                 </div>
                 <div class="tea-instruction">${config.instruction}</div>
-                <div class="tea-order" aria-label="正確順序">${orderMarkup}</div>
+                <div class="tea-order" aria-label="${this.tr('station.tea.order')}">${orderMarkup}</div>
                 <div class="tea-game-area">
                     ${ingredientSourceMarkup}
                     <div class="tea-workspace">
                         <div class="tea-drop-zone ${config.toolClass}${this.state.processing ? ' processing' : ''}" data-tea-drop>
                             ${toolMarkup}
-                            <span class="tea-target-label">${this.state.processing && expected ? `${expected.name}・${config.verb}` : `拖到這裡${config.verb}`}</span>
+                            <span class="tea-target-label">${this.state.processing && expected ? this.tr('station.tea.processing', { item: expected.name, verb: config.verb }) : this.tr('station.tea.dropHere', { verb: config.verb })}</span>
                             <span class="tea-action-progress">${progressText}</span>
                             <span class="tea-action-meter"><i style="width:${progressPercent}%"></i></span>
                         </div>
@@ -1144,7 +1144,7 @@ const StationDemoGame = {
         card.className = `tea-ingredient-card tea-moving-item${item.isDecoy ? ' tea-decoy' : ''}`;
         card.dataset.teaItem = item.id;
         card.dataset.teaInstance = instanceId;
-        card.setAttribute('aria-label', `拖曳${item.name}`);
+        card.setAttribute('aria-label', this.tr('station.tea.dragItem', { item: item.name }));
         if (item.isDecoy) {
             card.innerHTML = `
                 <span class="tea-decoy-art" aria-hidden="true"><img src="${item.image}" alt=""></span>
@@ -1191,9 +1191,9 @@ const StationDemoGame = {
     getTeaDecoyItem() {
         if (!this.state) return null;
         const decoys = [
-            { id: 'wood-small', name: '小柴', image: 'assets/images/station-fire/wood-small.png' },
-            { id: 'stone', name: '石頭', image: 'assets/images/station-tea/stone.png' },
-            { id: 'wood-large', name: '大柴', image: 'assets/images/station-fire/wood-large.png' }
+            { id: 'wood-small', name: this.tr('ingredient.woodSmall'), image: 'assets/images/station-fire/wood-small.png' },
+            { id: 'stone', name: this.tr('ingredient.stone'), image: 'assets/images/station-tea/stone.png' },
+            { id: 'wood-large', name: this.tr('ingredient.woodLarge'), image: 'assets/images/station-fire/wood-large.png' }
         ];
         const item = decoys[this.state.teaDecoySpawnCount++ % decoys.length];
         return { ...item, isDecoy: true };
@@ -1204,7 +1204,7 @@ const StationDemoGame = {
             if (!this.state || this.state.finished || this.state.transitioning) return;
             if (this.state.processing) {
                 const active = this.state.orders[this.state.phase][this.state.currentIndex];
-                this.flashTeaError(`請先完成${active.name}的${this.getTeaStageConfig(this.state.phase).verb}`, item.instanceId || item.id);
+                this.flashTeaError(this.tr('station.tea.finishActive', { item: active.name, verb: this.getTeaStageConfig(this.state.phase).verb }), item.instanceId || item.id);
                 return;
             }
             event.preventDefault();
@@ -1285,13 +1285,13 @@ const StationDemoGame = {
     handleTeaDrop(item) {
         if (!this.state || this.state.processing || this.state.transitioning) return;
         if (item.isDecoy) {
-            const destination = this.state.phase === 'grind' ? '擂缽' : '砧板';
-            this.flashTeaError(`${item.name}不能放進${destination}`, item.instanceId || item.id);
+            const destination = this.tr(this.state.phase === 'grind' ? 'station.tea.destination.mortar' : 'station.tea.destination.board');
+            this.flashTeaError(this.tr('station.tea.wrongDestination', { item: item.name, destination }), item.instanceId || item.id);
             return;
         }
         const expected = this.state.orders[this.state.phase][this.state.currentIndex];
         if (!expected || item.id !== expected.id) {
-            this.flashTeaError(`順序錯誤，下一個是${expected ? expected.name : '指定食材'}`, item.instanceId || item.id);
+            this.flashTeaError(this.tr('station.tea.wrongOrder', { item: expected ? expected.name : this.tr('station.tea.designated') }), item.instanceId || item.id);
             return;
         }
         const config = this.getTeaStageConfig(this.state.phase);
@@ -1300,7 +1300,7 @@ const StationDemoGame = {
         this.state.actionProgress = 0;
         this.state.rotationAngle = 0;
         this.state.lastPointerAngle = null;
-        this.state.feedback = `${item.name}已放入，開始${config.verb}`;
+        this.state.feedback = this.tr('station.tea.started', { item: item.name, verb: config.verb });
         this.playClick();
         this.renderTeaStage();
         if (this.mode === 'combined' && this.state.phase === 'grind' && this.state.currentIndex === 0 && !this.state.coachShown) {
@@ -1442,7 +1442,7 @@ const StationDemoGame = {
         this.state.processing = false;
         this.state.activeItemId = null;
         this.state.actionProgress = 0;
-        this.state.feedback = `${item.name}${config.verb}完成！`;
+        this.state.feedback = this.tr('station.tea.completed', { item: item.name, verb: config.verb });
         if (this.state.currentIndex >= this.state.orders[phase].length) {
             this.state.transitioning = true;
             this.renderTeaStage();
@@ -1450,7 +1450,7 @@ const StationDemoGame = {
             return;
         }
         const next = this.state.orders[phase][this.state.currentIndex];
-        this.state.feedback += ` 下一個是${next.name}`;
+        this.state.feedback += this.tr('station.tea.next', { item: next.name });
         this.renderTeaStage();
     },
 
@@ -1487,7 +1487,7 @@ const StationDemoGame = {
         this.state.activeItemId = null;
         this.state.timeLeft = 0;
         this.state.transitioning = true;
-        this.state.feedback = '時間到，師傅幫你完成剩餘步驟';
+        this.state.feedback = this.tr('station.tea.timeout');
         this.renderTeaStage();
         this.container.querySelector('.tea-play')?.classList.add('is-auto-completing');
         this.timers.push(setTimeout(() => this.completeTeaStage(), 1200));
@@ -1505,7 +1505,7 @@ const StationDemoGame = {
             this.state.rotationAngle = 0;
             this.state.lastPointerAngle = null;
             this.state.transitioning = false;
-            this.state.feedback = '配菜時間！先把第一種食材拖上砧板';
+            this.state.feedback = this.tr('station.tea.chopStart');
             this.renderTeaStage();
             this.startTeaTimer();
             return;
@@ -1525,19 +1525,19 @@ const StationDemoGame = {
         this.container.innerHTML = `
             <section class="station-panel station-result-panel tea-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>擂茶組合完成</h1>
+                <h1>${this.tr('station.tea.result.title')}</h1>
                 <div class="tea-result-layout">
-                    <div class="tea-result-art" role="img" aria-label="擂茶與配菜組合"></div>
+                    <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
                     <div class="tea-result-copy">
-                        <p class="station-subtitle">九層塔・薄荷・苦刺心・花生・芝麻</p>
-                        <p class="station-subtitle">長豆・菜脯・樹仔菜・豆腐</p>
+                        <p class="station-subtitle">${this.tr('station.tea.result.grindIngredients')}</p>
+                        <p class="station-subtitle">${this.tr('station.tea.result.chopIngredients')}</p>
                         <p class="station-copy">${this.station.success}</p>
-                        ${usedHelp ? '<p class="tea-assisted-note">這次有師傅協助補完，下一次試著在倒數內完成吧！</p>' : '<p class="tea-perfect-note">兩段都在時間內完成，手腳真俐落！</p>'}
+                        ${usedHelp ? `<p class="tea-assisted-note">${this.tr('station.tea.result.assisted')}</p>` : `<p class="tea-perfect-note">${this.tr('station.tea.result.perfect')}</p>`}
                     </div>
                 </div>
                 <div class="station-actions">
-                    <button type="button" class="station-primary" data-retry>再玩一次</button>
-                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                    <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
                 <img class="station-guide station-guide-result" src="${this.station.guideImage}" alt="${this.station.guideAlt}">
             </section>
@@ -1553,7 +1553,11 @@ const StationDemoGame = {
         const totalScore = Math.round(this.state.score + fireScore + mistakeBonus);
         const success = totalScore >= 2400 && this.isFireInSafeRange();
         this.state.score = totalScore;
-        this.station.fireSummary = `分數 ${totalScore}，火候 ${Math.round(this.state.fire)}%，失誤 ${this.state.maxMistakes - this.state.mistakesRemaining} 次。`;
+        this.station.fireSummary = this.tr('station.fire.summary', {
+            score: totalScore,
+            heat: Math.round(this.state.fire),
+            mistakes: this.state.maxMistakes - this.state.mistakesRemaining
+        });
         if (this.mode === 'combined') {
             this.finishCombinedFire();
             return;
@@ -1575,11 +1579,11 @@ const StationDemoGame = {
         this.container.innerHTML = `
             <section class="station-panel station-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>${success ? '挑戰成功' : '再試一次'}</h1>
+                <h1>${this.tr(success ? 'station.fire.result.success' : 'station.fire.result.retry')}</h1>
                 <p class="station-copy">${message}</p>
                 <div class="station-actions">
-                    <button type="button" class="station-primary" data-retry>再玩一次</button>
-                    <button type="button" class="station-secondary" data-back>返回入口</button>
+                    <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
                 <img class="station-guide station-guide-result" src="${this.station.guideImage}" alt="${this.station.guideAlt}">
             </section>

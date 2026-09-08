@@ -128,8 +128,8 @@
 
     <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
     <script src="js/i18n/i18n.js?v=44"></script>
-    <script src="js/i18n/zh-Hant.js?v=45"></script>
-    <script src="js/i18n/zh-Hans.js?v=45"></script>
+    <script src="js/i18n/zh-Hant.js?v=46"></script>
+    <script src="js/i18n/zh-Hans.js?v=46"></script>
 
     <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js"></script>
@@ -139,17 +139,17 @@
     <script src="js/core/SceneManager.js"></script>
 
     <!-- ========== 現行站點資料 ========== -->
-    <script src="js/data/stationCombinedStory.js?v=45"></script>
-    <script src="js/data/station34CombinedStory.js?v=45"></script>
-    <script src="js/data/cakePatterns.js?v=45"></script>
+    <script src="js/data/stationCombinedStory.js?v=46"></script>
+    <script src="js/data/station34CombinedStory.js?v=46"></script>
+    <script src="js/data/cakePatterns.js?v=46"></script>
     <script src="js/data/combinedStoryPacing.js?v=43"></script>
 
     <!-- ========== 現行站點玩法 ========== -->
     <script src="js/minigames/EndingScreen.js?v=44"></script>
-    <script src="js/minigames/CradleStationGame.js?v=45"></script>
-    <script src="js/minigames/CakeStationGame.js?v=45"></script>
-    <script src="js/minigames/Station34CombinedGame.js?v=45"></script>
-    <script src="js/minigames/StationDemoGame.js?v=45"></script>
+    <script src="js/minigames/CradleStationGame.js?v=46"></script>
+    <script src="js/minigames/CakeStationGame.js?v=46"></script>
+    <script src="js/minigames/Station34CombinedGame.js?v=46"></script>
+    <script src="js/minigames/StationDemoGame.js?v=46"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
     <script src="js/main.js?v=44"></script>
@@ -158,7 +158,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=45').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=46').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);

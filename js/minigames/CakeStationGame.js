@@ -76,23 +76,23 @@ const CakeStationGame = {
         const isLast = index === this.patterns.length - 1;
         this.container.innerHTML = `
             <section class="cake-card-panel">
-                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
-                <div class="cake-step-label">花紋介紹 ${index + 1} / ${this.patterns.length}</div>
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
+                <div class="cake-step-label">${this.tr('station.cake.intro.progress', { current: index + 1, total: this.patterns.length })}</div>
                 <div class="cake-intro-card">
                     <div class="cake-pattern-frame"><img src="${pattern.introImage}" alt="${pattern.name}"></div>
                     <div class="cake-intro-copy">
-                        <div class="station-kicker-line">關卡四 / 站點 4</div>
+                        <div class="station-kicker-line">${this.tr('station.cake.kicker')}</div>
                         <h1>${pattern.name}</h1>
                         <p class="cake-meaning">${pattern.meaning}</p>
                         <p>${pattern.blessing}</p>
                     </div>
                 </div>
-                <div class="cake-intro-dots" aria-label="介紹進度">
+                <div class="cake-intro-dots" aria-label="${this.tr('station.cake.intro.aria')}">
                     ${this.patterns.map((item, itemIndex) => `<span class="${itemIndex <= index ? 'read' : ''}">${item.name}</span>`).join('')}
                 </div>
                 <div class="station-actions cake-actions">
-                    ${index > 0 ? '<button type="button" class="station-secondary" data-prev>上一張</button>' : ''}
-                    <button type="button" class="station-primary" data-next>${isLast ? '開始連連看' : '下一張'}</button>
+                    ${index > 0 ? `<button type="button" class="station-secondary" data-prev>${this.tr('station.cake.intro.prev')}</button>` : ''}
+                    <button type="button" class="station-primary" data-next>${this.tr(isLast ? 'station.cake.intro.startMatch' : 'station.cake.intro.next')}</button>
                 </div>
             </section>`;
         this.listen(this.container.querySelector('[data-exit]'), 'click', () => this.close());
@@ -124,34 +124,34 @@ const CakeStationGame = {
             const matched = this.state.matchedIds.includes(id);
             return `<div class="cake-match-card cake-match-pattern ${matched ? 'matched' : ''}" data-card-side="top" data-pattern-id="${id}">
                 <img src="${pattern.introImage}" alt="${pattern.name}">
-                <button type="button" class="cake-connector cake-connector-bottom" data-connector data-side="top" data-pattern-id="${id}" ${matched ? 'disabled' : ''} aria-label="從${pattern.name}開始連線"></button>
+                <button type="button" class="cake-connector cake-connector-bottom" data-connector data-side="top" data-pattern-id="${id}" ${matched ? 'disabled' : ''} aria-label="${this.tr('station.cake.match.from', { name: pattern.name })}"></button>
             </div>`;
         }).join('');
         const bottomCards = this.state.bottomOrder.map((id) => {
             const pattern = this.getPattern(id);
             const matched = this.state.matchedIds.includes(id);
             return `<div class="cake-match-card cake-match-meaning ${matched ? 'matched' : ''}" data-card-side="bottom" data-pattern-id="${id}">
-                <button type="button" class="cake-connector cake-connector-top" data-connector data-side="bottom" data-pattern-id="${id}" ${matched ? 'disabled' : ''} aria-label="連到${pattern.meaning}"></button>
+                <button type="button" class="cake-connector cake-connector-top" data-connector data-side="bottom" data-pattern-id="${id}" ${matched ? 'disabled' : ''} aria-label="${this.tr('station.cake.match.to', { meaning: pattern.meaning })}"></button>
                 <strong>${pattern.meaning}</strong>
             </div>`;
         }).join('');
         this.container.innerHTML = `
             <section class="cake-match-panel">
-                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
                 <div class="cake-heading-row">
-                    <div><div class="station-kicker-line">關卡四 / 站點 4</div><h1>花紋連連看</h1></div>
-                    <p>從花紋卡拖到正確寓意卡，靠近卡片就會自動吸附。</p>
+                    <div><div class="station-kicker-line">${this.tr('station.cake.kicker')}</div><h1>${this.tr('station.cake.match.title')}</h1></div>
+                    <p>${this.tr('station.cake.match.help')}</p>
                 </div>
                 <div class="cake-match-board" data-match-board>
                     <svg class="cake-match-lines" data-match-lines aria-hidden="true"><path class="cake-live-line" data-live-line></path></svg>
-                    <div class="cake-match-row cake-match-top" aria-label="花紋圖像">${topCards}</div>
-                    <div class="cake-match-gap" aria-hidden="true"><span>拖曳連線</span></div>
-                    <div class="cake-match-row cake-match-bottom" aria-label="寓意字詞">${bottomCards}</div>
+                    <div class="cake-match-row cake-match-top" aria-label="${this.tr('station.cake.match.patterns')}">${topCards}</div>
+                    <div class="cake-match-gap" aria-hidden="true"><span>${this.tr('station.cake.match.drag')}</span></div>
+                    <div class="cake-match-row cake-match-bottom" aria-label="${this.tr('station.cake.match.meanings')}">${bottomCards}</div>
                 </div>
                 <div class="cake-match-feedback" data-match-feedback aria-live="polite">
-                    ${allMatched ? '四組都配對完成，可以選擇想做的花紋了！' : `已完成 ${this.state.matchedIds.length} / ${this.patterns.length} 組`}
+                    ${allMatched ? this.tr('station.cake.match.complete') : this.tr('station.cake.match.count', { current: this.state.matchedIds.length, total: this.patterns.length })}
                 </div>
-                <div class="station-actions cake-actions"><button type="button" class="station-primary" data-to-select ${allMatched ? '' : 'disabled'}>選擇花紋</button></div>
+                <div class="station-actions cake-actions"><button type="button" class="station-primary" data-to-select ${allMatched ? '' : 'disabled'}>${this.tr('station.cake.match.select')}</button></div>
             </section>`;
         this.listen(this.container.querySelector('[data-exit]'), 'click', () => this.close());
         this.container.querySelectorAll('[data-card-side]').forEach((card) => {
@@ -199,7 +199,7 @@ const CakeStationGame = {
             if (target) {
                 this.resolveMatch(sourceId, target.dataset.patternId, source, target);
             } else {
-                this.setMatchFeedback('再靠近另一排的卡片一點，就會自動吸附。');
+                this.setMatchFeedback(this.tr('station.cake.match.near'));
             }
         };
         const cancel = (cancelEvent) => {
@@ -240,7 +240,7 @@ const CakeStationGame = {
             this.state.keyboardEndpoint = endpoint;
             this.container.querySelectorAll('.cake-match-card.keyboard-selected').forEach((card) => card.classList.remove('keyboard-selected'));
             event.currentTarget.closest('.cake-match-card')?.classList.add('keyboard-selected');
-            this.setMatchFeedback('已選第一個端點，再選另一排的小點。');
+            this.setMatchFeedback(this.tr('station.cake.match.firstEndpoint'));
             return;
         }
         const source = this.state.keyboardEndpoint;
@@ -258,7 +258,7 @@ const CakeStationGame = {
         }
         this.state.resolvingMatch = true;
         [sourceConnector, targetConnector].forEach((connector) => connector?.closest('.cake-match-card')?.classList.add('wrong'));
-        this.setMatchFeedback('這兩個不相配，紅線消失後再試一次。');
+        this.setMatchFeedback(this.tr('station.cake.match.wrong'));
         this.playWrong();
         this.timers.push(setTimeout(() => {
             if (!this.state) return;
@@ -329,17 +329,17 @@ const CakeStationGame = {
         this.state.selectedPatternId = null;
         this.container.innerHTML = `
             <section class="cake-select-panel">
-                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
-                <div class="station-kicker-line">關卡四 / 站點 4</div>
-                <h1>選一個祝福花紋</h1>
-                <p class="cake-select-help">等等要旋轉粿印棒，找出你選的這一面。</p>
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
+                <div class="station-kicker-line">${this.tr('station.cake.kicker')}</div>
+                <h1>${this.tr('station.cake.select.title')}</h1>
+                <p class="cake-select-help">${this.tr('station.cake.select.help')}</p>
                 <div class="cake-pattern-options">
                     ${this.patterns.map((pattern) => `<button type="button" class="cake-pattern-option" data-select-pattern="${pattern.id}">
                         <span class="cake-option-image"><img src="${pattern.introImage}" alt=""></span>
                         <strong>${pattern.name}</strong><span>${pattern.meaning}</span>
                     </button>`).join('')}
                 </div>
-                <div class="station-actions cake-actions"><button type="button" class="station-primary" data-confirm-pattern disabled>開始製作</button></div>
+                <div class="station-actions cake-actions"><button type="button" class="station-primary" data-confirm-pattern disabled>${this.tr('station.cake.select.start')}</button></div>
             </section>`;
         this.listen(this.container.querySelector('[data-exit]'), 'click', () => this.close());
         this.container.querySelectorAll('[data-select-pattern]').forEach((button) => {
@@ -369,32 +369,32 @@ const CakeStationGame = {
         this.cancelHold(true);
         const step = this.state.makeStep;
         const prompt = {
-            dough: '先把左邊的米糰拖到中央圓盤。',
-            rotate: `左右旋轉粿印棒，找到「${target.name}」。`,
-            move: '圖案正確！把右邊的粿印棒拖到中央。',
-            press: '模具已對準，按住粿印棒 1 秒完成壓印。'
+            dough: this.tr('station.cake.make.feedback.dough'),
+            rotate: this.tr('station.cake.make.feedback.rotate', { name: target.name }),
+            move: this.tr('station.cake.make.feedback.move'),
+            press: this.tr('station.cake.make.feedback.press')
         }[step];
         const stepIndex = ['dough', 'rotate', 'move', 'press'].indexOf(step);
         this.container.innerHTML = `
             <section class="cake-making-panel" data-make-step="${step}">
-                <button type="button" class="station-secondary station-corner-exit" data-exit>離開</button>
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
                 <div class="cake-making-header">
-                    <div><span class="station-kicker-line">製作紅粿</span><strong>目標：${target.name}</strong></div>
+                    <div><span class="station-kicker-line">${this.tr('station.cake.make.kicker')}</span><strong>${this.tr('station.cake.make.target', { name: target.name })}</strong></div>
                     <div class="cake-target-chip"><img src="${target.introImage}" alt=""><span>${target.meaning}</span></div>
                 </div>
-                <ol class="cake-step-track" aria-label="製作步驟">
-                    ${['放米糰', '轉到對的花紋', '移動粿印棒', '長按壓印'].map((label, index) => `<li class="${index < stepIndex ? 'done' : index === stepIndex ? 'current' : ''}"><span>${index < stepIndex ? '✓' : index + 1}</span>${label}</li>`).join('')}
+                <ol class="cake-step-track" aria-label="${this.tr('station.cake.make.steps')}">
+                    ${['dough', 'rotate', 'move', 'press'].map((stepId, index) => `<li class="${index < stepIndex ? 'done' : index === stepIndex ? 'current' : ''}"><span>${index < stepIndex ? '✓' : index + 1}</span>${this.tr(`station.cake.make.step.${stepId}`)}</li>`).join('')}
                 </ol>
                 <div class="cake-guidance" data-making-feedback aria-live="polite"><span class="cake-hand-hint">☝</span><strong>${prompt}</strong></div>
                 <div class="cake-workbench" data-workbench>
-                    <div class="cake-zone-label cake-left-label">米糰</div>
-                    <div class="cake-zone-label cake-center-label">壓印區</div>
-                    <div class="cake-zone-label cake-right-label">粿印棒</div>
+                    <div class="cake-zone-label cake-left-label">${this.tr('station.cake.make.dough')}</div>
+                    <div class="cake-zone-label cake-center-label">${this.tr('station.cake.make.pressZone')}</div>
+                    <div class="cake-zone-label cake-right-label">${this.tr('station.cake.make.tool')}</div>
                     <div class="cake-dough-tray" aria-hidden="true"></div>
-                    <div class="cake-work-zone ${this.state.doughPositioned ? 'has-dough' : ''}" data-work-zone><span>${this.state.doughPositioned ? '米糰已就位' : '放在這裡'}</span></div>
-                    <button type="button" class="cake-dough ${this.state.doughPositioned ? 'snapped' : ''}" data-dough aria-label="${this.state.doughPositioned ? '已定位的米糰' : '拖曳米糰到中央'}" ${this.state.doughPositioned ? 'tabindex="-1"' : ''}></button>
+                    <div class="cake-work-zone ${this.state.doughPositioned ? 'has-dough' : ''}" data-work-zone><span>${this.tr(this.state.doughPositioned ? 'station.cake.make.doughReady' : 'station.cake.make.placeHere')}</span></div>
+                    <button type="button" class="cake-dough ${this.state.doughPositioned ? 'snapped' : ''}" data-dough aria-label="${this.tr(this.state.doughPositioned ? 'station.cake.make.doughReadyAria' : 'station.cake.make.dragDough')}" ${this.state.doughPositioned ? 'tabindex="-1"' : ''}></button>
                     <div class="cake-mold-dock"></div>
-                    <button type="button" class="cake-mold-tool ${this.state.moldPositioned ? 'positioned' : ''} step-${step}" data-mold-tool aria-label="目前是${face.name}的四面粿印棒">
+                    <button type="button" class="cake-mold-tool ${this.state.moldPositioned ? 'positioned' : ''} step-${step}" data-mold-tool aria-label="${this.tr('station.cake.make.toolFace', { name: face.name })}">
                         <span class="cake-mold-handle"><i></i></span>
                         <span class="cake-mold-block">
                             <span class="cake-mold-face"><img src="${face.moldImage}" alt=""><b>${face.name}</b></span>
@@ -402,12 +402,12 @@ const CakeStationGame = {
                             <span class="cake-press-fill" data-hold-fill></span>
                         </span>
                     </button>
-                    ${step === 'rotate' ? `<div class="cake-rotate-controls" aria-label="旋轉粿印棒">
-                        <button type="button" data-rotate="-1" aria-label="向左旋轉">↶</button>
-                        <span>拖曳或按箭頭旋轉</span>
-                        <button type="button" data-rotate="1" aria-label="向右旋轉">↷</button>
+                    ${step === 'rotate' ? `<div class="cake-rotate-controls" aria-label="${this.tr('station.cake.make.rotateAria')}">
+                        <button type="button" data-rotate="-1" aria-label="${this.tr('station.cake.make.rotateLeft')}">↶</button>
+                        <span>${this.tr('station.cake.make.rotateHint')}</span>
+                        <button type="button" data-rotate="1" aria-label="${this.tr('station.cake.make.rotateRight')}">↷</button>
                     </div>` : ''}
-                    ${step === 'press' ? '<div class="cake-hold-label">按住不放<br><strong>1 秒</strong></div>' : ''}
+                    ${step === 'press' ? `<div class="cake-hold-label">${this.tr('station.cake.make.hold')}<br><strong>${this.tr('station.cake.make.oneSecond')}</strong></div>` : ''}
                 </div>
             </section>`;
         this.listen(this.container.querySelector('[data-exit]'), 'click', () => this.close());
@@ -494,7 +494,7 @@ const CakeStationGame = {
                 else this.snapMold();
             } else {
                 object.removeAttribute('style');
-                this.setMakingFeedback(type === 'dough' ? '米糰要放到中央圓盤，已幫你送回左邊。' : '粿印棒要移到中央米糰上，已幫你送回右邊。');
+                this.setMakingFeedback(this.tr(type === 'dough' ? 'station.cake.make.returnDough' : 'station.cake.make.returnTool'));
             }
         };
         const cancel = (cancelEvent) => {
@@ -527,7 +527,7 @@ const CakeStationGame = {
             cleanup();
             const delta = finishEvent.clientX - startX;
             if (Math.abs(delta) < 18) {
-                this.setMakingFeedback('在粿印棒上左右拖曳，或按下方箭頭旋轉。');
+                this.setMakingFeedback(this.tr('station.cake.make.rotateFeedback'));
                 return;
             }
             this.rotateMold(delta < 0 ? 1 : -1);
@@ -548,7 +548,7 @@ const CakeStationGame = {
         this.playClick();
         if (face.id === this.state.selectedPatternId) this.state.makeStep = 'move';
         this.showMaking();
-        if (this.state.makeStep === 'rotate') this.setMakingFeedback(`現在是「${face.name}」，目標不是這一面，繼續旋轉。`);
+        if (this.state.makeStep === 'rotate') this.setMakingFeedback(this.tr('station.cake.make.wrongFace', { name: face.name }));
     },
 
     snapMold() {
@@ -568,7 +568,7 @@ const CakeStationGame = {
         if (!this.state || this.state.makeStep !== 'press' || this.state.holding) return;
         this.state.holding = true;
         this.state.holdStartedAt = performance.now();
-        this.setMakingFeedback('穩穩按住，不要放開……');
+        this.setMakingFeedback(this.tr('station.cake.make.holding'));
         this.clearHoldTimers();
         // 進度條動畫靠 rAF，但「壓滿一秒」的判定改用實際經過時間，
         // 避免分頁被切到背景時 rAF 被凍結導致按住永遠壓不滿。
@@ -611,7 +611,7 @@ const CakeStationGame = {
         this.state.holding = false;
         const fill = this.container?.querySelector('[data-hold-fill]');
         if (fill) fill.style.height = '0%';
-        if (!silent) this.setMakingFeedback('還差一點！要按住滿一秒，再試一次。');
+        if (!silent) this.setMakingFeedback(this.tr('station.cake.make.holdShort'));
     },
 
     finishCake() {
@@ -655,21 +655,21 @@ const CakeStationGame = {
                 <div class="cake-result-art">
                     <div class="cake-serving-leaf" aria-hidden="true"></div>
                     <div class="cake-finished-cake cake-finished-${pattern.id}">
-                        <span class="cake-emboss-ring"><img src="${pattern.cakeImage}" alt="${pattern.name}紅粿壓紋"></span>
+                        <span class="cake-emboss-ring"><img src="${pattern.cakeImage}" alt="${this.tr('station.cake.result.alt', { name: pattern.name })}"></span>
                     </div>
-                    <span class="cake-result-caption">剛壓好的${pattern.name}紅粿</span>
+                    <span class="cake-result-caption">${this.tr('station.cake.result.caption', { name: pattern.name })}</span>
                 </div>
                 <div class="cake-result-copy">
-                    <div class="station-kicker-line">紅粿完成</div><h1>${pattern.name}</h1>
+                    <div class="station-kicker-line">${this.tr('station.cake.result.kicker')}</div><h1>${pattern.name}</h1>
                     <p class="cake-meaning">${pattern.meaning}</p><p>${pattern.blessing}</p>
-                    <div class="cake-card-actions" aria-label="祝福卡分享與下載">
-                        <button type="button" class="station-primary cake-card-action" data-share-card><span aria-hidden="true">↗</span> 分享祝福卡</button>
-                        <button type="button" class="station-secondary cake-card-action" data-download-card><span aria-hidden="true">⇩</span> 下載卡片</button>
+                    <div class="cake-card-actions" aria-label="${this.tr('station.cake.result.actions')}">
+                        <button type="button" class="station-primary cake-card-action" data-share-card><span aria-hidden="true">↗</span> ${this.tr('station.cake.result.share')}</button>
+                        <button type="button" class="station-secondary cake-card-action" data-download-card><span aria-hidden="true">⇩</span> ${this.tr('station.cake.result.download')}</button>
                     </div>
                     <p class="cake-share-feedback" data-share-feedback aria-live="polite"></p>
                     <div class="station-actions cake-actions">
-                        <button type="button" class="station-primary" data-again>再做一塊</button>
-                        <button type="button" class="station-secondary" data-back>返回入口</button>
+                        <button type="button" class="station-primary" data-again>${this.tr('station.cake.result.again')}</button>
+                        <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                     </div>
                 </div>
             </section>`;
@@ -683,6 +683,15 @@ const CakeStationGame = {
     },
 
     async createBlessingCard(pattern) {
+        const fontFamily = window.I18n?.getLocale?.() === 'zh-Hans' ? 'Noto Serif SC' : 'Noto Serif TC';
+        if (document.fonts?.load) {
+            await Promise.race([
+                Promise.all([400, 700].map((weight) =>
+                    document.fonts.load(`${weight} 34px "${fontFamily}"`).catch(() => [])
+                )),
+                new Promise((resolve) => setTimeout(resolve, 1500))
+            ]);
+        }
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
         canvas.height = 1350;
@@ -696,9 +705,9 @@ const CakeStationGame = {
         context.lineWidth = 8;
         context.strokeRect(42, 42, 996, 1266);
         context.fillStyle = '#e8ca78';
-        context.font = '700 34px "Noto Sans TC", sans-serif';
+        context.font = `700 34px "${fontFamily}", serif`;
         context.textAlign = 'center';
-        context.fillText('我在森美蘭客家博物館想起您', 540, 125);
+        context.fillText(this.tr('station.cake.card.heading'), 540, 125);
 
         context.save();
         context.translate(540, 575);
@@ -745,17 +754,17 @@ const CakeStationGame = {
         }
 
         context.fillStyle = '#fff4d2';
-        context.font = '900 82px "Noto Serif TC", serif';
+        context.font = `700 82px "${fontFamily}", serif`;
         context.fillText(pattern.name, 540, 985);
         context.fillStyle = '#f1c65c';
-        context.font = '700 47px "Noto Sans TC", sans-serif';
+        context.font = `700 47px "${fontFamily}", serif`;
         context.fillText(pattern.meaning, 540, 1065);
         context.fillStyle = '#f7edda';
-        context.font = '400 35px "Noto Sans TC", sans-serif';
+        context.font = `400 35px "${fontFamily}", serif`;
         context.fillText(pattern.blessing, 540, 1135);
         context.fillStyle = '#b9c9bd';
-        context.font = '400 26px "Noto Sans TC", sans-serif';
-        context.fillText('紅粿祝福卡', 540, 1245);
+        context.font = `400 26px "${fontFamily}", serif`;
+        context.fillText(this.tr('station.cake.card.footer'), 540, 1245);
 
         return new Promise((resolve, reject) => canvas.toBlob((blob) => {
             if (blob) resolve(blob);
@@ -773,41 +782,41 @@ const CakeStationGame = {
     },
 
     async downloadBlessingCard(pattern) {
-        this.setShareFeedback('正在製作卡片…');
+        this.setShareFeedback(this.tr('station.cake.card.creating'));
         try {
             const blob = await this.createBlessingCard(pattern);
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `紅粿祝福卡-${pattern.name}.png`;
+            link.download = this.tr('station.cake.card.filename', { name: pattern.name });
             link.click();
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            this.setShareFeedback('卡片已下載，可以收藏或傳給朋友。');
+            this.setShareFeedback(this.tr('station.cake.card.downloaded'));
         } catch (error) {
             console.error(error);
-            this.setShareFeedback('卡片製作失敗，請再試一次。');
+            this.setShareFeedback(this.tr('station.cake.card.failed'));
         }
     },
 
     async shareBlessingCard(pattern) {
-        this.setShareFeedback('正在製作分享卡…');
+        this.setShareFeedback(this.tr('station.cake.card.creatingShare'));
         try {
             const blob = await this.createBlessingCard(pattern);
-            const file = new File([blob], `紅粿祝福卡-${pattern.name}.png`, { type: 'image/png' });
+            const file = new File([blob], this.tr('station.cake.card.filename', { name: pattern.name }), { type: 'image/png' });
             if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-                await navigator.share({ title: `${pattern.name}紅粿祝福卡`, text: `${pattern.meaning}｜${pattern.blessing}`, files: [file] });
-                this.setShareFeedback('祝福卡已分享。');
+                await navigator.share({ title: this.tr('station.cake.card.shareTitle', { name: pattern.name }), text: `${pattern.meaning}｜${pattern.blessing}`, files: [file] });
+                this.setShareFeedback(this.tr('station.cake.card.shared'));
                 return;
             }
             await this.downloadBlessingCard(pattern);
-            this.setShareFeedback('此裝置不支援分享面板，已改為下載卡片。');
+            this.setShareFeedback(this.tr('station.cake.card.shareUnsupported'));
         } catch (error) {
             if (error?.name === 'AbortError') {
-                this.setShareFeedback('已取消分享。');
+                this.setShareFeedback(this.tr('station.cake.card.shareCancelled'));
                 return;
             }
             console.error(error);
-            this.setShareFeedback('目前無法分享，請改用下載卡片。');
+            this.setShareFeedback(this.tr('station.cake.card.shareFailed'));
         }
     },
 
@@ -818,7 +827,7 @@ const CakeStationGame = {
 
     showDataError() {
         if (!this.container) return;
-        this.container.innerHTML = `<section class="station-panel"><h1>花紋資料載入失敗</h1><p>請重新整理頁面後再試。</p><button type="button" class="station-secondary" data-back>返回入口</button></section>`;
+        this.container.innerHTML = `<section class="station-panel"><h1>${this.tr('station.cake.dataError.title')}</h1><p>${this.tr('station.cake.dataError.copy')}</p><button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button></section>`;
         this.listen(this.container.querySelector('[data-back]'), 'click', () => this.close());
     },
 

@@ -128,7 +128,86 @@ function loadI18n(extra = {}) {
     const extraInHans = hansKeys.filter((k) => hantKeys.indexOf(k) === -1);
     assert.deepStrictEqual(missingInHans, [], 'zh-Hans 缺少 key: ' + missingInHans.join(', '));
     assert.deepStrictEqual(extraInHans, [], 'zh-Hans 多出 key: ' + extraInHans.join(', '));
+    hantKeys.forEach((key) => {
+        const tokens = (value) => Array.from(String(value).matchAll(/\{\{(\w+)\}\}/g), (match) => match[1]).sort();
+        assert.deepStrictEqual(
+            tokens(I18n.dicts['zh-Hans'][key]),
+            tokens(I18n.dicts['zh-Hant'][key]),
+            `繁簡 token 不一致: ${key}`
+        );
+    });
     assert.ok(hantKeys.length >= 30, '殼層 key 數量合理');
+}
+
+// --- #42 / #43：資料 key 與玩法程式引用的靜態 key 都必須存在 ---
+{
+    const { I18n } = loadI18n();
+    const dictionary = I18n.dicts['zh-Hant'];
+    const files = [
+        'js/data/stationCombinedStory.js',
+        'js/data/station34CombinedStory.js',
+        'js/data/cakePatterns.js',
+        'js/minigames/StationDemoGame.js',
+        'js/minigames/CradleStationGame.js',
+        'js/minigames/CakeStationGame.js',
+        'js/minigames/Station34CombinedGame.js'
+    ];
+    const missing = [];
+    files.forEach((file) => {
+        const source = fs.readFileSync(path.join(root, file), 'utf8');
+        const patterns = [
+            /\b(?:speaker|text|cue|actionLabel|name|meaning|blessing)Key:\s*['"]([^'"]+)['"]/g,
+            /\btr\(\s*['"]([^'"]+)['"]/g
+        ];
+        patterns.forEach((pattern) => {
+            for (const match of source.matchAll(pattern)) {
+                if (!Object.prototype.hasOwnProperty.call(dictionary, match[1])) missing.push(`${file}: ${match[1]}`);
+            }
+        });
+    });
+    ['dough', 'rotate', 'move', 'press'].forEach((step) => {
+        const key = `station.cake.make.step.${step}`;
+        if (!Object.prototype.hasOwnProperty.call(dictionary, key)) missing.push(`dynamic: ${key}`);
+    });
+    assert.deepStrictEqual(missing, [], '程式引用了不存在的 i18n key:\n' + missing.join('\n'));
+
+    const cakeSource = fs.readFileSync(path.join(root, 'js/minigames/CakeStationGame.js'), 'utf8');
+    assert.ok(cakeSource.includes("window.I18n?.getLocale?.() === 'zh-Hans'"), '祝福卡字型應依 locale 選 TC / SC');
+    assert.ok(cakeSource.includes('document.fonts.load'), '祝福卡繪製前應等待字型');
+    assert.ok(cakeSource.includes("this.tr('station.cake.card.heading')"), '祝福卡標題應走 i18n');
+    assert.ok(cakeSource.includes("this.tr('station.cake.card.footer')"), '祝福卡頁尾應走 i18n');
+}
+
+// --- 劇情與粿印資料能依目前 locale 解析，token 也在 t() 階段完成內插 ---
+{
+    const { I18n, context } = loadI18n();
+    for (const file of [
+        'js/data/stationCombinedStory.js',
+        'js/data/station34CombinedStory.js',
+        'js/data/cakePatterns.js',
+        'js/minigames/StationDemoGame.js',
+        'js/minigames/CakeStationGame.js',
+        'js/minigames/Station34CombinedGame.js'
+    ]) {
+        vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context);
+    }
+
+    I18n.init();
+    const opening = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.opening.lines[0]);
+    assert.strictEqual(opening.speaker, '阿嬤');
+    assert.ok(opening.text.includes('廚房'));
+    assert.strictEqual(context.CakeStationGame.patterns[0].name, '龜紋');
+
+    I18n.setLocale('zh-Hans');
+    const ending = context.Station34CombinedGame.localizeLine(
+        context.Station34CombinedStory.sections.ending.lines[0],
+        { patternName: '桃纹', meaning: '福寿吉祥' }
+    );
+    assert.strictEqual(ending.speaker, '阿嬷');
+    assert.ok(ending.text.includes('桃纹'));
+    assert.ok(!ending.text.includes('{{patternName}}'));
+    assert.strictEqual(context.CakeStationGame.patterns[0].name, '龟纹');
+    assert.strictEqual(context.CakeStationGame.patterns[2].meaning, '年年有余');
 }
 
 console.log('i18n ok');
