@@ -11,6 +11,19 @@ const CakeStationGame = {
     onComplete: null,
     onExit: null,
 
+    tr(key, tokens) {
+        return typeof window.t === 'function' ? window.t(key, tokens) : key;
+    },
+
+    localizePattern(pattern) {
+        return {
+            ...pattern,
+            name: pattern.nameKey ? this.tr(pattern.nameKey) : pattern.name,
+            meaning: pattern.meaningKey ? this.tr(pattern.meaningKey) : pattern.meaning,
+            blessing: pattern.blessingKey ? this.tr(pattern.blessingKey) : pattern.blessing
+        };
+    },
+
     start(options = {}) {
         this.stop();
         this.mode = options.mode || 'standalone';
@@ -39,7 +52,9 @@ const CakeStationGame = {
     },
 
     get patterns() {
-        return Array.isArray(window.CakePatterns) ? window.CakePatterns : [];
+        return Array.isArray(window.CakePatterns)
+            ? window.CakePatterns.map((pattern) => this.localizePattern(pattern))
+            : [];
     },
 
     createShell() {
