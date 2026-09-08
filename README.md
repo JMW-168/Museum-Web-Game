@@ -6,6 +6,7 @@
 
 ## 目前可用狀態
 
+- 首頁左上角可切換繁體中文與簡體中文介面（選單、模式選擇與關卡入口已支援並會記住選擇）；劇情與玩法文字的簡體化仍在進行中。
 - 可選擇小朋友版或一般版；小朋友版提供注音字型與簡化引導。
 - 首頁使用森美蘭客家文化博物館主視覺與動態標題，點擊「搭乘時光機」後直接進入遊戲入口，不再播放進場影片。
 - 四個站點均已接入正式博物館場景背景；前兩站並由阿嬤、阿公角色引導玩家。
@@ -46,7 +47,7 @@ python -m http.server 8765
 
 請務必在含有 `index.html` 的專案根目錄執行伺服器。如果瀏覽器顯示的是資料夾清單，代表伺服器從上一層目錄啟動；請停止伺服器、進入專案根目錄後重新執行指令。
 
-首次載入會連線取得 Google Fonts；主要遊戲圖片、音效與注音字型皆存放於 repo 內。
+首次載入會連線取得 Google Fonts（介面字型為思源宋體 Noto Serif TC，切換簡體時再載入 Noto Serif SC，皆為 SIL Open Font License）；主要遊戲圖片、音效與注音字型皆存放於 repo 內。
 
 ## 操作方式
 
@@ -109,6 +110,7 @@ python -m http.server 8765
 
 ### 共用系統
 
+- 繁體／簡體中文介面切換（首頁選擇、記住偏好，並依語言切換字型）。
 - 一般版與小朋友版模式選擇。
 - 兩個合併版各自保留逐字劇情效果，不依賴舊對話系統。
 - 資源載入、音效管理、錯誤記錄與場景切換。
@@ -123,6 +125,7 @@ python -m http.server 8765
 ├─ css/                       # 各小遊戲樣式
 ├─ js/
 │  ├─ core/                   # 場景、音效、載入與錯誤記錄
+│  ├─ i18n/                   # 多語系機制與繁／簡字典
 │  ├─ data/                   # 兩個合併劇情、粿印花紋資料與劇情逐字節奏設定
 │  └─ minigames/              # 四站玩法、兩個合併流程與通關致謝畫面
 ├─ assets/                    # 圖片、音效、字型與圖示
@@ -141,12 +144,15 @@ node --check js/minigames/CakeStationGame.js
 node --check js/minigames/Station34CombinedGame.js
 node --check js/minigames/EndingScreen.js
 node --check js/main.js
+node --check js/i18n/i18n.js
 node scripts/test-combined34-hooks.js
+node scripts/test-i18n.js
 git diff --check
 ```
 
 瀏覽器人工檢查建議包含：
 
+- 首頁可切換繁體／簡體介面，重新整理後記住選擇；切簡體時字型換為 Noto Serif SC。
 - 新封面、模式選擇與關卡入口能正常切換；「搭乘時光機」不經影片直接顯示入口。
 - 關卡一可完成判定、火候控制與結算。
 - 關卡二點擊只高亮，拖曳物件保持在最上層。
