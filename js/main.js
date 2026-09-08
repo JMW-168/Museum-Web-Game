@@ -160,7 +160,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await showAgeSelect();
 
+    // 首頁 → 引導說明頁（土樓旁白 → 爺爺奶奶歡迎）→ 選擇遊戲頁
     document.getElementById('startBtn')?.addEventListener('click', () => {
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        showScene('intro');
+    });
+
+    document.getElementById('introNextBtn')?.addEventListener('click', () => {
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        showScene('intro-welcome');
+    });
+
+    document.getElementById('welcomeStartBtn')?.addEventListener('click', () => {
         window.AudioManager?.playSFX('assets/sounds/click.mp3');
         showScene('level-select');
     });

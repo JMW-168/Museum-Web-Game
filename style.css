@@ -279,6 +279,134 @@ button {
     background: linear-gradient(145deg, #ffe7a6, #f0c778);
 }
 
+/* 引導說明頁（首頁 → 土樓旁白 → 爺爺奶奶歡迎 → 選擇遊戲頁） */
+/* .scene 已是 position:absolute; inset:0，本身即為子層的定位基準，不要覆寫 position */
+.intro-scene {
+    color: #fff4e6;
+    background-color: #17110a;
+    overflow: hidden;
+}
+
+#intro {
+    background-image:
+        linear-gradient(rgba(10, 8, 5, 0.42), rgba(10, 8, 5, 0.66)),
+        url('assets/images/intro/tulou-20260907.webp');
+}
+
+#intro-welcome {
+    justify-content: flex-end;
+    padding-bottom: clamp(18px, 6vh, 56px);
+    background-image:
+        linear-gradient(rgba(10, 8, 5, 0.3), rgba(10, 8, 5, 0.6) 58%, rgba(10, 8, 5, 0.82)),
+        url('assets/images/intro/courtyard-welcome-20260907.webp');
+}
+
+/* 爺爺奶奶站在中央大廳前，一左一右 */
+.intro-hosts {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(0px, 4vw, 40px);
+    pointer-events: none;
+}
+
+.intro-host {
+    width: auto;
+    height: clamp(52%, 74vh, 88%);
+    max-width: 46%;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45));
+    animation: intro-panel-in 0.55s ease-out both;
+}
+
+.intro-host-grandpa { animation-delay: 0.08s; }
+
+.intro-panel {
+    position: relative;
+    z-index: 2;
+    width: min(82%, 720px);
+    padding: clamp(24px, 6vh, 48px) clamp(22px, 5vw, 46px);
+    text-align: center;
+    border: 2px solid rgba(255, 231, 166, 0.55);
+    border-radius: 18px;
+    background: rgba(18, 12, 6, 0.62);
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    animation: intro-panel-in 0.5s ease-out both;
+}
+
+.intro-welcome-panel {
+    width: min(88%, 760px);
+    padding: clamp(16px, 4vh, 30px) clamp(20px, 5vw, 44px);
+    background: rgba(18, 12, 6, 0.78);
+}
+
+@keyframes intro-panel-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.intro-narration {
+    margin: 0 auto clamp(22px, 5vh, 40px);
+    max-width: 28em;
+    color: #fff4e6;
+    font-size: clamp(18px, 2.6vw, 28px);
+    line-height: 1.9;
+    letter-spacing: 0.03em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+.intro-welcome-panel .intro-narration {
+    margin-bottom: clamp(14px, 3vh, 24px);
+}
+
+.intro-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.intro-scene .intro-actions .time-machine-btn {
+    width: auto;
+    min-width: clamp(160px, 32vw, 240px);
+    min-height: 52px;
+    padding: 12px 28px;
+    color: #fff4cf;
+    font-size: clamp(18px, 2.2vw, 26px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border: 2px solid rgba(255, 231, 166, 0.9);
+    border-radius: 14px;
+    background: linear-gradient(145deg, rgba(87, 38, 22, 0.94), rgba(48, 23, 18, 0.96));
+    box-shadow: 0 5px 0 #2a1712, 0 9px 22px rgba(0, 0, 0, 0.38);
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.intro-scene .intro-actions .time-machine-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+.intro-scene .intro-actions .time-machine-btn:active { transform: scale(0.95); }
+
+@media (orientation: landscape) and (max-height: 460px) {
+    .intro-panel {
+        padding: clamp(14px, 5vh, 22px) clamp(18px, 5vw, 32px);
+    }
+
+    .intro-narration {
+        margin-bottom: 14px;
+        font-size: clamp(14px, 2.1vw, 19px);
+        line-height: 1.6;
+    }
+
+    .intro-host { height: 78%; }
+
+    .intro-scene .intro-actions .time-machine-btn {
+        min-height: 40px;
+        font-size: clamp(14px, 2vw, 18px);
+    }
+}
+
 /* 遊戲入口 */
 #level-select {
     color: #fff;

@@ -10,6 +10,17 @@ window.I18n.register('zh-Hant', {
     'menu.start': '搭乘時光機',
     'menu.exit': '回到現實',
 
+    // 共用
+    'common.back': '返回',
+
+    // 引導說明頁（1／2 土樓旁白）
+    'intro.narration': '您即將抵達 50 年前的客家土樓，爺爺奶奶家裡。請準備好愉悅的心情，開始體驗。',
+    'intro.next': '繼續',
+
+    // 引導說明頁（2／2 爺爺奶奶歡迎）
+    'welcome.text': '歡迎你呀～客人～來裡面坐～',
+    'welcome.start': '開始體驗',
+
     // 模式選擇
     'age.title': '選擇遊戲模式',
     'age.subtitle': '請選擇適合您的版本',

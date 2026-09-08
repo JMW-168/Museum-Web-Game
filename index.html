@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=44">
+    <link rel="stylesheet" href="style.css?v=47">
     <link rel="stylesheet" href="css/station-demo-game.css?v=43">
     <link rel="stylesheet" href="css/cake-station-game.css?v=40">
 </head>
@@ -64,6 +64,32 @@
                 <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="menu.start">搭乘時光機</button>
                 <button id="exitBtn" class="time-machine-btn" type="button" data-i18n="menu.exit">回到現實</button>
             </div>
+        </div>
+
+        <!-- 引導說明頁 1／2：土樓旁白過場 -->
+        <div id="intro" class="scene intro-scene" style="display:none;">
+            <div class="intro-panel">
+                <p class="intro-narration" data-i18n="intro.narration">您即將抵達 50 年前的客家土樓，爺爺奶奶家裡。請準備好愉悅的心情，開始體驗。</p>
+                <div class="intro-actions">
+                    <button id="introNextBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="intro.next">繼續</button>
+                </div>
+            </div>
+            <button class="back-btn intro-back" type="button" onclick="showScene('start-menu')" data-i18n="common.back">返回</button>
+        </div>
+
+        <!-- 引導說明頁 2／2：爺爺奶奶一起歡迎 -->
+        <div id="intro-welcome" class="scene intro-scene" style="display:none;">
+            <div class="intro-hosts" aria-hidden="true">
+                <img class="intro-host intro-host-grandma" src="assets/images/characters/grandma.png" alt="">
+                <img class="intro-host intro-host-grandpa" src="assets/images/characters/grandpa.png" alt="">
+            </div>
+            <div class="intro-panel intro-welcome-panel">
+                <p class="intro-narration" data-i18n="welcome.text">歡迎你呀～客人～來裡面坐～</p>
+                <div class="intro-actions">
+                    <button id="welcomeStartBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="welcome.start">開始體驗</button>
+                </div>
+            </div>
+            <button class="back-btn intro-back" type="button" onclick="showScene('intro')" data-i18n="common.back">返回</button>
         </div>
 
         <button id="install-app-btn" class="install-app-btn" type="button" hidden data-i18n="install.label">安裝</button>
@@ -128,8 +154,8 @@
 
     <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
     <script src="js/i18n/i18n.js?v=44"></script>
-    <script src="js/i18n/zh-Hant.js?v=46"></script>
-    <script src="js/i18n/zh-Hans.js?v=46"></script>
+    <script src="js/i18n/zh-Hant.js?v=47"></script>
+    <script src="js/i18n/zh-Hans.js?v=47"></script>
 
     <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js"></script>
@@ -152,13 +178,13 @@
     <script src="js/minigames/StationDemoGame.js?v=46"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
-    <script src="js/main.js?v=44"></script>
+    <script src="js/main.js?v=47"></script>
     
     <!-- ========== Service Worker 註冊（PWA） ========== -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=46').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=47').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);
