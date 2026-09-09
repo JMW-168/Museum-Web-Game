@@ -10,6 +10,7 @@ const StationDemoGame = {
     fireMusicStarted: false,
     fireGuideShown: false,
     teaGuideShown: false,
+    fullStory: false,
     fireDurationMs: 60000,
     fireAssetUrls: null,
     teaTimerId: null,
@@ -103,8 +104,9 @@ const StationDemoGame = {
 
     start(stationId) {
         this.stop();
-        if (stationId === 'combined') {
+        if (stationId === 'combined' || stationId === 'story') {
             this.mode = 'combined';
+            this.fullStory = stationId === 'story';
             this.station = this.getStation('fire');
             showScene('game-container');
             if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
@@ -1652,7 +1654,18 @@ const StationDemoGame = {
     },
 
     showCombinedEnding() {
+        const continueToSecondHalf = this.fullStory;
         this.stop();
+        if (continueToSecondHalf && window.Station34CombinedGame && window.EndingScreen) {
+            // 「完整劇情體驗」：上半場（灶台＋擂茶）結束後接中場過場，再進三四關。
+            EndingScreen.show(() => Station34CombinedGame.start(), {
+                kicker: this.tr('story.intermission.kicker'),
+                title: this.tr('story.intermission.title'),
+                subtitle: this.tr('story.intermission.subtitle'),
+                button: this.tr('story.intermission.continue')
+            });
+            return;
+        }
         if (window.EndingScreen) EndingScreen.show(() => showScene('level-select'));
         else showScene('level-select');
     },
@@ -1680,6 +1693,7 @@ const StationDemoGame = {
         this.container = null;
         this.state = null;
         this.mode = null;
+        this.fullStory = false;
     },
 
     playClick() {
@@ -1850,6 +1864,13 @@ const StationDemoGame = {
 function startStationDemo(stationId) {
     if (stationId === 'combined34' && window.Station34CombinedGame) {
         Station34CombinedGame.start();
+        return;
+    }
+    if (stationId === 'story') {
+        if (window.Station34CombinedGame) Station34CombinedGame.stop();
+        if (window.CradleStationGame) CradleStationGame.stop();
+        if (window.CakeStationGame) CakeStationGame.stop();
+        StationDemoGame.start('story');
         return;
     }
     if (window.Station34CombinedGame) Station34CombinedGame.stop();

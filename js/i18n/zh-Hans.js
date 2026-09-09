@@ -10,7 +10,7 @@ window.I18n.register('zh-Hans', {
     'menu.exit': '回到现实',
 
     // 共用
-    'common.back': '返回',
+    'common.back': '返回首页',
 
     // 引导说明页（1／2 土楼旁白）
     'intro.narration': '您即将抵达 50 年前的客家土楼，爷爷奶奶家里。请准备好愉悦的心情，开始体验。',
@@ -30,25 +30,23 @@ window.I18n.register('zh-Hans', {
 
     // 入口选择
     'level.title': '选择游戏入口',
-    'level.back': '返回',
-    'level.fire.kicker': '关卡一 / 站点 1',
+    'level.subtitle': '请根据您的所在位置挑选您的站点',
+    'level.back': '返回首页',
+    'level.fire.kicker': '站点 1',
     'level.fire.title': '灶台生火',
-    'level.fire.desc': '依节拍加入柴火，控制火候条，认识叶家勤俭与生火日常。',
-    'level.tea.kicker': '关卡二 / 站点 2',
+    'level.fire.desc': '帮客家阿嬷燃起灶台的炉火吧！',
+    'level.tea.kicker': '站点 2',
     'level.tea.title': '擂茶料理',
-    'level.tea.desc': '从流动队列依序拖曳食材，避开柴火与石头，完成研磨与切料。',
-    'level.cradle.kicker': '关卡三 / 站点 3',
+    'level.tea.desc': '端出一碗擂茶，这是客家人最实在的待客之道。',
+    'level.cradle.kicker': '站点 3',
     'level.cradle.title': '摇篮哄睡',
-    'level.cradle.desc': '跟随左右导引轻摇摇篮，慢慢累积稳定度，让婴孩安心睡着。',
-    'level.cake.kicker': '关卡四 / 站点 4',
+    'level.cradle.desc': '接过阿嬷手里的摇篮，把孩子轻轻哄进梦里。',
+    'level.cake.kicker': '站点 4',
     'level.cake.title': '粿印制作',
-    'level.cake.desc': '认识龟、桃、鱼与连钱纹，完成拖曳配对后用四面粿印棒压出红粿。',
-    'level.combined12.kicker': '剧情体验',
-    'level.combined12.title': '关卡一二合并版',
-    'level.combined12.desc': '跟着阿嬷与阿公的故事，依序完成灶台生火与擂茶料理。',
-    'level.combined34.kicker': '剧情体验',
-    'level.combined34.title': '三四关合并版',
-    'level.combined34.desc': '从摇篮里的牵挂走到粿印上的祝福，依序完成摇篮哄睡与粿印制作。',
+    'level.cake.desc': '印一个红粿，把节庆的祝福压进米团里。',
+    'level.story.kicker': '约 10 分钟',
+    'level.story.title': '完整剧情体验',
+    'level.story.desc': '跟着阿嬷阿公，依序走完灶台、擂茶、摇篮、粿印四段故事。',
 
     // 退出确认
     'exit.title': '你确定要退出吗？',
@@ -65,6 +63,12 @@ window.I18n.register('zh-Hans', {
     'ending.title': '感谢游玩',
     'ending.subtitle': '谢谢你来到客家土楼，和我们一起留下这段生活记忆。',
     'ending.return': '返回入口',
+
+    // 完整剧情体验：上下半场之间的中场过场
+    'story.intermission.kicker': '上半场完成',
+    'story.intermission.title': '前半段的故事，先到这里',
+    'story.intermission.subtitle': '灶台的火顾好了，擂茶也端上桌。接下来换一段从摇篮到红粿的故事。',
+    'story.intermission.continue': '继续下半场',
 
     // 剧情共用角色与操作
     'story.speaker.grandma': '阿嬷',

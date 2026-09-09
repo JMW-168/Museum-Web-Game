@@ -11,7 +11,7 @@ window.I18n.register('zh-Hant', {
     'menu.exit': '回到現實',
 
     // 共用
-    'common.back': '返回',
+    'common.back': '返回首頁',
 
     // 引導說明頁（1／2 土樓旁白）
     'intro.narration': '您即將抵達 50 年前的客家土樓，爺爺奶奶家裡。請準備好愉悅的心情，開始體驗。',
@@ -31,25 +31,23 @@ window.I18n.register('zh-Hant', {
 
     // 入口選擇
     'level.title': '選擇遊戲入口',
-    'level.back': '返回',
-    'level.fire.kicker': '關卡一 / 站點 1',
+    'level.subtitle': '請根據您的所在位置挑選您的站點',
+    'level.back': '返回首頁',
+    'level.fire.kicker': '站點 1',
     'level.fire.title': '灶台生火',
-    'level.fire.desc': '依節拍加入柴火，控制火候條，認識葉家勤儉與生火日常。',
-    'level.tea.kicker': '關卡二 / 站點 2',
+    'level.fire.desc': '幫客家阿嬤燃起灶台的爐火吧！',
+    'level.tea.kicker': '站點 2',
     'level.tea.title': '擂茶料理',
-    'level.tea.desc': '從流動隊列依序拖曳食材，避開柴火與石頭，完成研磨與切料。',
-    'level.cradle.kicker': '關卡三 / 站點 3',
+    'level.tea.desc': '端出一碗擂茶，這是客家人最實在的待客之道。',
+    'level.cradle.kicker': '站點 3',
     'level.cradle.title': '搖籃哄睡',
-    'level.cradle.desc': '跟隨左右導引輕搖搖籃，慢慢累積穩定度，讓嬰孩安心睡著。',
-    'level.cake.kicker': '關卡四 / 站點 4',
+    'level.cradle.desc': '接過阿嬤手裡的搖籃，把孩子輕輕哄進夢裡。',
+    'level.cake.kicker': '站點 4',
     'level.cake.title': '粿印製作',
-    'level.cake.desc': '認識龜、桃、魚與連錢紋，完成拖曳配對後用四面粿印棒壓出紅粿。',
-    'level.combined12.kicker': '劇情體驗',
-    'level.combined12.title': '關卡一二合併版',
-    'level.combined12.desc': '跟著阿嬤與阿公的故事，依序完成灶台生火與擂茶料理。',
-    'level.combined34.kicker': '劇情體驗',
-    'level.combined34.title': '三四關合併版',
-    'level.combined34.desc': '從搖籃裡的牽掛走到粿印上的祝福，依序完成搖籃哄睡與粿印製作。',
+    'level.cake.desc': '印一個紅粿，把節慶的祝福壓進米糰裡。',
+    'level.story.kicker': '約 10 分鐘',
+    'level.story.title': '完整劇情體驗',
+    'level.story.desc': '跟著阿嬤阿公，依序走完灶台、擂茶、搖籃、粿印四段故事。',
 
     // 退出確認
     'exit.title': '你確定要退出嗎？',
@@ -66,6 +64,12 @@ window.I18n.register('zh-Hant', {
     'ending.title': '感謝遊玩',
     'ending.subtitle': '謝謝你來到客家土樓，和我們一起留下這段生活記憶。',
     'ending.return': '返回入口',
+
+    // 完整劇情體驗：上下半場之間的中場過場
+    'story.intermission.kicker': '上半場完成',
+    'story.intermission.title': '前半段的故事，先到這裡',
+    'story.intermission.subtitle': '灶台的火顧好了，擂茶也端上桌。接下來換一段從搖籃到紅粿的故事。',
+    'story.intermission.continue': '繼續下半場',
 
     // 劇情共用角色與操作
     'story.speaker.grandma': '阿嬤',
