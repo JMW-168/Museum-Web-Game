@@ -134,9 +134,9 @@ window.I18n.register('zh-Hans', {
     'station.guide.skip': '略过说明',
 
     // 灶台生火
-    'station.fire.kicker': '关卡一 / 站点 1',
+    'station.fire.kicker': '站点一：灶台生火',
     'station.fire.title': '灶台生火',
-    'station.fire.success': '火候稳了，锅铲阿嬷点点头：勤俭不是省掉一切，是把每一分力气用在刚好的地方。',
+    'station.fire.success': '火候稳了。勤俭不是省掉一切，是把每一分力气用在刚好的地方。',
     'station.fire.fail': '火候还不稳。再试一次，抓到节奏后，灶台就会慢慢旺起来。',
     'station.fire.wait': '等木柴进入灶台火圈再添柴',
     'station.fire.hud.score': '分数',
@@ -170,7 +170,8 @@ window.I18n.register('zh-Hans', {
     'station.fire.load.copy': '目前网络没有把图片或音乐完整送达，请按下方按钮重新加载。',
     'station.fire.result.success': '挑战成功',
     'station.fire.result.retry': '再试一次',
-    'station.fire.summary': '分数 {{score}}，火候 {{heat}}%，失误 {{mistakes}} 次。',
+    'station.fire.result.findGrandma': '去找阿嬷',
+    'station.fire.summary': '分数 {{score}}',
     'station.fire.guide.wood': '木柴进入灶台火圈时，按这里“添柴”加柴（电脑可按空格键）。',
     'station.fire.guide.water': '火候太高时，按这里“喷水”少量降火（或按 W 键）。',
 

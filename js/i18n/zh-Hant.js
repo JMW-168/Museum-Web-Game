@@ -135,9 +135,9 @@ window.I18n.register('zh-Hant', {
     'station.guide.skip': '略過說明',
 
     // 灶台生火
-    'station.fire.kicker': '關卡一 / 站點 1',
+    'station.fire.kicker': '站點一：灶台生火',
     'station.fire.title': '灶台生火',
-    'station.fire.success': '火候穩了，鍋鏟阿嬤點點頭：勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
+    'station.fire.success': '火候穩了。勤儉不是省掉一切，是把每一分力氣用在剛好的地方。',
     'station.fire.fail': '火候還不穩。再試一次，抓到節奏後，灶台就會慢慢旺起來。',
     'station.fire.wait': '等木柴進入灶台火圈再添柴',
     'station.fire.hud.score': '分數',
@@ -171,7 +171,8 @@ window.I18n.register('zh-Hant', {
     'station.fire.load.copy': '目前網路沒有把圖片或音樂完整送達，請按下方按鈕重新載入。',
     'station.fire.result.success': '挑戰成功',
     'station.fire.result.retry': '再試一次',
-    'station.fire.summary': '分數 {{score}}，火候 {{heat}}%，失誤 {{mistakes}} 次。',
+    'station.fire.result.findGrandma': '去找阿罵',
+    'station.fire.summary': '分數 {{score}}',
     'station.fire.guide.wood': '木柴進入灶台火圈時，按這裡「添柴」加柴（電腦可按空白鍵）。',
     'station.fire.guide.water': '火候太高時，按這裡「噴水」少量降火（或按 W 鍵）。',
 

@@ -162,6 +162,57 @@ function makeFakeBox() {
 }
 
 {
+    // 第一關單玩結束：先顯示結果頁，按「去找阿罵」後才播離開對話。
+    const { game } = loadGame('js/minigames/StationDemoGame.js', 'StationDemoGame');
+    const events = [];
+    game.mode = 'single';
+    game.state = {
+        stationId: 'fire',
+        fire: 58,
+        score: 2400,
+        mistakesRemaining: 5,
+        maxMistakes: 5
+    };
+    game.station = {};
+    game.tr = (key) => key;
+    game.isFireInSafeRange = () => true;
+    game.stopFireMusic = () => {};
+    const originalShowResult = game.showResult;
+    game.showResult = () => events.push('result');
+    game.showCombinedDialogue = () => events.push('dialogue');
+    game.showFireResult();
+    assert.deepStrictEqual(events, ['result'], '第一關單玩結束應先顯示結果頁');
+    game.showResult = originalShowResult;
+
+    let retryHandler = null;
+    let backHandler = null;
+    const retryButton = { addEventListener: (type, handler) => { if (type === 'click') retryHandler = handler; } };
+    const backButton = { addEventListener: (type, handler) => { if (type === 'click') backHandler = handler; } };
+    game.container = {
+        innerHTML: '',
+        querySelector: (selector) => (selector === '[data-retry]' ? retryButton : backButton)
+    };
+    game.state = { stationId: 'fire' };
+    game.station = { kicker: '站點一：灶台生火', success: '成功', fail: '失敗', guideImage: 'grandma.png', guideAlt: '阿罵' };
+    game.tr = (key) => ({
+        'station.fire.result.success': '挑戰成功',
+        'station.fire.result.retry': '再試一次',
+        'game.retry': '再玩一次',
+        'station.fire.result.findGrandma': '去找阿罵'
+    }[key] || key);
+    let exitSection = null;
+    game.showCombinedDialogue = (sectionId) => { exitSection = sectionId; };
+    game.showResult(true);
+    assert.ok(game.container.innerHTML.includes('data-retry'), '結果頁應顯示再玩一次按鈕');
+    assert.ok(game.container.innerHTML.includes('data-back'), '結果頁應顯示去找阿罵按鈕');
+    assert.ok(game.container.innerHTML.includes('「成功」'), '阿罵的話應換行並使用直角引號');
+    assert.strictEqual(typeof retryHandler, 'function', '結果頁應綁定再玩一次');
+    assert.strictEqual(typeof backHandler, 'function', '結果頁應綁定去找阿罵');
+    backHandler();
+    assert.strictEqual(exitSection, 'fireExit', '按「去找阿罵」後才播放離開對話');
+}
+
+{
     // 合併劇情逐字完成後的防連點短暫停（Issue #32）：文字完整出現後不可立即前進。
     const pacing = { charIntervalMs: 70, minReadMs: 20 };
 
