@@ -14,9 +14,9 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=50">
+    <link rel="stylesheet" href="style.css?v=51">
     <link rel="stylesheet" href="css/station-demo-game.css?v=49">
-    <link rel="stylesheet" href="css/cake-station-game.css?v=40">
+    <link rel="stylesheet" href="css/cake-station-game.css?v=51">
 </head>
 <body>
     <div id="game-wrapper">
@@ -73,7 +73,7 @@
                     <button id="introNextBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="intro.next">繼續</button>
                 </div>
             </div>
-            <button class="back-btn intro-back" type="button" onclick="showScene('start-menu')" data-i18n="common.back">返回</button>
+            <button class="back-btn intro-back" type="button" onclick="showScene('start-menu')" data-i18n="common.back">返回首頁</button>
         </div>
 
         <!-- 引導說明頁 2／2：爺爺奶奶一起歡迎 -->
@@ -88,7 +88,7 @@
                     <button id="welcomeStartBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="welcome.start">開始體驗</button>
                 </div>
             </div>
-            <button class="back-btn intro-back" type="button" onclick="showScene('intro')" data-i18n="common.back">返回</button>
+            <button class="back-btn intro-back" type="button" onclick="showScene('start-menu')" data-i18n="common.back">返回首頁</button>
         </div>
 
         <button id="install-app-btn" class="install-app-btn" type="button" hidden data-i18n="install.label">安裝</button>
@@ -96,39 +96,35 @@
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
             <h2 data-i18n="level.title">選擇遊戲入口</h2>
+            <p class="level-subtitle" data-i18n="level.subtitle">請根據您的所在位置挑選您的站點</p>
             <div class="level-buttons station-entry-list has-cake-station">
                 <button id="station-fire-btn" class="station-entry" type="button" data-station-demo="fire">
-                    <span class="station-kicker" data-i18n="level.fire.kicker">關卡一 / 站點 1</span>
+                    <span class="station-kicker" data-i18n="level.fire.kicker">站點 1</span>
                     <span class="station-title" data-i18n="level.fire.title">灶台生火</span>
-                    <span class="station-desc" data-i18n="level.fire.desc">依節拍加入柴火，控制火候條，認識葉家勤儉與生火日常。</span>
+                    <span class="station-desc" data-i18n="level.fire.desc">幫客家阿嬤燃起灶台的爐火吧！</span>
                 </button>
                 <button id="station-tea-btn" class="station-entry" type="button" data-station-demo="tea">
-                    <span class="station-kicker" data-i18n="level.tea.kicker">關卡二 / 站點 2</span>
+                    <span class="station-kicker" data-i18n="level.tea.kicker">站點 2</span>
                     <span class="station-title" data-i18n="level.tea.title">擂茶料理</span>
-                    <span class="station-desc" data-i18n="level.tea.desc">從流動隊列依序拖曳食材，避開柴火與石頭，完成研磨與切料。</span>
+                    <span class="station-desc" data-i18n="level.tea.desc">端出一碗擂茶，這是客家人最實在的待客之道。</span>
                 </button>
                 <button id="station-cradle-btn" class="station-entry" type="button" data-station-demo="cradle">
-                    <span class="station-kicker" data-i18n="level.cradle.kicker">關卡三 / 站點 3</span>
+                    <span class="station-kicker" data-i18n="level.cradle.kicker">站點 3</span>
                     <span class="station-title" data-i18n="level.cradle.title">搖籃哄睡</span>
-                    <span class="station-desc" data-i18n="level.cradle.desc">跟隨左右導引輕搖搖籃，慢慢累積穩定度，讓嬰孩安心睡著。</span>
+                    <span class="station-desc" data-i18n="level.cradle.desc">接過阿嬤手裡的搖籃，把孩子輕輕哄進夢裡。</span>
                 </button>
                 <button id="station-cake-btn" class="station-entry" type="button" data-station-demo="cake">
-                    <span class="station-kicker" data-i18n="level.cake.kicker">關卡四 / 站點 4</span>
+                    <span class="station-kicker" data-i18n="level.cake.kicker">站點 4</span>
                     <span class="station-title" data-i18n="level.cake.title">粿印製作</span>
-                    <span class="station-desc" data-i18n="level.cake.desc">認識龜、桃、魚與連錢紋，完成拖曳配對後用四面粿印棒壓出紅粿。</span>
+                    <span class="station-desc" data-i18n="level.cake.desc">印一個紅粿，把節慶的祝福壓進米糰裡。</span>
                 </button>
-                <button id="station-combined-btn" class="station-entry station-entry-combined" type="button" data-station-demo="combined">
-                    <span class="station-kicker" data-i18n="level.combined12.kicker">劇情體驗</span>
-                    <span class="station-title" data-i18n="level.combined12.title">關卡一二合併版</span>
-                    <span class="station-desc" data-i18n="level.combined12.desc">跟著阿嬤與阿公的故事，依序完成灶台生火與擂茶料理。</span>
-                </button>
-                <button id="station-combined-34-btn" class="station-entry station-entry-combined" type="button" data-station-demo="combined34">
-                    <span class="station-kicker" data-i18n="level.combined34.kicker">劇情體驗</span>
-                    <span class="station-title" data-i18n="level.combined34.title">三四關合併版</span>
-                    <span class="station-desc" data-i18n="level.combined34.desc">從搖籃裡的牽掛走到粿印上的祝福，依序完成搖籃哄睡與粿印製作。</span>
+                <button id="station-story-btn" class="station-entry station-entry-combined" type="button" data-station-demo="story">
+                    <span class="station-kicker" data-i18n="level.story.kicker">約 10 分鐘</span>
+                    <span class="station-title" data-i18n="level.story.title">完整劇情體驗</span>
+                    <span class="station-desc" data-i18n="level.story.desc">跟著阿嬤阿公，完整體驗上述四項客家故事。</span>
                 </button>
             </div>
-            <button class="back-btn" onclick="showScene('start-menu')" data-i18n="level.back">返回</button>
+            <button class="back-btn" onclick="showScene('start-menu')" data-i18n="level.back">返回首頁</button>
         </div>
 
         <!-- 目前站點會建立自己的互動圖層；此場景只負責隱藏入口畫面。 -->
@@ -153,8 +149,8 @@
 
     <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
     <script src="js/i18n/i18n.js?v=44"></script>
-    <script src="js/i18n/zh-Hant.js?v=49"></script>
-    <script src="js/i18n/zh-Hans.js?v=49"></script>
+    <script src="js/i18n/zh-Hant.js?v=51"></script>
+    <script src="js/i18n/zh-Hans.js?v=51"></script>
 
     <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js"></script>
@@ -171,11 +167,11 @@
 
     <!-- ========== 現行站點玩法 ========== -->
     <script src="js/minigames/StationIntroGuide.js?v=49"></script>
-    <script src="js/minigames/EndingScreen.js?v=44"></script>
+    <script src="js/minigames/EndingScreen.js?v=51"></script>
     <script src="js/minigames/CradleStationGame.js?v=49"></script>
     <script src="js/minigames/CakeStationGame.js?v=49"></script>
     <script src="js/minigames/Station34CombinedGame.js?v=46"></script>
-    <script src="js/minigames/StationDemoGame.js?v=49"></script>
+    <script src="js/minigames/StationDemoGame.js?v=51"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
     <script src="js/main.js?v=47"></script>
@@ -184,7 +180,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=50').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=51').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);
