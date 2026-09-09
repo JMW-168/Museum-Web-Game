@@ -2540,3 +2540,118 @@
         line-height: 1.5;
     }
 }
+
+/* ========== 進入引導：聚光燈式操作提示（StationIntroGuide，各關共用） ========== */
+.station-guide-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    overflow: hidden;
+    animation: station-guide-in 0.2s ease-out;
+    cursor: pointer;
+}
+
+@keyframes station-guide-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 光圈：用超大 box-shadow 造出「其他地方變暗、只留這一塊」的聚光效果 */
+.station-guide-spot {
+    position: absolute;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(9, 15, 16, 0.78);
+    outline: 3px solid rgba(255, 215, 0, 0.9);
+    outline-offset: 0;
+    pointer-events: none;
+    transition: left 0.25s ease, top 0.25s ease, width 0.25s ease, height 0.25s ease;
+    animation: station-guide-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes station-guide-pulse {
+    0%, 100% { outline-color: rgba(255, 215, 0, 0.35); }
+    50% { outline-color: rgba(255, 215, 0, 1); }
+}
+
+.station-guide-hand {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.6));
+    animation: station-guide-hand-tap 1s ease-in-out infinite;
+}
+
+@keyframes station-guide-hand-tap {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, 6px); }
+}
+
+.station-guide-tip {
+    position: absolute;
+    width: min(78%, 300px);
+    padding: 12px 16px;
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    border-radius: 12px;
+    background: rgba(20, 36, 39, 0.98);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+    color: #f4ead2;
+    transition: left 0.25s ease, top 0.25s ease;
+}
+
+.station-guide-tip-text {
+    margin: 0 0 10px;
+    font-size: clamp(14px, 1.9vw, 17px);
+    line-height: 1.5;
+}
+
+.station-guide-tip-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.station-guide-step {
+    color: #ffd76a;
+    font-size: clamp(12px, 1.6vw, 14px);
+}
+
+.station-guide-tip .station-guide-next {
+    margin: 0;
+    padding: 7px 16px;
+    min-width: 96px;
+    font-size: clamp(13px, 1.7vw, 15px);
+}
+
+.station-guide-skip {
+    position: absolute;
+    top: clamp(8px, 2vh, 16px);
+    left: clamp(10px, 2.5vw, 22px);
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    background: rgba(40, 48, 50, 0.8);
+    color: #e9e2cf;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+@media (orientation: landscape) and (max-height: 460px) {
+    .station-guide-tip {
+        width: min(70%, 280px);
+        padding: 9px 12px;
+    }
+
+    .station-guide-tip-text {
+        margin-bottom: 7px;
+        font-size: clamp(12px, 1.7vw, 15px);
+        line-height: 1.4;
+    }
+
+    .station-guide-tip .station-guide-next {
+        padding: 5px 12px;
+        min-width: 84px;
+    }
+}

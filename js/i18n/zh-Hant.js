@@ -128,6 +128,11 @@ window.I18n.register('zh-Hant', {
     'game.retry': '再玩一次',
     'game.retryLoad': '重新載入',
 
+    // 進入引導：聚光燈式操作提示（各關共用）
+    'station.guide.next': '下一步',
+    'station.guide.start': '開始',
+    'station.guide.skip': '略過說明',
+
     // 灶台生火
     'station.fire.kicker': '關卡一 / 站點 1',
     'station.fire.title': '灶台生火',
@@ -168,6 +173,8 @@ window.I18n.register('zh-Hant', {
     'station.fire.result.success': '挑戰成功',
     'station.fire.result.retry': '再試一次',
     'station.fire.summary': '分數 {{score}}，火候 {{heat}}%，失誤 {{mistakes}} 次。',
+    'station.fire.guide.wood': '木柴進入灶台火圈時，按這裡「添柴」加柴（電腦可按空白鍵）。',
+    'station.fire.guide.water': '火候太高時，按這裡「噴水」少量降火（或按 W 鍵）。',
 
     // 擂茶料理
     'station.tea.kicker': '關卡二 / 站點 2',
@@ -225,6 +232,8 @@ window.I18n.register('zh-Hant', {
     'station.tea.result.chopIngredients': '長豆・菜脯・樹仔菜・豆腐',
     'station.tea.result.assisted': '這次有師傅協助補完，下一次試著在倒數內完成吧！',
     'station.tea.result.perfect': '兩段都在時間內完成，手腳真俐落！',
+    'station.tea.guide.pick': '食材會從這條軌道流過來，看到上方指定的食材就把它拖出來。',
+    'station.tea.guide.process': '把食材拖到這裡加工：研磨沿著碗邊畫圈，切料則連點菜刀。',
 
     // 搖籃哄睡
     'station.cradle.kicker': '關卡三 / 站點 3',
@@ -248,6 +257,8 @@ window.I18n.register('zh-Hant', {
     'station.cradle.result.copy': '這只用麵粉袋改成的搖籃，養大了家裡不少人。',
     'station.cradle.result.assisted': '阿嬤陪你把節奏放寬了一點，一樣順利哄睡了。',
     'station.cradle.result.perfect': '你穩穩跟上整段節奏，哭聲也慢慢停了。',
+    'station.cradle.guide.rhythm': '這個光點會左右擺動，是搖籃該跟上的節奏。',
+    'station.cradle.guide.follow': '拖曳搖籃、或按鍵盤左右方向鍵，跟著光點一起擺。',
 
     // 粿印製作
     'station.cake.kicker': '關卡四 / 站點 4',
@@ -267,6 +278,8 @@ window.I18n.register('zh-Hant', {
     'station.cake.match.complete': '四組都配對完成，可以選擇想做的花紋了！',
     'station.cake.match.count': '已完成 {{current}} / {{total}} 組',
     'station.cake.match.select': '選擇花紋',
+    'station.cake.guide.match': '把上排的花紋，一個一個拖到下排對應的祝福意思。',
+    'station.cake.guide.select': '四組都配對好之後，按這裡進入選花紋。',
     'station.cake.match.near': '再靠近另一排的卡片一點，就會自動吸附。',
     'station.cake.match.firstEndpoint': '已選第一個端點，再選另一排的小點。',
     'station.cake.match.wrong': '這兩個不相配，紅線消失後再試一次。',

@@ -8,6 +8,7 @@ const CakeStationGame = {
     holdDurationMs: 1000,
     lastResult: null,
     mode: 'standalone',
+    guideShown: false,
     onComplete: null,
     onExit: null,
 
@@ -166,6 +167,21 @@ const CakeStationGame = {
         });
         this.listen(window, 'resize', () => this.positionMatchLines());
         requestAnimationFrame(() => this.positionMatchLines());
+        this.showMatchGuide();
+    },
+
+    showMatchGuide() {
+        const panel = this.container?.querySelector('.cake-match-panel');
+        if (this.guideShown || !panel || typeof StationIntroGuide === 'undefined') return;
+        this.guideShown = true;
+        StationIntroGuide.start({
+            host: panel,
+            steps: [
+                { selector: '.cake-match-top', textKey: 'station.cake.guide.match' },
+                { selector: '[data-to-select]', textKey: 'station.cake.guide.select' }
+            ],
+            onFinish: () => {}
+        });
     },
 
     startMatchDrag(event) {
@@ -879,6 +895,8 @@ const CakeStationGame = {
         this.timers.forEach((timer) => clearTimeout(timer));
         this.timers = [];
         this.clearHoldTimers();
+        if (typeof StationIntroGuide !== 'undefined') StationIntroGuide.stop();
+        this.guideShown = false;
         if (this.container?.parentNode) this.container.remove();
         document.body.classList.remove('cake-station-active');
         this.container = null;
