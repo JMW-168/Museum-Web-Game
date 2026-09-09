@@ -105,7 +105,7 @@ function loadGame(relativePath, exportExpression, extras = {}) {
     game.afterCake({
         pattern: { id: 'peach', name: '桃紋', meaning: '福壽吉祥', blessing: '願你喜樂常在。' }
     });
-    assert.strictEqual(transition.sectionId, 'ending');
+    assert.strictEqual(transition.sectionId, 'cakeExit');
     assert.strictEqual(transition.tokens.patternName, '桃紋');
     assert.strictEqual(game.interpolate('選擇「{{patternName}}」', transition.tokens), '選擇「桃紋」');
 

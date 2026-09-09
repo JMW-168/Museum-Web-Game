@@ -193,14 +193,14 @@ function loadI18n(extra = {}) {
     }
 
     I18n.init();
-    const opening = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.opening.lines[0]);
+    const opening = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[0]);
     assert.strictEqual(opening.speaker, '阿嬤');
     assert.ok(opening.text.includes('廚房'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龜紋');
 
     I18n.setLocale('zh-Hans');
     const ending = context.Station34CombinedGame.localizeLine(
-        context.Station34CombinedStory.sections.ending.lines[0],
+        context.Station34CombinedStory.sections.cakeExit.lines[0],
         { patternName: '桃纹', meaning: '福寿吉祥' }
     );
     assert.strictEqual(ending.speaker, '阿嬷');

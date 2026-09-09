@@ -26,7 +26,10 @@ const CradleStationGame = {
         showScene('game-container');
         if (window.AudioManager) AudioManager.stopBGM();
         this.createShell();
-        this.showIntro();
+        // 進入引導對話由 Station34CombinedGame（orchestrator）在呼叫本 start 之前播完；
+        // 這裡直接進遊戲。prepareAudio 在使用者手勢鏈內（對話 CTA → onComplete → start）。
+        this.prepareAudio();
+        this.startGame();
     },
 
     createShell() {
@@ -34,29 +37,6 @@ const CradleStationGame = {
         this.container = document.createElement('div');
         this.container.className = 'station-demo station-demo-cradle';
         parent.appendChild(this.container);
-    },
-
-    showIntro() {
-        if (!this.container) return;
-        this.container.innerHTML = `
-            <section class="station-panel station-intro-panel cradle-intro-panel has-guide">
-                <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
-                <h1>${this.tr('station.cradle.title')}</h1>
-                <p class="station-subtitle">${this.tr('station.cradle.subtitle')}</p>
-                <p class="station-copy">${this.tr('station.cradle.intro')}</p>
-                <div class="station-actions">
-                    <button type="button" class="station-primary" data-start>${this.tr('station.cradle.start')}</button>
-                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
-                </div>
-                <img class="station-guide station-guide-intro" src="assets/images/characters/grandma.png" alt="${this.tr('story.speaker.grandma')}">
-            </section>
-        `;
-        this.listen(this.container.querySelector('[data-start]'), 'click', () => {
-            this.playClick();
-            this.prepareAudio();
-            this.startGame();
-        });
-        this.listen(this.container.querySelector('[data-back]'), 'click', () => this.close());
     },
 
     startGame() {
