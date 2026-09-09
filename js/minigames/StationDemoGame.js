@@ -84,8 +84,6 @@ const StationDemoGame = {
             ...source,
             kicker: this.tr(`${prefix}.kicker`),
             title: this.tr(`${prefix}.title`),
-            subtitle: this.tr(`${prefix}.subtitle`),
-            intro: this.tr(`${prefix}.intro`),
             success: this.tr(`${prefix}.success`),
             fail: stationId === 'fire' ? this.tr('station.fire.fail') : '',
             guideAlt: this.tr(source.guideAltKey)
@@ -111,7 +109,7 @@ const StationDemoGame = {
             showScene('game-container');
             if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
             this.createShell('fire');
-            this.showCombinedDialogue('opening', () => this.startCombinedFire());
+            this.showCombinedDialogue('fireEntry', () => this.startCombinedFire());
             return;
         }
 
@@ -122,7 +120,13 @@ const StationDemoGame = {
         showScene('game-container');
         if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
         this.createShell(stationId);
-        this.showIntro(stationId);
+        // 單關版：進入引導對話 → 遊戲（聚光燈操作提示在遊戲啟動路徑內）。
+        if (stationId === 'fire') {
+            this.showCombinedDialogue('fireEntry', () => this.startCombinedFire());
+        } else if (stationId === 'tea') {
+            this.station = this.getStation('tea');
+            this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
+        }
     },
 
     createShell(stationId) {
@@ -138,7 +142,8 @@ const StationDemoGame = {
         this.container.classList.add(`station-demo-${stationId}`);
     },
 
-    showCombinedDialogue(sectionId, onComplete) {
+    // opts.actionLabelKey：覆寫本段最後一句的 CTA 文字／去向（單關版用 story.action.seeResult）。
+    showCombinedDialogue(sectionId, onComplete, opts = {}) {
         const section = window.StationCombinedStory?.sections?.[sectionId];
         if (!section || !this.container) {
             if (window.Logger) window.Logger.error('找不到合併版劇情段落:', sectionId);
@@ -147,25 +152,28 @@ const StationDemoGame = {
         }
 
         this.clearCombinedTyping();
-        this.state = null;
         this.setShellTheme(section.theme);
         let lineIndex = 0;
 
         const renderLine = () => {
             const line = this.localizeStoryLine(section.lines[lineIndex]);
+            const isLastLine = lineIndex === section.lines.length - 1;
+            const actionLabel = (isLastLine && opts.actionLabelKey)
+                ? this.tr(opts.actionLabelKey)
+                : line.actionLabel;
             const characterMarkup = line.image
                 ? `<img class="combined-story-character" src="${line.image}" alt="${line.speaker}">`
                 : '';
             const cueMarkup = line.cue ? `<span class="combined-dialogue-cue">（${line.cue}）</span>` : '';
-            const actionMarkup = line.actionLabel
-                ? `<button type="button" class="station-primary combined-story-action" data-story-action hidden>${line.actionLabel}</button>`
+            const actionMarkup = actionLabel
+                ? `<button type="button" class="station-primary combined-story-action" data-story-action hidden>${actionLabel}</button>`
                 : '';
 
             this.container.innerHTML = `
                 <section class="combined-story${line.narration ? ' is-narration' : ''}">
                     <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
                     <div class="combined-story-character-stage">${characterMarkup}</div>
-                    <div class="combined-dialogue-box${line.actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="${this.tr('story.action.continueDialogue')}">
+                    <div class="combined-dialogue-box${actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="${this.tr('story.action.continueDialogue')}">
                         <div class="combined-dialogue-speaker">${line.speaker}${cueMarkup}</div>
                         <div class="combined-dialogue-text" aria-live="polite"></div>
                         <span class="combined-dialogue-indicator" aria-hidden="true"></span>
@@ -182,7 +190,7 @@ const StationDemoGame = {
                     return;
                 }
                 if (!this.dialogueReady) return; // 逐字完成後的防連點短暫停內，忽略前進輸入
-                if (line.actionLabel) return;
+                if (actionLabel) return;
                 if (lineIndex < section.lines.length - 1) {
                     lineIndex++;
                     renderLine();
@@ -301,9 +309,9 @@ const StationDemoGame = {
         this.animationId = null;
         this.stopFireMusic();
         this.releaseFireAssets();
-        this.showCombinedDialogue('afterFire', () => {
+        this.showCombinedDialogue('fireExit', () => {
             this.station = this.getStation('tea');
-            this.showCombinedDialogue('beforeTea', () => this.startCombinedTea());
+            this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
         });
     },
 
@@ -329,40 +337,6 @@ const StationDemoGame = {
         message.append(speaker, document.createTextNode(this.tr(coaching.textKey)));
         play.appendChild(message);
         this.timers.push(setTimeout(() => message.remove(), 6200));
-    },
-
-    showIntro(stationId) {
-        const guide = this.station.guideImage
-            ? `<img class="station-guide station-guide-intro" src="${this.station.guideImage}" alt="${this.station.guideAlt}">`
-            : '';
-        this.container.innerHTML = `
-            <section class="station-panel station-intro-panel ${guide ? 'has-guide' : ''}">
-                <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>${this.station.title}</h1>
-                <p class="station-subtitle">${this.station.subtitle}</p>
-                <p class="station-copy">${this.station.intro}</p>
-                <div class="station-actions">
-                    <button type="button" class="station-primary">${this.tr('game.startChallenge')}</button>
-                    <button type="button" class="station-secondary">${this.tr('game.backToEntrance')}</button>
-                </div>
-                ${guide}
-            </section>
-        `;
-
-        this.container.querySelector('.station-primary').addEventListener('click', () => {
-            this.playClick();
-            if (stationId === 'fire') {
-                this.prepareFireAssets()
-                    .then(() => this.startFireGame())
-                    .catch((error) => this.showFireLoadError(error));
-            }
-            if (stationId === 'tea') {
-                this.prepareTeaAssets()
-                    .then(() => this.startTeaGame())
-                    .catch((error) => this.showTeaLoadError(error));
-            }
-        });
-        this.container.querySelector('.station-secondary').addEventListener('click', () => this.close());
     },
 
     startFireGame() {
@@ -1570,9 +1544,15 @@ const StationDemoGame = {
         this.clearTeaTimer();
         this.state.finished = true;
         if (this.mode === 'combined') {
-            this.showCombinedDialogue('afterTea', () => this.showCombinedEnding());
+            this.showCombinedDialogue('teaExit', () => this.showCombinedEnding());
             return;
         }
+        // 單關版：離開引導對話 → 結果頁。
+        this.showCombinedDialogue('teaExit', () => this.renderTeaResult(), { actionLabelKey: 'story.action.seeResult' });
+    },
+
+    renderTeaResult() {
+        if (!this.state || !this.container) return;
         const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
         this.container.innerHTML = `
             <section class="station-panel station-result-panel tea-result-panel has-guide">
@@ -1614,7 +1594,11 @@ const StationDemoGame = {
             this.finishCombinedFire();
             return;
         }
-        this.showResult(success);
+        // 單關版：離開引導對話 → 結果頁。
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+        this.stopFireMusic();
+        this.showCombinedDialogue('fireExit', () => this.showResult(success), { actionLabelKey: 'story.action.seeResult' });
     },
 
     showResult(success) {
@@ -1874,14 +1858,9 @@ function startStationDemo(stationId) {
         return;
     }
     if (window.Station34CombinedGame) Station34CombinedGame.stop();
-    if (stationId === 'cradle' && window.CradleStationGame) {
-        if (window.CakeStationGame) CakeStationGame.stop();
-        CradleStationGame.start();
-        return;
-    }
-    if (stationId === 'cake' && window.CakeStationGame) {
-        if (window.CradleStationGame) CradleStationGame.stop();
-        CakeStationGame.start();
+    // 搖籃／粿印單關版與三四關合併版共用 Station34CombinedGame 這個 orchestrator。
+    if ((stationId === 'cradle' || stationId === 'cake') && window.Station34CombinedGame) {
+        Station34CombinedGame.start({ only: stationId });
         return;
     }
     if (window.CradleStationGame) CradleStationGame.stop();

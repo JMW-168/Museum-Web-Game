@@ -76,10 +76,8 @@ window.I18n.register('zh-Hans', {
     'story.speaker.narrator': '旁白',
     'story.speaker.playerNarration': '玩家（旁白代答）',
     'story.action.startGame': '开始游戏',
-    'story.action.goToSecond': '前往第二关',
+    'story.action.seeResult': '看看成果',
     'story.action.returnLobby': '返回大厅',
-    'story.action.startThird': '开始第三关',
-    'story.action.goToFourth': '前往第四关',
     'story.action.viewBlessingCard': '查看祝福卡',
     'story.action.leave': '离开',
     'story.action.continueDialogue': '继续对话',
@@ -125,7 +123,6 @@ window.I18n.register('zh-Hans', {
     'pattern.linkedCoins.blessing': '愿你福气相连，生活富足。',
 
     // 玩法共用
-    'game.startChallenge': '开始挑战',
     'game.backToEntrance': '返回入口',
     'game.back': '返回',
     'game.retry': '再玩一次',
@@ -139,8 +136,6 @@ window.I18n.register('zh-Hans', {
     // 灶台生火
     'station.fire.kicker': '关卡一 / 站点 1',
     'station.fire.title': '灶台生火',
-    'station.fire.subtitle': '看准节拍添柴，让火候维持在刚好的温度。',
-    'station.fire.intro': '木柴会沿着节奏轨道移动。当木柴进入灶台火圈时，按“添柴”或空格键。小柴升火少，大柴升火多；添柴时火候在绿色区间会获得较多分，火候太高还添柴会扣分。火候超过绿色区间右侧时，按“喷水”少量降火。',
     'station.fire.success': '火候稳了，锅铲阿嬷点点头：勤俭不是省掉一切，是把每一分力气用在刚好的地方。',
     'station.fire.fail': '火候还不稳。再试一次，抓到节奏后，灶台就会慢慢旺起来。',
     'station.fire.wait': '等木柴进入灶台火圈再添柴',
@@ -182,8 +177,6 @@ window.I18n.register('zh-Hans', {
     // 擂茶料理
     'station.tea.kicker': '关卡二 / 站点 2',
     'station.tea.title': '擂茶料理',
-    'station.tea.subtitle': '看着指定顺序，把食材逐一研磨、切好，完成一组擂茶。',
-    'station.tea.intro': '先从移动轨道中依照上方顺序挑出五种食材，避开柴火与石头，拖进石臼后让研磨棒沿着碗缘画满 5 圈；接着把四种配菜拖上砧板，每一种连点 10 刀。两段各有 1 分钟，拖错只会放不进去，不扣分也不扣时间。',
     'station.tea.success': '擂茶小知识：擂茶把茶叶、香草、花生与芝麻耐心擂成茶膏，再配上切细的蔬菜与豆腐，是一碗兼具香气与口感的客家料理。',
     'station.tea.grind.title': '小游戏一・研磨食材',
     'station.tea.grind.verb': '研磨',
@@ -241,9 +234,6 @@ window.I18n.register('zh-Hans', {
     // 摇篮哄睡
     'station.cradle.kicker': '关卡三 / 站点 3',
     'station.cradle.title': '摇篮哄睡',
-    'station.cradle.subtitle': '跟着光点的节奏，轻轻左右摇动摇篮。',
-    'station.cradle.intro': '按住摇篮左右移动，让摇篮跟着上方引导光点。也可以按住键盘左右方向键操作。跟得越稳，婴孩就会渐渐安静；没有失败，慢慢来就好。',
-    'station.cradle.start': '开始哄睡',
     'station.cradle.stability': '稳定度 {{percent}}%',
     'station.cradle.follow': '跟着光点慢慢摇',
     'station.cradle.instruction': '按住摇篮左右移动・或按住 ← →',

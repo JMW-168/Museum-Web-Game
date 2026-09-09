@@ -1,6 +1,10 @@
+// 灶台生火（站點 1）與擂茶料理（站點 2）的角色對話。
+// 每站拆成 entry（進入引導）與 exit（離開引導）兩段：
+//   單關版：entry → 遊戲 → exit → 結果頁（exit 末句 CTA 由呼叫端覆寫成「看看成果」）。
+//   完整劇情體驗：fireEntry → 灶台 → fireExit → teaEntry → 擂茶 → teaExit → 中場過場。
 const StationCombinedStory = {
     sections: {
-        opening: {
+        fireEntry: {
             theme: 'fire',
             lines: [
                 {
@@ -29,7 +33,7 @@ const StationCombinedStory = {
                 }
             ]
         },
-        afterFire: {
+        fireExit: {
             theme: 'fire',
             lines: [
                 {
@@ -41,12 +45,11 @@ const StationCombinedStory = {
                 {
                     speakerKey: 'story.speaker.narrator',
                     textKey: 'story.combined12.afterFire.2',
-                    narration: true,
-                    actionLabelKey: 'story.action.goToSecond'
+                    narration: true
                 }
             ]
         },
-        beforeTea: {
+        teaEntry: {
             theme: 'tea',
             lines: [
                 {
@@ -58,7 +61,7 @@ const StationCombinedStory = {
                 }
             ]
         },
-        afterTea: {
+        teaExit: {
             theme: 'tea',
             lines: [
                 {

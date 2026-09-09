@@ -1,6 +1,10 @@
+// 搖籃哄睡（站點 3）與粿印製作（站點 4）的角色對話。
+// 每站拆成 entry（進入引導）與 exit（離開引導）兩段：
+//   單關版：entry → 遊戲 → exit → 結果頁（exit 末句 CTA 由呼叫端覆寫成「看看成果」）。
+//   完整劇情體驗：cradleEntry → 搖籃 → cradleExit → cakeEntry → 粿印 → cakeExit → 祝福卡。
 const Station34CombinedStory = {
     sections: {
-        opening: {
+        cradleEntry: {
             theme: 'cradle',
             lines: [
                 {
@@ -20,11 +24,11 @@ const Station34CombinedStory = {
                     textKey: 'story.combined34.opening.3',
                     image: 'assets/images/characters/grandma.png',
                     voice: 'female',
-                    actionLabelKey: 'story.action.startThird'
+                    actionLabelKey: 'story.action.startGame'
                 }
             ]
         },
-        afterCradle: {
+        cradleExit: {
             theme: 'cradle',
             lines: [
                 {
@@ -32,7 +36,12 @@ const Station34CombinedStory = {
                     textKey: 'story.combined34.afterCradle.1',
                     image: 'assets/images/characters/grandma.png',
                     voice: 'female'
-                },
+                }
+            ]
+        },
+        cakeEntry: {
+            theme: 'cake',
+            lines: [
                 {
                     speakerKey: 'story.speaker.narrator',
                     textKey: 'story.combined34.afterCradle.2',
@@ -43,11 +52,11 @@ const Station34CombinedStory = {
                     textKey: 'story.combined34.afterCradle.3',
                     image: 'assets/images/characters/grandma.png',
                     voice: 'female',
-                    actionLabelKey: 'story.action.goToFourth'
+                    actionLabelKey: 'story.action.startGame'
                 }
             ]
         },
-        ending: {
+        cakeExit: {
             theme: 'cake',
             lines: [
                 {
