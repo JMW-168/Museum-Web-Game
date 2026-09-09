@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=47">
+    <link rel="stylesheet" href="style.css?v=50">
     <link rel="stylesheet" href="css/station-demo-game.css?v=49">
     <link rel="stylesheet" href="css/cake-station-game.css?v=40">
 </head>
@@ -51,11 +51,6 @@
         <!-- 起始頁面 -->
         <div id="start-menu" class="scene">
             <!-- 背景由 CSS 控制，這裡放置 UI 元素 -->
-            <div class="lang-switch" role="group" aria-label="語言 Language">
-                <button type="button" class="lang-btn" data-lang="zh-Hant" lang="zh-Hant">繁體中文</button>
-                <button type="button" class="lang-btn" data-lang="zh-Hans" lang="zh-Hans">简体中文</button>
-            </div>
-
             <div class="title-container">
                 <img src="assets/images/title/title-20260904.png" data-i18n-attr="alt:title.alt" alt="森美蘭客家文化博物館・傳統日常再現" class="start-title-img">
             </div>
@@ -63,6 +58,10 @@
             <div class="menu-buttons">
                 <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="menu.start">搭乘時光機</button>
                 <button id="exitBtn" class="time-machine-btn" type="button" data-i18n="menu.exit">回到現實</button>
+                <div class="lang-switch" role="group" aria-label="語言 Language">
+                    <button type="button" class="lang-btn" data-lang="zh-Hant" lang="zh-Hant">繁體中文</button>
+                    <button type="button" class="lang-btn" data-lang="zh-Hans" lang="zh-Hans">简体中文</button>
+                </div>
             </div>
         </div>
 
@@ -185,7 +184,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=49').then(function(registration) {
+                navigator.serviceWorker.register('sw.js?v=50').then(function(registration) {
                     console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
                 }).catch(function(error) {
                     console.log('❌ Service Worker 註冊失敗:', error);
