@@ -1586,19 +1586,17 @@ const StationDemoGame = {
         const success = totalScore >= 2400 && this.isFireInSafeRange();
         this.state.score = totalScore;
         this.station.fireSummary = this.tr('station.fire.summary', {
-            score: totalScore,
-            heat: Math.round(this.state.fire),
-            mistakes: this.state.maxMistakes - this.state.mistakesRemaining
+            score: totalScore
         });
         if (this.mode === 'combined') {
             this.finishCombinedFire();
             return;
         }
-        // 單關版：離開引導對話 → 結果頁。
+        // 單關版：先看結果，再由「去找阿罵」進入離開引導對話。
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         this.stopFireMusic();
-        this.showCombinedDialogue('fireExit', () => this.showResult(success), { actionLabelKey: 'story.action.seeResult' });
+        this.showResult(success);
     },
 
     showResult(success) {
@@ -1609,17 +1607,18 @@ const StationDemoGame = {
         this.stopFireMusic();
 
         const summary = this.state.stationId === 'fire' && this.station.fireSummary
-            ? `${this.station.fireSummary} `
+            ? this.station.fireSummary
             : '';
-        const message = summary + (success ? this.station.success : this.station.fail);
+        const message = success ? this.station.success : this.station.fail;
         this.container.innerHTML = `
             <section class="station-panel station-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
                 <h1>${this.tr(success ? 'station.fire.result.success' : 'station.fire.result.retry')}</h1>
-                <p class="station-copy">${message}</p>
+                <p class="station-subtitle fire-result-score">${summary}</p>
+                <p class="station-copy fire-result-quote">「${message}」</p>
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
-                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('station.fire.result.findGrandma')}</button>
                 </div>
                 <img class="station-guide station-guide-result" src="${this.station.guideImage}" alt="${this.station.guideAlt}">
             </section>
@@ -1629,7 +1628,9 @@ const StationDemoGame = {
             if (this.state.stationId === 'fire') this.startFireGame();
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
-        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
+        this.container.querySelector('[data-back]').addEventListener('click', () => {
+            this.showCombinedDialogue('fireExit', () => this.close(), { actionLabelKey: 'story.action.returnLobby' });
+        });
     },
 
     close() {

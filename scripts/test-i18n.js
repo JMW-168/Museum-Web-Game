@@ -49,6 +49,9 @@ function loadI18n(extra = {}) {
     assert.strictEqual(I18n.getLocale(), 'zh-Hant', '無記憶時預設繁體');
     assert.strictEqual(t('menu.start'), '搭乘時光機');
     assert.strictEqual(t('ending.subtitle').includes('客家土樓'), true);
+    assert.strictEqual(t('station.fire.kicker'), '站點一：灶台生火');
+    assert.strictEqual(t('station.fire.result.findGrandma'), '去找阿罵');
+    assert.strictEqual(t('station.fire.summary', { score: 1022 }), '分數 1022');
 
     I18n.register('zh-Hant', { 'test.token': '選擇「{{name}}」，共 {{count}} 張' });
     assert.strictEqual(t('test.token', { name: '桃紋', count: 4 }), '選擇「桃紋」，共 4 張');
