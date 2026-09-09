@@ -47,7 +47,7 @@ window.I18n.register('zh-Hant', {
     'level.cake.desc': '印一個紅粿，把節慶的祝福壓進米糰裡。',
     'level.story.kicker': '約 10 分鐘',
     'level.story.title': '完整劇情體驗',
-    'level.story.desc': '跟著阿嬤阿公，依序走完灶台、擂茶、搖籃、粿印四段故事。',
+    'level.story.desc': '跟著阿嬤阿公，完整體驗上述四項客家故事。',
 
     // 退出確認
     'exit.title': '你確定要退出嗎？',

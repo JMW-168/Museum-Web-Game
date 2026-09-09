@@ -46,7 +46,7 @@ window.I18n.register('zh-Hans', {
     'level.cake.desc': '印一个红粿，把节庆的祝福压进米团里。',
     'level.story.kicker': '约 10 分钟',
     'level.story.title': '完整剧情体验',
-    'level.story.desc': '跟着阿嬷阿公，依序走完灶台、擂茶、摇篮、粿印四段故事。',
+    'level.story.desc': '跟着阿嬷阿公，完整体验上述四项客家故事。',
 
     // 退出确认
     'exit.title': '你确定要退出吗？',
