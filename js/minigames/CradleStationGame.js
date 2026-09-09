@@ -9,6 +9,7 @@ const CradleStationGame = {
     targetSeconds: 10,
     assistAfterMs: 25000,
     mode: 'standalone',
+    guideShown: false,
     onComplete: null,
     onExit: null,
 
@@ -91,7 +92,7 @@ const CradleStationGame = {
                 <p class="cradle-instruction">${this.tr('station.cradle.instruction')}</p>
                 <div class="cradle-scene" data-control tabindex="0" role="slider" aria-label="${this.tr('station.cradle.position')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
                     <div class="cradle-guide-track" aria-hidden="true">
-                        <span class="cradle-guide-dot" data-guide></span>
+                        <span class="cradle-guide-dot" data-guide style="left:50%"></span>
                     </div>
                     <div class="cradle-rope cradle-rope-left" data-rope-left></div>
                     <div class="cradle-rope cradle-rope-right" data-rope-right></div>
@@ -117,7 +118,33 @@ const CradleStationGame = {
         this.listen(window, 'keyup', (event) => this.handleKey(event, false));
         control.focus({ preventScroll: true });
         this.updateAudioStage('crying');
-        this.animationId = requestAnimationFrame((time) => this.tick(time));
+        this.showGuide(control);
+    },
+
+    showGuide(control) {
+        const play = this.container?.querySelector('.cradle-play');
+        const begin = () => {
+            if (!this.state || this.state.finished) return;
+            const now = performance.now();
+            this.state.startedAt = now;
+            this.state.lastFrameAt = now;
+            this.state.lastInputAt = 0;
+            control?.focus({ preventScroll: true });
+            this.animationId = requestAnimationFrame((time) => this.tick(time));
+        };
+        if (this.guideShown || !play || typeof StationIntroGuide === 'undefined') {
+            begin();
+            return;
+        }
+        this.guideShown = true;
+        StationIntroGuide.start({
+            host: play,
+            steps: [
+                { selector: '[data-guide]', textKey: 'station.cradle.guide.rhythm' },
+                { selector: '[data-player]', textKey: 'station.cradle.guide.follow' }
+            ],
+            onFinish: begin
+        });
     },
 
     listen(target, type, handler, options) {
@@ -359,6 +386,8 @@ const CradleStationGame = {
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         this.clearAudioTimer();
+        if (typeof StationIntroGuide !== 'undefined') StationIntroGuide.stop();
+        this.guideShown = false;
         this.removeListeners();
         if (this.audioContext) {
             this.audioContext.close().catch(() => {});

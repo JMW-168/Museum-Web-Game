@@ -127,6 +127,11 @@ window.I18n.register('zh-Hans', {
     'game.retry': '再玩一次',
     'game.retryLoad': '重新加载',
 
+    // 进入引导：聚光灯式操作提示（各关共用）
+    'station.guide.next': '下一步',
+    'station.guide.start': '开始',
+    'station.guide.skip': '略过说明',
+
     // 灶台生火
     'station.fire.kicker': '关卡一 / 站点 1',
     'station.fire.title': '灶台生火',
@@ -167,6 +172,8 @@ window.I18n.register('zh-Hans', {
     'station.fire.result.success': '挑战成功',
     'station.fire.result.retry': '再试一次',
     'station.fire.summary': '分数 {{score}}，火候 {{heat}}%，失误 {{mistakes}} 次。',
+    'station.fire.guide.wood': '木柴进入灶台火圈时，按这里“添柴”加柴（电脑可按空格键）。',
+    'station.fire.guide.water': '火候太高时，按这里“喷水”少量降火（或按 W 键）。',
 
     // 擂茶料理
     'station.tea.kicker': '关卡二 / 站点 2',
@@ -224,6 +231,8 @@ window.I18n.register('zh-Hans', {
     'station.tea.result.chopIngredients': '长豆・菜脯・树仔菜・豆腐',
     'station.tea.result.assisted': '这次有师傅协助补完，下一次试着在倒数内完成吧！',
     'station.tea.result.perfect': '两段都在时间内完成，手脚真利落！',
+    'station.tea.guide.pick': '食材会从这条轨道流过来，看到上方指定的食材就把它拖出来。',
+    'station.tea.guide.process': '把食材拖到这里加工：研磨沿着碗边画圈，切料则连点菜刀。',
 
     // 摇篮哄睡
     'station.cradle.kicker': '关卡三 / 站点 3',
@@ -247,6 +256,8 @@ window.I18n.register('zh-Hans', {
     'station.cradle.result.copy': '这只用面粉袋改成的摇篮，养大了家里不少人。',
     'station.cradle.result.assisted': '阿嬷陪你把节奏放宽了一点，一样顺利哄睡了。',
     'station.cradle.result.perfect': '你稳稳跟上整段节奏，哭声也慢慢停了。',
+    'station.cradle.guide.rhythm': '这个光点会左右摆动，是摇篮该跟上的节奏。',
+    'station.cradle.guide.follow': '拖曳摇篮、或按键盘左右方向键，跟着光点一起摆。',
 
     // 粿印制作
     'station.cake.kicker': '关卡四 / 站点 4',
@@ -266,6 +277,8 @@ window.I18n.register('zh-Hans', {
     'station.cake.match.complete': '四组都配对完成，可以选择想做的花纹了！',
     'station.cake.match.count': '已完成 {{current}} / {{total}} 组',
     'station.cake.match.select': '选择花纹',
+    'station.cake.guide.match': '把上排的花纹，一个一个拖到下排对应的祝福意思。',
+    'station.cake.guide.select': '四组都配对好之后，按这里进入选花纹。',
     'station.cake.match.near': '再靠近另一排的卡片一点，就会自动吸附。',
     'station.cake.match.firstEndpoint': '已选第一个端点，再选另一排的小点。',
     'station.cake.match.wrong': '这两个不相配，红线消失后再试一次。',

@@ -8,6 +8,8 @@ const StationDemoGame = {
     fireMusic: null,
     fireMusicSrc: 'assets/sounds/station-fire-theme.mp3',
     fireMusicStarted: false,
+    fireGuideShown: false,
+    teaGuideShown: false,
     fireDurationMs: 60000,
     fireAssetUrls: null,
     teaTimerId: null,
@@ -285,7 +287,6 @@ const StationDemoGame = {
     startCombinedFire() {
         this.station = this.getStation('fire');
         this.setShellTheme('fire');
-        this.startFireMusic();
         this.prepareFireAssets()
             .then(() => this.startFireGame())
             .catch((error) => this.showFireLoadError(error));
@@ -349,7 +350,6 @@ const StationDemoGame = {
         this.container.querySelector('.station-primary').addEventListener('click', () => {
             this.playClick();
             if (stationId === 'fire') {
-                this.startFireMusic();
                 this.prepareFireAssets()
                     .then(() => this.startFireGame())
                     .catch((error) => this.showFireLoadError(error));
@@ -444,8 +444,36 @@ const StationDemoGame = {
 
         this.renderFireHud();
         this.waitForFireGameReady()
-            .then(() => this.beginFireLoop())
+            .then(() => this.showFireGuide())
             .catch((error) => this.showFireLoadError(error));
+    },
+
+    showFireGuide() {
+        if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
+        const play = this.container?.querySelector('.station-play');
+        // 在使用者手勢內起 BGM（startFireMusic 會吞掉被瀏覽器阻擋的例外）。
+        const begin = () => {
+            this.startFireMusic();
+            this.beginFireLoop();
+        };
+        if (this.fireGuideShown || !play || typeof StationIntroGuide === 'undefined') {
+            begin();
+            return;
+        }
+
+        // 素材已就緒，先讓真實 HUD 顯示在遮罩下，但不啟動節奏迴圈與音樂。
+        if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
+        play.classList.remove('is-preparing');
+        this.fireGuideShown = true;
+
+        StationIntroGuide.start({
+            host: play,
+            steps: [
+                { selector: '[data-hit]', textKey: 'station.fire.guide.wood' },
+                { selector: '[data-water]', textKey: 'station.fire.guide.water' }
+            ],
+            onFinish: begin
+        });
     },
 
     beginFireLoop() {
@@ -625,7 +653,6 @@ const StationDemoGame = {
             </section>
         `;
         this.container.querySelector('[data-retry-load]').addEventListener('click', () => {
-            this.startFireMusic();
             this.prepareFireAssets()
                 .then(() => this.startFireGame())
                 .catch((retryError) => this.showFireLoadError(retryError));
@@ -997,7 +1024,30 @@ const StationDemoGame = {
             finished: false
         };
         this.renderTeaStage();
-        this.startTeaTimer();
+        this.showTeaGuide();
+    },
+
+    showTeaGuide() {
+        const play = this.container?.querySelector('.tea-play');
+        const begin = () => {
+            if (!this.state || this.state.stationId !== 'tea' || this.state.finished) return;
+            this.startTeaTrack();
+            this.startTeaTimer();
+        };
+        if (this.teaGuideShown || !play || typeof StationIntroGuide === 'undefined') {
+            begin();
+            return;
+        }
+        this.teaGuideShown = true;
+        this.stopTeaTrack(); // 說明期間先停住流動軌道與倒數
+        StationIntroGuide.start({
+            host: play,
+            steps: [
+                { selector: '[data-tea-track]', textKey: 'station.tea.guide.pick' },
+                { selector: '[data-tea-drop]', textKey: 'station.tea.guide.process' }
+            ],
+            onFinish: begin
+        });
     },
 
     renderTeaStage() {
@@ -1590,10 +1640,7 @@ const StationDemoGame = {
         `;
 
         this.container.querySelector('[data-retry]').addEventListener('click', () => {
-            if (this.state.stationId === 'fire') {
-                this.startFireMusic();
-                this.startFireGame();
-            }
+            if (this.state.stationId === 'fire') this.startFireGame();
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
@@ -1622,6 +1669,9 @@ const StationDemoGame = {
         this.keyHandler = null;
         this.stopFireMusic();
         this.releaseFireAssets();
+        if (typeof StationIntroGuide !== 'undefined') StationIntroGuide.stop();
+        this.fireGuideShown = false;
+        this.teaGuideShown = false;
         if (this.teaAudioContext) {
             this.teaAudioContext.close().catch(() => {});
             this.teaAudioContext = null;
