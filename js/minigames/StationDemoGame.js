@@ -366,10 +366,10 @@ const StationDemoGame = {
             nextBeatIndex: 0,
             nextSpawnAt: 0,
             totalBeats: this.fireBeatTimes.length,
-            idealMin: 45,
-            idealMax: 72,
-            safeMin: 30,
-            safeMax: 88,
+            idealMin: 30,
+            idealMax: 56,
+            safeMin: 16,
+            safeMax: 74,
             unstableMs: 0,
             maxMistakes: 5,
             mistakesRemaining: 5,
@@ -676,12 +676,12 @@ const StationDemoGame = {
 
         this.state.beats.forEach((beat) => {
             const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
-            // 木柴由左向右飄向右側灶口。
-            const startX = -beat.el.offsetWidth;
+            // 木柴由右向左飄向左側灶口。
+            const startX = trackWidth + beat.el.offsetWidth;
             const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
 
-            if (!beat.hit && x > targetX + 100) {
+            if (!beat.hit && x < targetX - 100) {
                 beat.hit = true;
                 this.applyFireScore(this.tr('station.fire.missed'), -8, -10, true, true);
                 beat.el.remove();
@@ -834,8 +834,8 @@ const StationDemoGame = {
     },
 
     getFireTargetX(trackWidth) {
-        // 與 .station-demo-fire .fire-target 的 left 對齊（灶台在右側，木柴由左飄入）。
-        return trackWidth * 0.74;
+        // 與 .station-demo-fire .fire-target 的灶口位置對齊（灶台在左側，木柴由右飄入）。
+        return trackWidth * 0.19;
     },
 
     updateFireStability(delta) {
@@ -1601,8 +1601,10 @@ const StationDemoGame = {
         const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
         this.container.innerHTML = `
             <section class="station-panel station-result-panel tea-result-panel has-guide">
-                <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>${this.tr('station.tea.result.title')}</h1>
+                <div class="tea-result-head">
+                    <div class="station-kicker-line">${this.station.kicker}</div>
+                    <h1>${this.tr('station.tea.result.title')}</h1>
+                </div>
                 <div class="tea-result-body">
                     <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
                     <div class="tea-result-copy">
@@ -1629,7 +1631,7 @@ const StationDemoGame = {
 
     showFireResult() {
         if (!this.state || this.state.stationId !== 'fire') return;
-        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 58) * 2);
+        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 43) * 2);
         const mistakeBonus = this.state.mistakesRemaining * 40;
         const totalScore = Math.round(this.state.score + fireScore + mistakeBonus);
         const success = totalScore >= 2400 && this.isFireInSafeRange();

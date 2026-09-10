@@ -1562,6 +1562,11 @@
     background: linear-gradient(155deg, rgba(83, 71, 59, 0.96), rgba(37, 42, 40, 0.98));
 }
 
+/* 干擾物（柴火／石頭）縮小，少擋到軌道提示文字。 */
+.tea-moving-item.tea-decoy {
+    width: clamp(54px, 6.6vw, 78px);
+}
+
 .tea-decoy-art {
     display: grid;
     place-items: center;
@@ -1571,8 +1576,8 @@
 
 .tea-decoy-art img {
     display: block;
-    width: 88%;
-    height: 88%;
+    width: 70%;
+    height: 70%;
     object-fit: contain;
     filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.42));
 }
@@ -1877,24 +1882,38 @@
     animation: tea-auto-complete 0.52s ease-in-out alternate 2;
 }
 
-/* 結果頁：填滿版面、成果圖在左、文字在右、角色置右放大、按鈕右下。 */
+/* 結果頁：成果圖在左、文字在右、角色置右放大、按鈕右下。
+   面板填滿遊戲區高度，標題／圖文／按鈕三段平均分布，避免上下大片空白。 */
 .tea-result-panel {
     width: min(88%, 1040px);
+    min-height: min(94%, 560px);
+    max-height: 100%;
+    justify-content: space-between;
 }
 
 .tea-result-panel.has-guide {
     padding-right: clamp(172px, 28vw, 340px);
 }
 
+.tea-result-head {
+    flex: 0 0 auto;
+}
+
 .tea-result-panel h1 {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .tea-result-body {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: clamp(16px, 3vw, 34px);
-    margin: 6px 0 4px;
+    flex: 0 1 auto;
+    min-height: 0;
+}
+
+.tea-result-panel .station-actions {
+    flex: 0 0 auto;
+    margin-top: 0;
 }
 
 .tea-result-art {
@@ -2035,15 +2054,12 @@
 
     .tea-result-panel {
         width: min(96%, 980px);
-        height: calc(100% - 12px);
-        min-height: 0;
-        padding: 10px 14px 10px;
-        justify-content: flex-start;
-        gap: 2px;
+        min-height: min(97%, 470px);
+        padding: 12px 16px 12px;
     }
 
     .tea-result-panel.has-guide {
-        padding-right: clamp(104px, 22vw, 150px);
+        padding-right: clamp(120px, 24vw, 190px);
     }
 
     .tea-result-panel .station-kicker-line {
@@ -2059,7 +2075,6 @@
 
     .tea-result-body {
         gap: 10px;
-        margin: 3px 0 2px;
     }
 
     .tea-result-art {
@@ -2087,7 +2102,6 @@
 
     .tea-result-panel .station-actions {
         gap: 7px;
-        margin-top: 8px;
     }
 
     .tea-result-panel .station-actions button {
@@ -2098,8 +2112,8 @@
     }
 
     .tea-result-panel .station-guide-result {
-        width: clamp(96px, 20vw, 144px);
-        max-height: 82%;
+        width: clamp(128px, 26vw, 196px);
+        max-height: 94%;
     }
 }
 
@@ -2138,12 +2152,12 @@
     }
 
     .tea-result-panel {
-        height: calc(100% - 8px);
-        padding: 5px 9px 4px;
+        min-height: min(98%, 340px);
+        padding: 6px 10px 6px;
     }
 
     .tea-result-panel.has-guide {
-        padding-right: clamp(88px, 20vw, 124px);
+        padding-right: clamp(104px, 22vw, 160px);
     }
 
     .tea-result-panel h1 {
@@ -2164,8 +2178,8 @@
     }
 
     .tea-result-panel .station-guide-result {
-        width: clamp(84px, 18vw, 120px);
-        max-height: 76%;
+        width: clamp(108px, 22vw, 168px);
+        max-height: 92%;
     }
 }
 
@@ -2234,7 +2248,7 @@
 }
 
 .station-demo-fire .fire-target {
-    left: 74%;
+    left: 26%;
     z-index: 3;
     width: clamp(216px, 28vw, 356px);
     height: clamp(150px, 19vw, 246px);
@@ -2351,9 +2365,9 @@
     flex-direction: column;
     align-items: center;
     gap: clamp(4px, 1vh, 8px);
-    width: min(58%, 620px);
-    /* 靠左擺放；上移與底部按鈕拉開距離。 */
-    margin: 0 auto clamp(92px, 18vh, 150px) clamp(20px, 6vw, 96px);
+    width: min(74%, 780px);
+    /* 上移與底部按鈕拉開距離。 */
+    margin: 0 auto clamp(92px, 18vh, 150px);
 }
 
 .fire-meter-label {
