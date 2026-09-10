@@ -150,6 +150,7 @@ window.I18n.register('zh-Hant', {
     'station.fire.danger': '快要火燒厝了',
     'station.fire.stove': '灶台',
     'station.fire.flame': '火焰',
+    'station.fire.meter.label': '火候安全區',
     'station.fire.addWood': '添柴',
     'station.fire.sprayWater': '噴水',
     'station.fire.wood.big': '大柴',
@@ -177,7 +178,7 @@ window.I18n.register('zh-Hant', {
     'station.fire.guide.water': '火候太高時，按這裡「噴水」少量降火（或按 W 鍵）。',
 
     // 擂茶料理
-    'station.tea.kicker': '關卡二 / 站點 2',
+    'station.tea.kicker': '站點二：擂茶料理',
     'station.tea.title': '擂茶料理',
     'station.tea.success': '擂茶小知識：擂茶把茶葉、香草、花生與芝麻耐心擂成茶膏，再配上切細的蔬菜與豆腐，是一碗兼具香氣與口感的客家料理。',
     'station.tea.grind.title': '站點二之一 研磨湯底',

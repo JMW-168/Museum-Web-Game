@@ -55,8 +55,8 @@ const StationDemoGame = {
         'assets/images/station-fire/background.webp',
         'assets/images/characters/grandma.png',
         'assets/images/station-fire/stove.png',
-        'assets/images/station-fire/fire-small.png',
-        'assets/images/station-fire/fire-large.png',
+        'assets/images/station-fire/flame-1.png',
+        'assets/images/station-fire/flame-2.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png'
     ],
@@ -380,7 +380,7 @@ const StationDemoGame = {
         };
 
         const stoveImage = this.getFireAsset('assets/images/station-fire/stove.png');
-        const smallFlameImage = this.getFireAsset('assets/images/station-fire/fire-small.png');
+        const smallFlameImage = this.getFireAsset('assets/images/station-fire/flame-1.png');
 
         this.container.innerHTML = `
             <div class="station-play is-preparing">
@@ -405,11 +405,14 @@ const StationDemoGame = {
                         </div>
                     </div>
                 </div>
-                <div class="fire-meter">
-                    <div class="fire-ideal-zone"></div>
-                    <span></span>
-                </div>
                 <div class="station-feedback">${this.tr('station.fire.wait')}</div>
+                <div class="fire-meter-wrap">
+                    <span class="fire-meter-label">${this.tr('station.fire.meter.label')}</span>
+                    <div class="fire-meter">
+                        <div class="fire-ideal-zone"></div>
+                        <span></span>
+                    </div>
+                </div>
                 <div class="fire-score-layer" data-score-layer aria-hidden="true"></div>
                 <div class="station-actions compact">
                     <button type="button" class="station-primary" data-hit>${this.tr('station.fire.addWood')}</button>
@@ -813,7 +816,8 @@ const StationDemoGame = {
     },
 
     getFireTravelMs(index) {
-        return index < 4 ? 2100 : 1950;
+        // 灶台左移後行進距離變長，縮短 travel 讓木柴移動更快、鼓點更明確。
+        return index < 4 ? 1780 : 1650;
     },
 
     getFireSpawnAt(index) {
@@ -829,7 +833,8 @@ const StationDemoGame = {
     },
 
     getFireTargetX(trackWidth) {
-        return trackWidth * 0.24;
+        // 與 .station-demo-fire .fire-target 的 left 對齊（灶台往左移，讓左側空間有作用）。
+        return trackWidth * 0.16;
     },
 
     updateFireStability(delta) {
@@ -881,10 +886,11 @@ const StationDemoGame = {
         if (dangerAlert) dangerAlert.classList.toggle('active', this.state.fire > this.state.safeMax);
         if (flame) {
             const flameSrc = this.state.fire > this.state.idealMax
-                ? this.getFireAsset('assets/images/station-fire/fire-large.png')
-                : this.getFireAsset('assets/images/station-fire/fire-small.png');
+                ? this.getFireAsset('assets/images/station-fire/flame-2.png')
+                : this.getFireAsset('assets/images/station-fire/flame-1.png');
             if (flame.src !== flameSrc) flame.src = flameSrc;
-            const flameScale = 0.55 + (this.state.fire / 75);
+            // 火焰隨火候長大，但幅度收斂，避免超出灶門。
+            const flameScale = 0.78 + (this.state.fire / 150);
             flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
     },
@@ -1596,15 +1602,10 @@ const StationDemoGame = {
             <section class="station-panel station-result-panel tea-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
                 <h1>${this.tr('station.tea.result.title')}</h1>
-                <div class="tea-result-layout">
-                    <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
-                    <div class="tea-result-copy">
-                        <p class="station-subtitle">${this.tr('station.tea.result.grindIngredients')}</p>
-                        <p class="station-subtitle">${this.tr('station.tea.result.chopIngredients')}</p>
-                        <p class="station-copy">${this.station.success}</p>
-                        ${usedHelp ? `<p class="tea-assisted-note">${this.tr('station.tea.result.assisted')}</p>` : `<p class="tea-perfect-note">${this.tr('station.tea.result.perfect')}</p>`}
-                    </div>
-                </div>
+                <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
+                <p class="station-subtitle tea-result-ingredients">${this.tr('station.tea.result.grindIngredients')}<br>${this.tr('station.tea.result.chopIngredients')}</p>
+                <p class="station-copy">${this.station.success}</p>
+                ${usedHelp ? `<p class="tea-assisted-note">${this.tr('station.tea.result.assisted')}</p>` : `<p class="tea-perfect-note">${this.tr('station.tea.result.perfect')}</p>`}
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
                     <button type="button" class="station-secondary" data-continue>${this.tr('station.tea.result.talkGrandpa')}</button>
