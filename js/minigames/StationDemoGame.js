@@ -24,7 +24,7 @@ const StationDemoGame = {
     dialogueReady: false,
     dialogueTextTarget: null,
     dialogueFullText: '',
-    teaStageDurationMs: 60000,
+    teaStageDurationMs: 45000,
     teaSpawnIntervalMs: 975,
     teaTravelMs: 1950,
     teaImageUrls: [
