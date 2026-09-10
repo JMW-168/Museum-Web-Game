@@ -144,7 +144,7 @@ window.I18n.register('zh-Hant', {
     'station.fire.hud.heat': '火候',
     'station.fire.hud.time': '時間',
     'station.fire.hud.seconds': '秒',
-    'station.fire.help.wood': '木柴進入灶台火圈：按添柴',
+    'station.fire.help.wood': '木柴到灶口時，按「添柴」',
     'station.fire.help.water': '火候超過 72%：按噴水',
     'station.fire.track': '節奏軌道',
     'station.fire.danger': '快要火燒厝了',
@@ -174,7 +174,7 @@ window.I18n.register('zh-Hant', {
     'station.fire.result.retry': '再試一次',
     'station.fire.result.findGrandma': '去找阿罵',
     'station.fire.summary': '分數 {{score}}',
-    'station.fire.guide.wood': '木柴進入灶台火圈時，按這裡「添柴」加柴（電腦可按空白鍵）。',
+    'station.fire.guide.wood': '木柴飄到右側灶口時，按這裡「添柴」加柴（電腦可按空白鍵）。',
     'station.fire.guide.water': '火候太高時，按這裡「噴水」少量降火（或按 W 鍵）。',
 
     // 擂茶料理

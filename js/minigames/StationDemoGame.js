@@ -676,11 +676,12 @@ const StationDemoGame = {
 
         this.state.beats.forEach((beat) => {
             const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
-            const startX = trackWidth + beat.el.offsetWidth;
+            // 木柴由左向右飄向右側灶口。
+            const startX = -beat.el.offsetWidth;
             const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
 
-            if (!beat.hit && x < targetX - 100) {
+            if (!beat.hit && x > targetX + 100) {
                 beat.hit = true;
                 this.applyFireScore(this.tr('station.fire.missed'), -8, -10, true, true);
                 beat.el.remove();
@@ -816,8 +817,8 @@ const StationDemoGame = {
     },
 
     getFireTravelMs(index) {
-        // 灶台左移後行進距離變長，縮短 travel 讓木柴移動更快、鼓點更明確。
-        return index < 4 ? 1780 : 1650;
+        // 縮短 travel 讓木柴移動更快、鼓點更明確。
+        return index < 4 ? 1900 : 1780;
     },
 
     getFireSpawnAt(index) {
@@ -833,8 +834,8 @@ const StationDemoGame = {
     },
 
     getFireTargetX(trackWidth) {
-        // 與 .station-demo-fire .fire-target 的 left 對齊（灶台往左移，讓左側空間有作用）。
-        return trackWidth * 0.16;
+        // 與 .station-demo-fire .fire-target 的 left 對齊（灶台在右側，木柴由左飄入）。
+        return trackWidth * 0.74;
     },
 
     updateFireStability(delta) {
@@ -1602,10 +1603,14 @@ const StationDemoGame = {
             <section class="station-panel station-result-panel tea-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
                 <h1>${this.tr('station.tea.result.title')}</h1>
-                <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
-                <p class="station-subtitle tea-result-ingredients">${this.tr('station.tea.result.grindIngredients')}<br>${this.tr('station.tea.result.chopIngredients')}</p>
-                <p class="station-copy">${this.station.success}</p>
-                ${usedHelp ? `<p class="tea-assisted-note">${this.tr('station.tea.result.assisted')}</p>` : `<p class="tea-perfect-note">${this.tr('station.tea.result.perfect')}</p>`}
+                <div class="tea-result-body">
+                    <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
+                    <div class="tea-result-copy">
+                        <p class="station-subtitle tea-result-ingredients">${this.tr('station.tea.result.grindIngredients')}<br>${this.tr('station.tea.result.chopIngredients')}</p>
+                        <p class="station-copy">${this.station.success}</p>
+                        ${usedHelp ? `<p class="tea-assisted-note">${this.tr('station.tea.result.assisted')}</p>` : `<p class="tea-perfect-note">${this.tr('station.tea.result.perfect')}</p>`}
+                    </div>
+                </div>
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
                     <button type="button" class="station-secondary" data-continue>${this.tr('station.tea.result.talkGrandpa')}</button>
