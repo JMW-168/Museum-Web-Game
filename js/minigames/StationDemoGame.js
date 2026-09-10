@@ -24,7 +24,7 @@ const StationDemoGame = {
     dialogueReady: false,
     dialogueTextTarget: null,
     dialogueFullText: '',
-    teaStageDurationMs: 60000,
+    teaStageDurationMs: 45000,
     teaSpawnIntervalMs: 975,
     teaTravelMs: 1950,
     teaImageUrls: [
@@ -55,8 +55,8 @@ const StationDemoGame = {
         'assets/images/station-fire/background.webp',
         'assets/images/characters/grandma.png',
         'assets/images/station-fire/stove.png',
-        'assets/images/station-fire/fire-small.png',
-        'assets/images/station-fire/fire-large.png',
+        'assets/images/station-fire/flame-1.png',
+        'assets/images/station-fire/flame-2.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png'
     ],
@@ -365,11 +365,13 @@ const StationDemoGame = {
             startedAt: 0,
             nextBeatIndex: 0,
             nextSpawnAt: 0,
+            fireTargetX: null,
+            fireTargetTrackWidth: 0,
             totalBeats: this.fireBeatTimes.length,
-            idealMin: 45,
-            idealMax: 72,
-            safeMin: 30,
-            safeMax: 88,
+            idealMin: 60,
+            idealMax: 86,
+            safeMin: 46,
+            safeMax: 94,
             unstableMs: 0,
             maxMistakes: 5,
             mistakesRemaining: 5,
@@ -380,7 +382,7 @@ const StationDemoGame = {
         };
 
         const stoveImage = this.getFireAsset('assets/images/station-fire/stove.png');
-        const smallFlameImage = this.getFireAsset('assets/images/station-fire/fire-small.png');
+        const smallFlameImage = this.getFireAsset('assets/images/station-fire/flame-1.png');
 
         this.container.innerHTML = `
             <div class="station-play is-preparing">
@@ -405,11 +407,14 @@ const StationDemoGame = {
                         </div>
                     </div>
                 </div>
-                <div class="fire-meter">
-                    <div class="fire-ideal-zone"></div>
-                    <span></span>
-                </div>
                 <div class="station-feedback">${this.tr('station.fire.wait')}</div>
+                <div class="fire-meter-wrap">
+                    <span class="fire-meter-label">${this.tr('station.fire.meter.label')}</span>
+                    <div class="fire-meter">
+                        <div class="fire-ideal-zone"></div>
+                        <span></span>
+                    </div>
+                </div>
                 <div class="fire-score-layer" data-score-layer aria-hidden="true"></div>
                 <div class="station-actions compact">
                     <button type="button" class="station-primary" data-hit>${this.tr('station.fire.addWood')}</button>
@@ -673,6 +678,7 @@ const StationDemoGame = {
 
         this.state.beats.forEach((beat) => {
             const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
+            // 木柴由右向左飄向灶口。
             const startX = trackWidth + beat.el.offsetWidth;
             const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
@@ -813,7 +819,8 @@ const StationDemoGame = {
     },
 
     getFireTravelMs(index) {
-        return index < 4 ? 2100 : 1950;
+        // 縮短 travel 讓木柴移動更快、鼓點更明確。
+        return index < 4 ? 1900 : 1780;
     },
 
     getFireSpawnAt(index) {
@@ -829,7 +836,20 @@ const StationDemoGame = {
     },
 
     getFireTargetX(trackWidth) {
-        return trackWidth * 0.24;
+        if (this.state?.fireTargetX !== null && this.state?.fireTargetTrackWidth === trackWidth) {
+            return this.state.fireTargetX;
+        }
+        const track = this.container?.querySelector('.fire-track');
+        const flame = this.container?.querySelector('.fire-flame-img');
+        if (track && flame) {
+            const trackBounds = track.getBoundingClientRect();
+            const flameBounds = flame.getBoundingClientRect();
+            const targetX = flameBounds.left + flameBounds.width / 2 - trackBounds.left;
+            this.state.fireTargetX = targetX;
+            this.state.fireTargetTrackWidth = trackWidth;
+            return targetX;
+        }
+        return trackWidth * 0.15;
     },
 
     updateFireStability(delta) {
@@ -881,10 +901,11 @@ const StationDemoGame = {
         if (dangerAlert) dangerAlert.classList.toggle('active', this.state.fire > this.state.safeMax);
         if (flame) {
             const flameSrc = this.state.fire > this.state.idealMax
-                ? this.getFireAsset('assets/images/station-fire/fire-large.png')
-                : this.getFireAsset('assets/images/station-fire/fire-small.png');
+                ? this.getFireAsset('assets/images/station-fire/flame-2.png')
+                : this.getFireAsset('assets/images/station-fire/flame-1.png');
             if (flame.src !== flameSrc) flame.src = flameSrc;
-            const flameScale = 0.55 + (this.state.fire / 75);
+            // 火焰隨火候長大，但幅度收斂，避免超出灶門。
+            const flameScale = 0.78 + (this.state.fire / 150);
             flame.style.transform = `translateX(-50%) scale(${flameScale})`;
         }
     },
@@ -1594,13 +1615,14 @@ const StationDemoGame = {
         const usedHelp = this.state.autoCompleted.grind || this.state.autoCompleted.chop;
         this.container.innerHTML = `
             <section class="station-panel station-result-panel tea-result-panel has-guide">
-                <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>${this.tr('station.tea.result.title')}</h1>
-                <div class="tea-result-layout">
+                <div class="tea-result-head">
+                    <div class="station-kicker-line">${this.station.kicker}</div>
+                    <h1>${this.tr('station.tea.result.title')}</h1>
+                </div>
+                <div class="tea-result-body">
                     <div class="tea-result-art" role="img" aria-label="${this.tr('station.tea.result.art')}"></div>
                     <div class="tea-result-copy">
-                        <p class="station-subtitle">${this.tr('station.tea.result.grindIngredients')}</p>
-                        <p class="station-subtitle">${this.tr('station.tea.result.chopIngredients')}</p>
+                        <p class="station-subtitle tea-result-ingredients">${this.tr('station.tea.result.grindIngredients')}<br>${this.tr('station.tea.result.chopIngredients')}</p>
                         <p class="station-copy">${this.station.success}</p>
                         ${usedHelp ? `<p class="tea-assisted-note">${this.tr('station.tea.result.assisted')}</p>` : `<p class="tea-perfect-note">${this.tr('station.tea.result.perfect')}</p>`}
                     </div>
@@ -1623,7 +1645,7 @@ const StationDemoGame = {
 
     showFireResult() {
         if (!this.state || this.state.stationId !== 'fire') return;
-        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 58) * 2);
+        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 73) * 2);
         const mistakeBonus = this.state.mistakesRemaining * 40;
         const totalScore = Math.round(this.state.score + fireScore + mistakeBonus);
         const success = totalScore >= 2400 && this.isFireInSafeRange();
