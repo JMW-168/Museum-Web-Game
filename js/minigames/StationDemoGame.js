@@ -365,11 +365,13 @@ const StationDemoGame = {
             startedAt: 0,
             nextBeatIndex: 0,
             nextSpawnAt: 0,
+            fireTargetX: null,
+            fireTargetTrackWidth: 0,
             totalBeats: this.fireBeatTimes.length,
-            idealMin: 30,
-            idealMax: 56,
-            safeMin: 16,
-            safeMax: 74,
+            idealMin: 60,
+            idealMax: 86,
+            safeMin: 46,
+            safeMax: 94,
             unstableMs: 0,
             maxMistakes: 5,
             mistakesRemaining: 5,
@@ -676,7 +678,7 @@ const StationDemoGame = {
 
         this.state.beats.forEach((beat) => {
             const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
-            // 木柴由右向左飄向左側灶口。
+            // 木柴由右向左飄向灶口。
             const startX = trackWidth + beat.el.offsetWidth;
             const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
@@ -834,8 +836,20 @@ const StationDemoGame = {
     },
 
     getFireTargetX(trackWidth) {
-        // 與 .station-demo-fire .fire-target 的灶口位置對齊（灶台在左側，木柴由右飄入）。
-        return trackWidth * 0.19;
+        if (this.state?.fireTargetX !== null && this.state?.fireTargetTrackWidth === trackWidth) {
+            return this.state.fireTargetX;
+        }
+        const track = this.container?.querySelector('.fire-track');
+        const flame = this.container?.querySelector('.fire-flame-img');
+        if (track && flame) {
+            const trackBounds = track.getBoundingClientRect();
+            const flameBounds = flame.getBoundingClientRect();
+            const targetX = flameBounds.left + flameBounds.width / 2 - trackBounds.left;
+            this.state.fireTargetX = targetX;
+            this.state.fireTargetTrackWidth = trackWidth;
+            return targetX;
+        }
+        return trackWidth * 0.15;
     },
 
     updateFireStability(delta) {
@@ -1631,7 +1645,7 @@ const StationDemoGame = {
 
     showFireResult() {
         if (!this.state || this.state.stationId !== 'fire') return;
-        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 43) * 2);
+        const fireScore = Math.max(0, 100 - Math.abs(this.state.fire - 73) * 2);
         const mistakeBonus = this.state.mistakesRemaining * 40;
         const totalScore = Math.round(this.state.score + fireScore + mistakeBonus);
         const success = totalScore >= 2400 && this.isFireInSafeRange();

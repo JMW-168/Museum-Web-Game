@@ -2054,8 +2054,10 @@
 
     .tea-result-panel {
         width: min(96%, 980px);
-        min-height: min(97%, 470px);
+        min-height: min(92%, 300px);
         padding: 12px 16px 12px;
+        justify-content: flex-start;
+        gap: 3px;
     }
 
     .tea-result-panel.has-guide {
@@ -2075,6 +2077,7 @@
 
     .tea-result-body {
         gap: 10px;
+        flex: 0 1 auto;
     }
 
     .tea-result-art {
@@ -2102,6 +2105,7 @@
 
     .tea-result-panel .station-actions {
         gap: 7px;
+        margin-top: 2px;
     }
 
     .tea-result-panel .station-actions button {
@@ -2154,6 +2158,7 @@
     .tea-result-panel {
         min-height: min(98%, 340px);
         padding: 6px 10px 6px;
+        gap: 1px;
     }
 
     .tea-result-panel.has-guide {
@@ -2161,11 +2166,12 @@
     }
 
     .tea-result-panel h1 {
+        margin-bottom: 0;
         font-size: 20px;
     }
 
     .tea-result-body {
-        gap: 8px;
+        gap: 5px;
     }
 
     .tea-result-art {
@@ -2175,6 +2181,19 @@
     .tea-result-panel .station-copy {
         font-size: 10px;
         line-height: 1.25;
+    }
+
+    .tea-result-ingredients {
+        margin-bottom: 1px;
+    }
+
+    .tea-result-panel .tea-assisted-note,
+    .tea-result-panel .tea-perfect-note {
+        margin-top: 2px;
+    }
+
+    .tea-result-panel .station-actions {
+        margin-top: 1px;
     }
 
     .tea-result-panel .station-guide-result {
@@ -2248,7 +2267,7 @@
 }
 
 .station-demo-fire .fire-target {
-    left: 26%;
+    left: 16%;
     z-index: 3;
     width: clamp(216px, 28vw, 356px);
     height: clamp(150px, 19vw, 246px);
@@ -2300,13 +2319,12 @@
     max-height: none;
     object-fit: contain;
     pointer-events: none;
-    /* 水平翻轉：讓灶口（拱門）朝向左側由左飄入的木柴。 */
     transform: scaleX(-1);
 }
 
 .station-demo-fire .fire-flame-img {
-    left: 25%;
-    bottom: 12%;
+    left: 55%;
+    bottom: 14%;
     z-index: 3;
     width: 25%;
     max-height: none;
@@ -2618,9 +2636,6 @@
 }
 
 .station-demo-fire .fire-flame-img {
-    left: 25%;
-    bottom: 12%;
-    width: 25%;
     filter: saturate(0.96) drop-shadow(0 0 10px rgba(255, 138, 46, 0.55));
 }
 

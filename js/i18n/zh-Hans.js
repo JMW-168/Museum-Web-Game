@@ -144,7 +144,7 @@ window.I18n.register('zh-Hans', {
     'station.fire.hud.time': '时间',
     'station.fire.hud.seconds': '秒',
     'station.fire.help.wood': '木柴到灶口时，按“添柴”',
-    'station.fire.help.water': '火候超过 56%：按喷水',
+    'station.fire.help.water': '火候超过 86%：按喷水',
     'station.fire.track': '节奏轨道',
     'station.fire.danger': '快要火烧厝了',
     'station.fire.stove': '灶台',
@@ -173,7 +173,7 @@ window.I18n.register('zh-Hans', {
     'station.fire.result.retry': '再试一次',
     'station.fire.result.findGrandma': '去找阿嬷',
     'station.fire.summary': '分数 {{score}}',
-    'station.fire.guide.wood': '木柴飘到左侧灶口时，按这里“添柴”加柴（电脑可按空格键）。',
+    'station.fire.guide.wood': '木柴飘到灶口时，按这里“添柴”加柴（电脑可按空格键）。',
     'station.fire.guide.water': '火候太高时，按这里“喷水”少量降火（或按 W 键）。',
 
     // 擂茶料理
