@@ -28,10 +28,25 @@ const StationDemoGame = {
     teaSpawnIntervalMs: 975,
     teaTravelMs: 1950,
     teaImageUrls: [
-        'assets/images/station-tea/ingredient-sprites.png',
-        'assets/images/station-tea/tool-sprites.png',
-        'assets/images/station-tea/grind-tool-sprites.png',
         'assets/images/station-tea/chop-tool-sprites-v2.png',
+        'assets/images/station-tea/basil.png',
+        'assets/images/station-tea/mint.png',
+        'assets/images/station-tea/kuding.png',
+        'assets/images/station-tea/peanut.png',
+        'assets/images/station-tea/sesame.png',
+        'assets/images/station-tea/long-bean.png',
+        'assets/images/station-tea/radish.png',
+        'assets/images/station-tea/tree-veg.png',
+        'assets/images/station-tea/tofu.png',
+        'assets/images/station-tea/tea-leaves.png',
+        'assets/images/station-tea/knife.png',
+        'assets/images/station-tea/pestle.png',
+        'assets/images/station-tea/mortar-1.png',
+        'assets/images/station-tea/mortar-2.png',
+        'assets/images/station-tea/mortar-3.png',
+        'assets/images/station-tea/mortar-4.png',
+        'assets/images/station-tea/chopped-bowls-strip.png',
+        'assets/images/station-tea/tea-result-v2.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png',
         'assets/images/station-tea/stone.png'
@@ -902,25 +917,25 @@ const StationDemoGame = {
                 unit: this.tr('station.tea.grind.unit'),
                 toolClass: 'grind',
                 items: [
-                    { id: 'basil', name: this.tr('ingredient.basil'), sprite: 0 },
-                    { id: 'mint', name: this.tr('ingredient.mint'), sprite: 1 },
-                    { id: 'kuding', name: this.tr('ingredient.kuding'), sprite: 2 },
-                    { id: 'peanut', name: this.tr('ingredient.peanut'), sprite: 3 },
-                    { id: 'sesame', name: this.tr('ingredient.sesame'), sprite: 4 }
+                    { id: 'kuding', name: this.tr('ingredient.kuding'), image: 'assets/images/station-tea/kuding.png' },
+                    { id: 'mint', name: this.tr('ingredient.mint'), image: 'assets/images/station-tea/mint.png' },
+                    { id: 'basil', name: this.tr('ingredient.basil'), image: 'assets/images/station-tea/basil.png' },
+                    { id: 'sesame', name: this.tr('ingredient.sesame'), image: 'assets/images/station-tea/sesame.png' },
+                    { id: 'peanut', name: this.tr('ingredient.peanut'), image: 'assets/images/station-tea/peanut.png' }
                 ]
             },
             chop: {
                 title: this.tr('station.tea.chop.title'),
                 verb: this.tr('station.tea.chop.verb'),
                 instruction: this.tr('station.tea.chop.instruction'),
-                target: 10,
+                target: 6,
                 unit: this.tr('station.tea.chop.unit'),
                 toolClass: 'chop',
                 items: [
-                    { id: 'long-bean', name: this.tr('ingredient.longBean'), sprite: 5 },
-                    { id: 'radish', name: this.tr('ingredient.radish'), sprite: 6 },
-                    { id: 'tree-veg', name: this.tr('ingredient.treeVeg'), sprite: 7 },
-                    { id: 'tofu', name: this.tr('ingredient.tofu'), sprite: 8 }
+                    { id: 'long-bean', name: this.tr('ingredient.longBean'), image: 'assets/images/station-tea/long-bean.png' },
+                    { id: 'radish', name: this.tr('ingredient.radish'), image: 'assets/images/station-tea/radish.png' },
+                    { id: 'tree-veg', name: this.tr('ingredient.treeVeg'), image: 'assets/images/station-tea/tree-veg.png' },
+                    { id: 'tofu', name: this.tr('ingredient.tofu'), image: 'assets/images/station-tea/tofu.png' }
                 ]
             }
         };
@@ -976,8 +991,10 @@ const StationDemoGame = {
             stationId: 'tea',
             phase: 'grind',
             orders: {
-                grind: this.shuffleTeaItems(grind.items),
-                chop: this.shuffleTeaItems(chop.items)
+                // 研磨與配菜皆採固定順序，提示與完成素材才能穩定對應。
+                grind: grind.items.map((item) => ({ ...item })),
+                // 配菜固定順序，才能讓完成的小碗依固定位置逐格出現。
+                chop: chop.items.map((item) => ({ ...item }))
             },
             completed: { grind: [], chop: [] },
             autoCompleted: { grind: false, chop: false },
@@ -996,7 +1013,7 @@ const StationDemoGame = {
             timeLeft: this.teaStageDurationMs / 1000,
             stageDeadline: 0,
             transitioning: false,
-            feedback: this.tr('station.tea.firstIngredient'),
+            feedback: this.tr('station.tea.firstIngredient', { item: grind.items[0].name }),
             finished: false
         };
         this.renderTeaStage();
@@ -1019,6 +1036,7 @@ const StationDemoGame = {
         StationIntroGuide.start({
             host: play,
             steps: [
+                { selector: '[data-tea-order]', textKey: 'station.tea.guide.order' },
                 { selector: '[data-tea-track]', textKey: 'station.tea.guide.pick' },
                 { selector: '[data-tea-drop]', textKey: 'station.tea.guide.process' }
             ],
@@ -1046,28 +1064,34 @@ const StationDemoGame = {
         const progressPercent = this.state.processing
             ? Math.min(100, this.state.actionProgress / config.target * 100)
             : 0;
-        const liquidPercent = this.getTeaLiquidPercent();
         const activeItem = this.state.processing
             ? config.items.find((item) => item.id === this.state.activeItemId)
             : null;
         const activeIngredientMarkup = activeItem
-            ? `<span class="tea-processing-ingredient ${this.state.phase}" aria-label="${activeItem.name}"
-                    style="--tea-sprite-x:${(activeItem.sprite % 3) * 50}%;--tea-sprite-y:${Math.floor(activeItem.sprite / 3) * 50}%">
-                    <span class="tea-ingredient-art" aria-hidden="true"></span>
+            ? `<span class="tea-processing-ingredient ${this.state.phase}" aria-label="${activeItem.name}">
+                    <img class="tea-ingredient-art" src="${activeItem.image}" alt="">
                </span>`
+            : '';
+        const choppedBowlsMarkup = this.state.phase === 'chop'
+            ? `<div class="tea-chopped-bowls" aria-label="${this.tr('station.tea.choppedBowls')}">
+                ${config.items.map((item, index) => `
+                    <span class="tea-chopped-bowl${completed.includes(item.id) ? ' is-ready' : ''}"
+                        style="--tea-bowl-x:${index * (100 / (config.items.length - 1))}%"
+                        role="img" aria-label="${item.name}" aria-hidden="${completed.includes(item.id) ? 'false' : 'true'}"></span>
+                `).join('')}
+               </div>`
             : '';
         const toolMarkup = this.state.phase === 'grind'
             ? `
-                <span class="tea-mortar-art" aria-hidden="true"></span>
-                <span class="tea-liquid" data-tea-liquid aria-hidden="true"
-                    style="width:${23 + liquidPercent * 0.08}%;height:${5 + liquidPercent * 0.16}px;opacity:${Math.min(1, liquidPercent / 14)}"></span>
+                <img class="tea-mortar-art" data-tea-mortar src="${this.getTeaMortarImage()}" alt="">
                 ${activeIngredientMarkup}
-                <span class="tea-pestle-art" data-tea-pestle aria-hidden="true"></span>
+                <img class="tea-pestle-art" data-tea-pestle src="assets/images/station-tea/pestle.png" alt="">
             `
             : `
                 <span class="tea-cutting-board-art" aria-hidden="true"></span>
                 ${activeIngredientMarkup}
-                <span class="tea-knife-art" aria-hidden="true"></span>
+                <img class="tea-knife-art" src="assets/images/station-tea/knife.png" alt="">
+                ${choppedBowlsMarkup}
             `;
 
         this.container.innerHTML = `
@@ -1079,19 +1103,20 @@ const StationDemoGame = {
                     <span class="tea-timer${this.state.timeLeft <= 5 ? ' urgent' : ''}">${this.tr('station.tea.remaining', { seconds: `<b data-tea-time>${Math.ceil(this.state.timeLeft)}</b>` })}</span>
                 </div>
                 <div class="tea-instruction">${config.instruction}</div>
-                <div class="tea-order" aria-label="${this.tr('station.tea.order')}">${orderMarkup}</div>
+                <div class="tea-order" data-tea-order aria-label="${this.tr('station.tea.order')}">${orderMarkup}</div>
                 <div class="tea-game-area">
                     ${ingredientSourceMarkup}
                     <div class="tea-workspace">
+                        <div class="station-feedback tea-feedback" aria-live="polite">${this.state.feedback}</div>
                         <div class="tea-drop-zone ${config.toolClass}${this.state.processing ? ' processing' : ''}" data-tea-drop>
                             ${toolMarkup}
-                            <span class="tea-target-label">${this.state.processing && expected ? this.tr('station.tea.processing', { item: expected.name, verb: config.verb }) : this.tr('station.tea.dropHere', { verb: config.verb })}</span>
-                            <span class="tea-action-progress">${progressText}</span>
+                            ${this.state.phase === 'grind' || this.state.processing
+                                ? `<span class="tea-action-progress ${this.state.phase}">${progressText}</span>`
+                                : ''}
                             <span class="tea-action-meter"><i style="width:${progressPercent}%"></i></span>
                         </div>
                     </div>
                 </div>
-                <div class="station-feedback tea-feedback" aria-live="polite">${this.state.feedback}</div>
             </div>
         `;
 
@@ -1177,12 +1202,8 @@ const StationDemoGame = {
                 <span class="tea-ingredient-name">${item.name}</span>
             `;
         } else {
-            const column = item.sprite % 3;
-            const row = Math.floor(item.sprite / 3);
-            card.style.setProperty('--tea-sprite-x', `${column * 50}%`);
-            card.style.setProperty('--tea-sprite-y', `${row * 50}%`);
             card.innerHTML = `
-                <span class="tea-ingredient-art" aria-hidden="true"></span>
+                <img class="tea-ingredient-art" src="${item.image}" alt="">
                 <span class="tea-ingredient-name">${item.name}</span>
             `;
         }
@@ -1326,6 +1347,7 @@ const StationDemoGame = {
         this.state.actionProgress = 0;
         this.state.rotationAngle = 0;
         this.state.lastPointerAngle = null;
+        this.state.grindPath = null;
         this.state.feedback = this.tr('station.tea.started', { item: item.name, verb: config.verb });
         this.playClick();
         this.renderTeaStage();
@@ -1381,7 +1403,7 @@ const StationDemoGame = {
             this.state.rotationAngle += Math.abs(delta);
             this.updateTeaPestle(angle);
             this.playTeaGrindSound(Math.abs(delta));
-            this.updateTeaLiquid();
+            this.updateTeaMortar();
             while (this.state.rotationAngle >= 360 && this.state.actionProgress < 5) {
                 this.state.rotationAngle -= 360;
                 this.state.actionProgress++;
@@ -1397,7 +1419,10 @@ const StationDemoGame = {
         });
         const endGesture = (event) => {
             if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
-            if (this.state) this.state.lastPointerAngle = null;
+            if (this.state) {
+                this.state.lastPointerAngle = null;
+                this.state.grindPath = null;
+            }
             target.classList.remove('gesturing');
         };
         target.addEventListener('pointerup', endGesture);
@@ -1416,7 +1441,7 @@ const StationDemoGame = {
             void target.offsetWidth;
             target.classList.add('tea-chop-hit');
             this.updateTeaActionProgress();
-            if (this.state.actionProgress >= 10) this.completeTeaItem();
+            if (this.state.actionProgress >= 6) this.completeTeaItem();
         });
     },
 
@@ -1427,35 +1452,51 @@ const StationDemoGame = {
         const meter = this.container.querySelector('.tea-action-meter i');
         if (label) label.textContent = `${this.state.actionProgress}/${config.target} ${config.unit}`;
         if (meter) meter.style.width = `${Math.min(100, this.state.actionProgress / config.target * 100)}%`;
-        if (this.state.phase === 'grind') this.updateTeaLiquid();
+        if (this.state.phase === 'grind') this.updateTeaMortar();
     },
 
-    getTeaLiquidPercent() {
-        if (!this.state) return 0;
-        const completedTurns = this.state.completed.grind.length * 5;
-        const currentTurns = this.state.phase === 'grind' && this.state.processing
-            ? this.state.actionProgress + (this.state.rotationAngle / 360)
-            : 0;
-        return Math.max(0, Math.min(100, ((completedTurns + currentTurns) / 25) * 100));
+    getTeaMortarImage() {
+        const completedCount = this.state?.completed?.grind?.length || 0;
+        const stage = Math.min(4, completedCount + 1);
+        return `assets/images/station-tea/mortar-${stage}.png`;
     },
 
-    updateTeaLiquid() {
-        const liquid = this.container?.querySelector('[data-tea-liquid]');
-        if (!liquid) return;
-        const percent = this.getTeaLiquidPercent();
-        liquid.style.width = `${23 + percent * 0.08}%`;
-        liquid.style.height = `${5 + percent * 0.16}px`;
-        liquid.style.opacity = `${Math.min(1, percent / 14)}`;
+    updateTeaMortar() {
+        const mortar = this.container?.querySelector('[data-tea-mortar]');
+        if (mortar) mortar.src = this.getTeaMortarImage();
     },
 
     updateTeaPestle(angle) {
         const pestle = this.container?.querySelector('[data-tea-pestle]');
         if (!pestle || !Number.isFinite(angle)) return;
+        const target = this.container.querySelector('[data-tea-drop]');
+        const mortar = this.container.querySelector('[data-tea-mortar]');
+        if (!target || !mortar) return;
+
+        if (!this.state.grindPath) {
+            const targetBounds = target.getBoundingClientRect();
+            const mortarBounds = mortar.getBoundingClientRect();
+            // 缽的影像可能還沒 decode，量到 0 尺寸就先跳過，等下一次 pointermove 再算。
+            if (!mortarBounds.width || !mortarBounds.height) return;
+            // 杵尖沿著缽「內圈」畫圓：取缽短邊再收進內緣。
+            const radiusPx = Math.min(mortarBounds.width, mortarBounds.height) * 0.22;
+            this.state.grindPath = {
+                centerX: (mortarBounds.left + mortarBounds.width / 2 - targetBounds.left) / targetBounds.width * 100,
+                // 圓心略往下偏，研磨面重心本來就偏低，也留出上緣空間讓棒身不被裁切。
+                centerY: (mortarBounds.top + mortarBounds.height / 2 - targetBounds.top) / targetBounds.height * 100 + 5,
+                radiusX: radiusPx / targetBounds.width * 100,
+                radiusY: radiusPx / targetBounds.height * 100
+            };
+        }
+
         const radians = angle * Math.PI / 180;
-        const x = 50 + Math.cos(radians) * 20;
-        const y = 54 + Math.sin(radians) * 12;
-        pestle.style.setProperty('--tea-pestle-x', `${x}%`);
-        pestle.style.setProperty('--tea-pestle-y', `${y}%`);
+        const path = this.state.grindPath;
+        // 只有「杵尖」（影像左下角）沿著缽內圈畫圓；棒身角度固定不轉，僅位移。
+        // 百分比半徑依容器寬高分別換算，畫面上的實際軌跡維持為正圓並貼著缽內緣。
+        const tipX = path.centerX + Math.cos(radians) * path.radiusX;
+        const tipY = path.centerY + Math.sin(radians) * path.radiusY;
+        pestle.style.setProperty('--tea-pestle-x', `${tipX}%`);
+        pestle.style.setProperty('--tea-pestle-y', `${tipY}%`);
     },
 
     completeTeaItem() {
@@ -1531,7 +1572,8 @@ const StationDemoGame = {
             this.state.rotationAngle = 0;
             this.state.lastPointerAngle = null;
             this.state.transitioning = false;
-            this.state.feedback = this.tr('station.tea.chopStart');
+            const firstChopItem = this.getTeaStageConfig('chop').items[0];
+            this.state.feedback = this.tr('station.tea.chopStart', { item: firstChopItem.name });
             this.renderTeaStage();
             this.startTeaTimer();
             return;
@@ -1543,12 +1585,8 @@ const StationDemoGame = {
         if (!this.state || !this.container) return;
         this.clearTeaTimer();
         this.state.finished = true;
-        if (this.mode === 'combined') {
-            this.showCombinedDialogue('teaExit', () => this.showCombinedEnding());
-            return;
-        }
-        // 單關版：離開引導對話 → 結果頁。
-        this.showCombinedDialogue('teaExit', () => this.renderTeaResult(), { actionLabelKey: 'story.action.seeResult' });
+        // 兩種入口都先看成果頁，再由成果頁進入阿公的結尾對話。
+        this.renderTeaResult();
     },
 
     renderTeaResult() {
@@ -1569,13 +1607,18 @@ const StationDemoGame = {
                 </div>
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
-                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
+                    <button type="button" class="station-secondary" data-continue>${this.tr('station.tea.result.talkGrandpa')}</button>
                 </div>
                 <img class="station-guide station-guide-result" src="${this.station.guideImage}" alt="${this.station.guideAlt}">
             </section>
         `;
         this.container.querySelector('[data-retry]').addEventListener('click', () => this.startTeaGame());
-        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
+        this.container.querySelector('[data-continue]').addEventListener('click', () => {
+            const onComplete = this.mode === 'combined' ? () => this.showCombinedEnding() : () => this.close();
+            this.showCombinedDialogue('teaExit', onComplete, {
+                actionLabelKey: this.mode === 'combined' ? undefined : 'story.action.returnLobby'
+            });
+        });
     },
 
     showFireResult() {

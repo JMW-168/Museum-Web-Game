@@ -19,7 +19,7 @@
 
 .station-demo-tea {
     background:
-        linear-gradient(rgba(9, 15, 16, 0.5), rgba(9, 15, 16, 0.72)),
+        linear-gradient(rgba(9, 15, 16, 0.2), rgba(9, 15, 16, 0.4)),
         url('../assets/images/station-tea/background.webp') center / cover no-repeat;
 }
 
@@ -1359,9 +1359,9 @@
     max-height: none;
     padding: clamp(9px, 2vh, 18px) clamp(14px, 3vw, 34px);
     border: 0;
-    background: linear-gradient(180deg, rgba(8, 24, 24, 0.6), rgba(20, 36, 39, 0.78));
+    background: linear-gradient(180deg, rgba(8, 24, 24, 0.34), rgba(20, 36, 39, 0.56));
     box-shadow: none;
-    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
     gap: clamp(6px, 1.25vh, 11px);
     overflow: hidden;
 }
@@ -1379,8 +1379,10 @@
 
 .station-demo-tea .tea-hud {
     padding-left: 10px;
-    padding-right: 78px;
+    /* 預留右上「離開」按鈕的寬度，避免與「剩餘秒數」重疊。 */
+    padding-right: clamp(96px, 10vw, 122px);
     align-items: center;
+    font-size: clamp(15px, 1.9vw, 20px);
 }
 
 .tea-hud > span {
@@ -1398,7 +1400,7 @@
 .tea-instruction {
     color: #f5d58e;
     text-align: center;
-    font-size: clamp(13px, 1.9vw, 18px);
+    font-size: clamp(16px, 2.1vw, 21px);
     line-height: 1.25;
 }
 
@@ -1420,18 +1422,18 @@
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.26);
     color: #efe4cd;
-    font-size: clamp(11px, 1.55vw, 15px);
+    font-size: clamp(14px, 1.75vw, 18px);
     white-space: nowrap;
 }
 
 .tea-order span b {
     display: grid;
     place-items: center;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.14);
-    font-size: 11px;
+    font-size: 13px;
 }
 
 .tea-order span.current {
@@ -1495,7 +1497,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     color: rgba(255, 243, 201, 0.32);
-    font-size: clamp(10px, 1.35vw, 13px);
+    font-size: clamp(13px, 1.55vw, 16px);
     white-space: nowrap;
     pointer-events: none;
 }
@@ -1606,31 +1608,34 @@
 
 .tea-ingredient-art {
     display: block;
+    width: 100%;
+    height: 100%;
     min-height: 0;
-    background-image: url('../assets/images/station-tea/ingredient-sprites.png');
-    background-repeat: no-repeat;
-    background-size: 300% 300%;
-    background-position: var(--tea-sprite-x) var(--tea-sprite-y);
+    object-fit: contain;
     filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.4));
     pointer-events: none;
 }
 
 .tea-ingredient-name {
     display: block;
-    font-size: clamp(11px, 1.45vw, 14px);
+    font-size: clamp(14px, 1.65vw, 17px);
     line-height: 1.1;
     pointer-events: none;
 }
 
 .tea-workspace {
     display: grid;
-    place-items: center;
+    grid-template-rows: auto minmax(0, 1fr);
+    justify-items: center;
+    align-items: stretch;
+    gap: clamp(3px, 0.8vh, 7px);
+    width: 100%;
     min-height: 0;
 }
 
 .tea-drop-zone {
     position: relative;
-    width: min(68vw, 560px);
+    width: min(78vw, 680px);
     height: 100%;
     min-height: 150px;
     max-height: 270px;
@@ -1654,29 +1659,37 @@
     animation: tea-drop-error 0.42s ease-in-out;
 }
 
-.tea-cutting-board-art,
-.tea-knife-art {
+.tea-cutting-board-art {
     position: absolute;
+    z-index: 1;
+    left: 40%;
+    top: 50%;
+    /* 高度為主軸、寬度依砧板實際比例換算，不再被容器強制拉寬。 */
+    height: calc(100% - 4px);
+    width: auto;
+    aspect-ratio: 783 / 495;
+    max-width: 64%;
+    transform: translate(-50%, -50%);
     background-image: url('../assets/images/station-tea/chop-tool-sprites-v2.png');
     background-repeat: no-repeat;
-    background-size: 200% 100%;
-    filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.4));
+    /* 只取精靈圖左格裡的砧板本體，等比例不變形。 */
+    background-size: 226.6% 179.2%;
+    background-position: 8.8% 45.2%;
+    /* 稍微降低寫實貼圖的高光與飽和，貼近其他手繪素材的質感。 */
+    filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.4)) saturate(0.82) brightness(0.98) contrast(0.94);
     pointer-events: none;
 }
 
-.tea-cutting-board-art {
-    z-index: 1;
-    inset: 0 11% 25px;
-    background-position: 0% 50%;
-}
-
 .tea-knife-art {
+    position: absolute;
     z-index: 4;
-    left: 52%;
-    top: 45%;
-    width: min(34%, 155px);
-    aspect-ratio: 1;
-    background-position: 100% 50%;
+    left: 37%;
+    top: 44%;
+    width: min(36%, 178px);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.4));
+    pointer-events: none;
     transform: translate(-50%, -50%) rotate(-8deg);
     transform-origin: 70% 75%;
 }
@@ -1685,49 +1698,32 @@
 .tea-pestle-art {
     position: absolute;
     z-index: 1;
-    background-image: url('../assets/images/station-tea/grind-tool-sprites.png');
-    background-repeat: no-repeat;
-    background-size: 200% 100%;
+    height: auto;
+    object-fit: contain;
     filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.42));
     pointer-events: none;
 }
 
 .tea-mortar-art {
-    inset: -4px 14% 22px;
-    background-position: 0% 50%;
-}
-
-.tea-liquid {
-    position: absolute;
-    z-index: 2;
     left: 50%;
-    top: 54%;
-    width: 23%;
-    height: 5px;
+    top: 50%;
+    /* 以高度為主軸，寬度自動，保留擂缽本身接近正圓的比例（不再被壓扁）。 */
+    width: auto;
+    height: calc(100% - 6px);
+    max-width: 64%;
     transform: translate(-50%, -50%);
-    border: 1px solid rgba(206, 255, 154, 0.7);
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 32% 30%, rgba(239, 255, 179, 0.94) 0 3%, transparent 4%),
-        radial-gradient(circle at 68% 60%, rgba(246, 226, 132, 0.86) 0 4%, transparent 5%),
-        radial-gradient(ellipse, #91bd31, #367b28 72%);
-    box-shadow: inset 0 3px 7px rgba(232, 255, 176, 0.28), 0 2px 4px rgba(0, 0, 0, 0.42);
-    opacity: 0;
-    transition: width 0.16s ease, height 0.16s ease, opacity 0.16s ease;
-    pointer-events: none;
 }
 
 .tea-pestle-art {
     --tea-pestle-x: 50%;
-    --tea-pestle-y: 48%;
+    --tea-pestle-y: 46%;
     z-index: 4;
     left: var(--tea-pestle-x);
     top: var(--tea-pestle-y);
-    width: min(30%, 118px);
-    aspect-ratio: 1;
-    background-position: 100% 50%;
-    transform: translate(-50%, -78%) rotate(28deg);
-    transform-origin: 50% 78%;
+    width: min(23%, 118px);
+    /* 杵尖＝影像左下角(10%,92%)，該支點對齊 --tea-pestle-x/y，只有它沿著缽內圈移動；棒身角度固定。 */
+    transform: translate(-10%, -92%) rotate(-6deg);
+    transform-origin: 10% 92%;
     transition: filter 0.12s ease;
     will-change: left, top;
 }
@@ -1745,13 +1741,48 @@
 
 .tea-processing-ingredient.grind {
     left: 50%;
-    top: 57%;
-    width: min(18%, 78px);
+    top: 55%;
+    width: min(17%, 82px);
 }
 
 .tea-processing-ingredient.chop {
-    left: 46%;
-    top: 49%;
+    left: 40%;
+    top: 50%;
+}
+
+.tea-chopped-bowls {
+    position: absolute;
+    z-index: 5;
+    top: 9%;
+    right: 2%;
+    bottom: 9%;
+    width: 23%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
+    justify-items: center;
+    gap: clamp(2px, 0.6vw, 7px);
+    pointer-events: none;
+}
+
+.tea-chopped-bowl {
+    display: block;
+    width: 100%;
+    /* 來源圖為四格 3:1 長條，因此每格寬高比約為 3:4。 */
+    aspect-ratio: 3 / 4;
+    background-image: url('../assets/images/station-tea/chopped-bowls-strip.png');
+    background-repeat: no-repeat;
+    background-size: 400% 100%;
+    background-position: var(--tea-bowl-x) 50%;
+    opacity: 0;
+    transform: scale(0.72);
+    filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.42));
+    transition: opacity 0.24s ease, transform 0.28s ease;
+}
+
+.tea-chopped-bowl.is-ready {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .tea-processing-ingredient .tea-ingredient-art {
@@ -1768,7 +1799,7 @@
     border-radius: 999px;
     background: rgba(8, 18, 18, 0.82);
     color: #fff1bd;
-    font-size: clamp(11px, 1.45vw, 14px);
+    font-size: clamp(14px, 1.65vw, 17px);
     line-height: 1.1;
     pointer-events: none;
 }
@@ -1780,6 +1811,19 @@
 .tea-action-progress {
     right: 8px;
     color: #8ff0ff;
+}
+
+.tea-action-progress.grind {
+    top: 6px;
+    bottom: auto;
+}
+
+/* 配菜階段右側被完成小碗佔用，計數移到左上角避免重疊。 */
+.tea-action-progress.chop {
+    left: 8px;
+    right: auto;
+    top: 6px;
+    bottom: auto;
 }
 
 .tea-action-meter {
@@ -1808,18 +1852,19 @@
     filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.42)) brightness(1.08);
 }
 
-.tea-drop-zone.tea-pulse .tea-liquid {
-    filter: brightness(1.18) saturate(1.12);
-}
-
 .tea-drop-zone.tea-chop-hit .tea-knife-art {
     animation: tea-tool-chop 0.13s ease-out;
 }
 
 .station-demo-tea .tea-feedback {
-    min-height: 22px;
-    font-size: clamp(15px, 2.15vw, 22px);
-    line-height: 1.1;
+    min-height: 0;
+    width: fit-content;
+    max-width: 92%;
+    margin: 0 auto;
+    padding: 5px 14px;
+    text-align: center;
+    font-size: clamp(17px, 2.35vw, 24px);
+    line-height: 1.2;
 }
 
 .tea-play.is-auto-completing .tea-order span {
@@ -1840,13 +1885,13 @@
 .tea-result-art {
     width: 100%;
     aspect-ratio: 1.18;
-    background: url('../assets/images/station-tea/tool-sprites.png') 100% 50% / 300% 100% no-repeat;
+    background: url('../assets/images/station-tea/tea-result-v2.png') center / contain no-repeat;
     filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4));
 }
 
 .tea-result-copy .station-subtitle {
     margin-bottom: 7px;
-    font-size: clamp(14px, 1.9vw, 18px);
+    font-size: clamp(16px, 2.1vw, 21px);
 }
 
 .tea-assisted-note,
@@ -1854,7 +1899,7 @@
     margin: 10px 0 0;
     padding: 8px 10px;
     border-radius: 8px;
-    font-size: clamp(13px, 1.75vw, 16px);
+    font-size: clamp(15px, 1.95vw, 19px);
 }
 
 .tea-assisted-note {
@@ -1900,7 +1945,7 @@
     }
 
     .station-demo-tea .tea-hud {
-        padding-right: 64px;
+        padding-right: clamp(84px, 16vw, 104px);
     }
 
     .tea-hud > span,
@@ -1931,17 +1976,13 @@
     }
 
     .tea-drop-zone {
-        width: min(58vw, 430px);
+        width: min(70vw, 540px);
         min-height: 120px;
         border-radius: 15px;
     }
 
-    .tea-cutting-board-art {
-        inset: 0 10% 22px;
-    }
-
     .tea-mortar-art {
-        inset: -3px 14% 20px;
+        max-width: 58%;
     }
 
     .tea-knife-art {
@@ -1961,8 +2002,8 @@
     }
 
     .station-demo-tea .tea-feedback {
-        min-height: 17px;
-        font-size: 13px;
+        padding: 3px 10px;
+        font-size: 14px;
     }
 
     .tea-result-panel {
@@ -2058,11 +2099,11 @@
 
 @media (orientation: landscape) and (max-height: 400px) {
     .station-demo-tea .tea-instruction {
-        font-size: 11px;
+        font-size: 13px;
     }
 
     .tea-order span {
-        font-size: 9px;
+        font-size: 11px;
     }
 
     .tea-game-area {
@@ -2074,20 +2115,16 @@
     }
 
     .tea-ingredient-name {
-        font-size: 9px;
+        font-size: 11px;
     }
 
     .tea-drop-zone {
-        width: min(50vw, 340px);
+        width: min(64vw, 440px);
         min-height: 96px;
     }
 
-    .tea-cutting-board-art {
-        inset: 0 12% 20px;
-    }
-
     .tea-mortar-art {
-        inset: -2px 16% 18px;
+        max-width: 56%;
     }
 
     .tea-knife-art {
@@ -2604,7 +2641,8 @@
 
 .station-demo-fire .station-actions.compact button,
 .station-demo-fire .station-water-fixed,
-.station-demo-fire .station-corner-exit {
+.station-demo-fire .station-corner-exit,
+.station-demo-tea .station-corner-exit {
     color: #f4e4bd;
     border: 2px solid rgba(197, 155, 91, 0.86);
     border-radius: 8px 11px 7px 10px;
@@ -2628,13 +2666,15 @@
 
 .station-demo-fire .station-actions.compact button:hover,
 .station-demo-fire .station-water-fixed:hover,
-.station-demo-fire .station-corner-exit:hover {
+.station-demo-fire .station-corner-exit:hover,
+.station-demo-tea .station-corner-exit:hover {
     filter: brightness(1.08);
 }
 
 .station-demo-fire .station-actions.compact button:active,
 .station-demo-fire .station-water-fixed:active,
-.station-demo-fire .station-corner-exit:active {
+.station-demo-fire .station-corner-exit:active,
+.station-demo-tea .station-corner-exit:active {
     transform: translateY(3px);
     box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.16), 0 1px 0 #291b17, 0 4px 8px rgba(0, 0, 0, 0.24);
 }
@@ -2822,6 +2862,43 @@
     }
 }
 
+/* 關卡二提示框：與右上「離開」一致的手繪木質語彙。 */
+.station-demo-tea .tea-hud > span,
+.station-demo-tea .tea-order span,
+.station-demo-tea .tea-action-progress,
+.station-demo-tea .tea-feedback,
+.station-demo-tea .station-guide-tip,
+.station-demo-tea .station-guide-skip,
+.station-demo-tea .station-guide-tip .station-guide-next {
+    color: #f4e4bd;
+    border: 2px solid rgba(197, 155, 91, 0.86);
+    border-radius: 8px 11px 7px 10px;
+    background:
+        linear-gradient(115deg, rgba(255, 228, 169, 0.12), transparent 40%),
+        linear-gradient(160deg, #765239, #4b3225 72%, #38251e);
+    box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.16), 0 3px 0 #291b17, 0 7px 12px rgba(0, 0, 0, 0.26);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.52);
+}
+
+.station-demo-tea .tea-order span.current {
+    color: #2b2110;
+    border-color: #fff2a8;
+    background: linear-gradient(160deg, #ffe985, #e9b93e 72%, #c88726);
+    box-shadow: inset 0 0 0 1px rgba(255, 249, 196, 0.7), 0 3px 0 #7d4f1f, 0 0 18px rgba(255, 215, 0, 0.36);
+    text-shadow: none;
+}
+
+.station-demo-tea .tea-order span.done {
+    color: #eaffed;
+    border-color: rgba(135, 239, 153, 0.78);
+    background: linear-gradient(160deg, #568d53, #35683f 72%, #274d32);
+}
+
+.station-demo-tea .tea-timer.urgent {
+    color: #fff08a;
+    border-color: #ff7b68;
+}
+
 /* ========== 進入引導：聚光燈式操作提示（StationIntroGuide，各關共用） ========== */
 .station-guide-overlay {
     position: absolute;
@@ -2919,6 +2996,16 @@
     cursor: pointer;
 }
 
+.station-demo-tea .station-guide-tip-text {
+    font-size: clamp(16px, 2.1vw, 21px);
+}
+
+.station-demo-tea .station-guide-step,
+.station-demo-tea .station-guide-tip .station-guide-next,
+.station-demo-tea .station-guide-skip {
+    font-size: clamp(14px, 1.6vw, 18px);
+}
+
 @media (orientation: landscape) and (max-height: 460px) {
     .station-guide-tip {
         width: min(70%, 280px);
@@ -2929,6 +3016,10 @@
         margin-bottom: 7px;
         font-size: clamp(12px, 1.7vw, 15px);
         line-height: 1.4;
+    }
+
+    .station-demo-tea .station-guide-tip-text {
+        font-size: clamp(14px, 1.9vw, 17px);
     }
 
     .station-guide-tip .station-guide-next {

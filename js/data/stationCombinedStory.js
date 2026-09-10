@@ -1,7 +1,7 @@
 // 灶台生火（站點 1）與擂茶料理（站點 2）的角色對話。
 // 每站拆成 entry（進入引導）與 exit（離開引導）兩段：
 //   單關版：entry → 遊戲 → 結果頁 → exit → 返回入口。
-//   完整劇情體驗：fireEntry → 灶台 → fireExit → teaEntry → 擂茶 → teaExit → 中場過場。
+//   完整劇情體驗：fireEntry → 灶台 → fireExit → teaEntry → 擂茶 → 成果頁 → teaExit → 中場過場。
 const StationCombinedStory = {
     sections: {
         fireEntry: {
