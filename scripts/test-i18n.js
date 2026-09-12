@@ -181,7 +181,7 @@ function loadI18n(extra = {}) {
     assert.ok(cakeSource.includes("this.tr('station.cake.card.footer')"), '祝福卡頁尾應走 i18n');
 }
 
-// --- 劇情與粿印資料能依目前 locale 解析，token 也在 t() 階段完成內插 ---
+// --- 劇情與粄印資料能依目前 locale 解析，token 也在 t() 階段完成內插 ---
 {
     const { I18n, context } = loadI18n();
     for (const file of [

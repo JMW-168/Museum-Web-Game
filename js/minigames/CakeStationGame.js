@@ -6,6 +6,7 @@ const CakeStationGame = {
     holdAnimationId: null,
     holdCompleteTimer: null,
     holdDurationMs: 1000,
+    stepOrder: ['dough', 'filling', 'rotate', 'move', 'press'],
     lastResult: null,
     mode: 'standalone',
     guideShown: false,
@@ -44,6 +45,7 @@ const CakeStationGame = {
             selectedPatternId: null,
             makeStep: 'dough',
             doughPositioned: false,
+            fillingAdded: false,
             moldFaceIndex: 0,
             moldPositioned: false,
             holding: false,
@@ -371,6 +373,7 @@ const CakeStationGame = {
             if (targetIndex < 0) return;
             this.state.makeStep = 'dough';
             this.state.doughPositioned = false;
+            this.state.fillingAdded = false;
             this.state.moldPositioned = false;
             this.state.moldFaceIndex = (targetIndex + 1) % this.patterns.length;
             this.showMaking();
@@ -386,29 +389,35 @@ const CakeStationGame = {
         const step = this.state.makeStep;
         const prompt = {
             dough: this.tr('station.cake.make.feedback.dough'),
+            filling: this.tr('station.cake.make.feedback.filling'),
+            wrapping: this.tr('station.cake.make.feedback.wrapping'),
+            wrapped: this.tr('station.cake.make.feedback.wrapped'),
             rotate: this.tr('station.cake.make.feedback.rotate', { name: target.name }),
             move: this.tr('station.cake.make.feedback.move'),
             press: this.tr('station.cake.make.feedback.press')
         }[step];
-        const stepIndex = ['dough', 'rotate', 'move', 'press'].indexOf(step);
+        const stepTrackKey = (step === 'wrapping' || step === 'wrapped') ? 'filling' : step;
+        const stepIndex = this.stepOrder.indexOf(stepTrackKey);
+        const doughBig = step === 'wrapping' || step === 'wrapped' || step === 'rotate' || step === 'move' || step === 'press';
         this.container.innerHTML = `
             <section class="cake-making-panel" data-make-step="${step}">
                 <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
                 <div class="cake-making-header">
                     <div><span class="station-kicker-line">${this.tr('station.cake.make.kicker')}</span><strong>${this.tr('station.cake.make.target', { name: target.name })}</strong></div>
-                    <div class="cake-target-chip"><img src="${target.introImage}" alt=""><span>${target.meaning}</span></div>
+                    <div class="cake-target-chip"><span>${target.meaning}</span><img src="${target.introImage}" alt=""></div>
                 </div>
                 <ol class="cake-step-track" aria-label="${this.tr('station.cake.make.steps')}">
-                    ${['dough', 'rotate', 'move', 'press'].map((stepId, index) => `<li class="${index < stepIndex ? 'done' : index === stepIndex ? 'current' : ''}"><span>${index < stepIndex ? '✓' : index + 1}</span>${this.tr(`station.cake.make.step.${stepId}`)}</li>`).join('')}
+                    ${this.stepOrder.map((stepId, index) => `<li class="${index < stepIndex ? 'done' : index === stepIndex ? 'current' : ''}"><span>${index < stepIndex ? '✓' : index + 1}</span>${this.tr(`station.cake.make.step.${stepId}`)}</li>`).join('')}
                 </ol>
                 <div class="cake-guidance" data-making-feedback aria-live="polite"><span class="cake-hand-hint">☝</span><strong>${prompt}</strong></div>
                 <div class="cake-workbench" data-workbench>
-                    <div class="cake-zone-label cake-left-label">${this.tr('station.cake.make.dough')}</div>
+                    <div class="cake-zone-label cake-left-label">${this.tr(step === 'filling' ? 'station.cake.make.filling' : 'station.cake.make.dough')}</div>
                     <div class="cake-zone-label cake-center-label">${this.tr('station.cake.make.pressZone')}</div>
                     <div class="cake-zone-label cake-right-label">${this.tr('station.cake.make.tool')}</div>
-                    <div class="cake-dough-tray" aria-hidden="true"></div>
+                    <div class="cake-dough-tray ${step === 'filling' ? 'filling-mode' : ''}" aria-hidden="true"></div>
                     <div class="cake-work-zone ${this.state.doughPositioned ? 'has-dough' : ''}" data-work-zone><span>${this.tr(this.state.doughPositioned ? 'station.cake.make.doughReady' : 'station.cake.make.placeHere')}</span></div>
-                    <button type="button" class="cake-dough ${this.state.doughPositioned ? 'snapped' : ''}" data-dough aria-label="${this.tr(this.state.doughPositioned ? 'station.cake.make.doughReadyAria' : 'station.cake.make.dragDough')}" ${this.state.doughPositioned ? 'tabindex="-1"' : ''}></button>
+                    <button type="button" class="cake-dough ${this.state.doughPositioned ? 'snapped' : ''} ${doughBig ? 'big' : ''} ${step === 'wrapping' ? 'wrapping' : ''}" data-dough aria-label="${this.tr(this.state.doughPositioned ? 'station.cake.make.doughReadyAria' : 'station.cake.make.dragDough')}" ${this.state.doughPositioned ? 'tabindex="-1"' : ''}></button>
+                    ${step === 'filling' ? `<button type="button" class="cake-filling-ball" data-filling aria-label="${this.tr('station.cake.make.dragFilling')}"></button>` : ''}
                     <div class="cake-mold-dock"></div>
                     <button type="button" class="cake-mold-tool ${this.state.moldPositioned ? 'positioned' : ''} step-${step}" data-mold-tool aria-label="${this.tr('station.cake.make.toolFace', { name: face.name })}">
                         <span class="cake-mold-handle"><i></i></span>
@@ -419,9 +428,8 @@ const CakeStationGame = {
                         </span>
                     </button>
                     ${step === 'rotate' ? `<div class="cake-rotate-controls" aria-label="${this.tr('station.cake.make.rotateAria')}">
-                        <button type="button" data-rotate="-1" aria-label="${this.tr('station.cake.make.rotateLeft')}">↶</button>
-                        <span>${this.tr('station.cake.make.rotateHint')}</span>
-                        <button type="button" data-rotate="1" aria-label="${this.tr('station.cake.make.rotateRight')}">↷</button>
+                        <button type="button" class="cake-rotate-btn cake-rotate-btn-left" data-rotate="-1" aria-label="${this.tr('station.cake.make.rotateLeft')}"><span class="cake-rotate-arrow"></span></button>
+                        <button type="button" class="cake-rotate-btn cake-rotate-btn-right" data-rotate="1" aria-label="${this.tr('station.cake.make.rotateRight')}"><span class="cake-rotate-arrow"></span></button>
                     </div>` : ''}
                     ${step === 'press' ? `<div class="cake-hold-label">${this.tr('station.cake.make.hold')}<br><strong>${this.tr('station.cake.make.oneSecond')}</strong></div>` : ''}
                 </div>
@@ -435,6 +443,16 @@ const CakeStationGame = {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     this.snapDough();
+                }
+            });
+        }
+        if (step === 'filling') {
+            const filling = this.container.querySelector('[data-filling]');
+            this.listen(filling, 'pointerdown', (event) => this.startObjectDrag(event, 'filling'));
+            this.listen(filling, 'keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    this.snapFilling();
                 }
             });
         }
@@ -507,10 +525,12 @@ const CakeStationGame = {
             const distance = Math.hypot(finishEvent.clientX - (bounds.left + bounds.width / 2), finishEvent.clientY - (bounds.top + bounds.height / 2));
             if (distance <= Math.max(bounds.width, bounds.height) * 0.48) {
                 if (type === 'dough') this.snapDough();
+                else if (type === 'filling') this.snapFilling();
                 else this.snapMold();
             } else {
                 object.removeAttribute('style');
-                this.setMakingFeedback(this.tr(type === 'dough' ? 'station.cake.make.returnDough' : 'station.cake.make.returnTool'));
+                const returnKey = type === 'dough' ? 'station.cake.make.returnDough' : type === 'filling' ? 'station.cake.make.returnFilling' : 'station.cake.make.returnTool';
+                this.setMakingFeedback(this.tr(returnKey));
             }
         };
         const cancel = (cancelEvent) => {
@@ -526,9 +546,27 @@ const CakeStationGame = {
     snapDough() {
         if (!this.state || this.state.makeStep !== 'dough') return;
         this.state.doughPositioned = true;
-        this.state.makeStep = 'rotate';
+        this.state.makeStep = 'filling';
         this.playClick();
         this.showMaking();
+    },
+
+    snapFilling() {
+        if (!this.state || this.state.makeStep !== 'filling') return;
+        this.state.fillingAdded = true;
+        this.state.makeStep = 'wrapping';
+        this.playClick();
+        this.showMaking();
+        this.timers.push(setTimeout(() => {
+            if (!this.state || this.state.makeStep !== 'wrapping') return;
+            this.state.makeStep = 'wrapped';
+            this.showMaking();
+            this.timers.push(setTimeout(() => {
+                if (!this.state || this.state.makeStep !== 'wrapped') return;
+                this.state.makeStep = 'rotate';
+                this.showMaking();
+            }, 700));
+        }, 1500));
     },
 
     startMoldRotateGesture(event) {
@@ -669,11 +707,9 @@ const CakeStationGame = {
         this.container.innerHTML = `
             <section class="cake-result-panel">
                 <div class="cake-result-art">
-                    <div class="cake-serving-leaf" aria-hidden="true"></div>
                     <div class="cake-finished-cake cake-finished-${pattern.id}">
                         <span class="cake-emboss-ring"><img src="${pattern.cakeImage}" alt="${this.tr('station.cake.result.alt', { name: pattern.name })}"></span>
                     </div>
-                    <span class="cake-result-caption">${this.tr('station.cake.result.caption', { name: pattern.name })}</span>
                 </div>
                 <div class="cake-result-copy">
                     <div class="station-kicker-line">${this.tr('station.cake.result.kicker')}</div><h1>${pattern.name}</h1>
@@ -684,15 +720,10 @@ const CakeStationGame = {
                     </div>
                     <p class="cake-share-feedback" data-share-feedback aria-live="polite"></p>
                     <div class="station-actions cake-actions">
-                        <button type="button" class="station-primary" data-again>${this.tr('station.cake.result.again')}</button>
-                        <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
+                        <button type="button" class="station-primary" data-back>${this.tr(this.mode === 'combined34-result' ? 'station.cake.result.findGrandma' : 'game.backToEntrance')}</button>
                     </div>
                 </div>
             </section>`;
-        this.listen(this.container.querySelector('[data-again]'), 'click', () => {
-            this.playClick();
-            this.showSelection();
-        });
         this.listen(this.container.querySelector('[data-share-card]'), 'click', () => this.shareBlessingCard(pattern));
         this.listen(this.container.querySelector('[data-download-card]'), 'click', () => this.downloadBlessingCard(pattern));
         this.listen(this.container.querySelector('[data-back]'), 'click', () => this.close());
@@ -713,8 +744,8 @@ const CakeStationGame = {
         canvas.height = 1350;
         const context = canvas.getContext('2d');
         const gradient = context.createLinearGradient(0, 0, 1080, 1350);
-        gradient.addColorStop(0, '#243b31');
-        gradient.addColorStop(1, '#0d1e1c');
+        gradient.addColorStop(0, '#4a3524');
+        gradient.addColorStop(1, '#231a12');
         context.fillStyle = gradient;
         context.fillRect(0, 0, 1080, 1350);
         context.strokeStyle = '#d9b45d';
@@ -725,46 +756,10 @@ const CakeStationGame = {
         context.textAlign = 'center';
         context.fillText(this.tr('station.cake.card.heading'), 540, 125);
 
-        context.save();
-        context.translate(540, 575);
-        context.rotate(-0.08);
-        context.fillStyle = '#567346';
-        context.beginPath();
-        context.ellipse(0, 95, 390, 155, 0, 0, Math.PI * 2);
-        context.fill();
-        context.strokeStyle = 'rgba(225, 240, 174, .38)';
-        context.lineWidth = 5;
-        context.beginPath();
-        context.moveTo(-330, 100);
-        context.lineTo(330, 88);
-        context.stroke();
-        context.restore();
-
-        const cakeGradient = context.createRadialGradient(425, 405, 30, 540, 555, 330);
-        cakeGradient.addColorStop(0, '#ff9b88');
-        cakeGradient.addColorStop(.58, '#dc514b');
-        cakeGradient.addColorStop(1, '#8e282d');
-        context.fillStyle = '#752328';
-        context.beginPath();
-        context.ellipse(540, 625, 315, 260, -0.03, 0, Math.PI * 2);
-        context.fill();
-        context.fillStyle = cakeGradient;
-        context.beginPath();
-        context.ellipse(540, 596, 315, 260, -0.03, 0, Math.PI * 2);
-        context.fill();
-        context.strokeStyle = 'rgba(105, 22, 27, .5)';
-        context.lineWidth = 10;
-        context.beginPath();
-        context.ellipse(540, 596, 218, 182, -0.03, 0, Math.PI * 2);
-        context.stroke();
-
         try {
             const image = await this.loadCardImage(pattern.cakeImage);
-            context.save();
-            context.globalAlpha = .58;
-            context.filter = 'sepia(1) saturate(2.2) brightness(.48)';
-            context.drawImage(image, 390, 445, 300, 300);
-            context.restore();
+            const size = 620;
+            context.drawImage(image, 540 - size / 2, 596 - size / 2, size, size);
         } catch (error) {
             console.warn('祝福卡花紋載入失敗', error);
         }
@@ -778,7 +773,7 @@ const CakeStationGame = {
         context.fillStyle = '#f7edda';
         context.font = `400 35px "${fontFamily}", serif`;
         context.fillText(pattern.blessing, 540, 1135);
-        context.fillStyle = '#b9c9bd';
+        context.fillStyle = '#cdbca4';
         context.font = `400 26px "${fontFamily}", serif`;
         context.fillText(this.tr('station.cake.card.footer'), 540, 1245);
 

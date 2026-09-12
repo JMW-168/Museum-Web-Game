@@ -1924,7 +1924,7 @@ function startStationDemo(stationId) {
         return;
     }
     if (window.Station34CombinedGame) Station34CombinedGame.stop();
-    // 搖籃／粿印單關版與三四關合併版共用 Station34CombinedGame 這個 orchestrator。
+    // 搖籃／粄印單關版與三四關合併版共用 Station34CombinedGame 這個 orchestrator。
     if ((stationId === 'cradle' || stationId === 'cake') && window.Station34CombinedGame) {
         Station34CombinedGame.start({ only: stationId });
         return;
