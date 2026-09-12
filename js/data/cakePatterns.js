@@ -4,36 +4,36 @@ const CakePatterns = [
         nameKey: 'pattern.turtle.name',
         meaningKey: 'pattern.turtle.meaning',
         blessingKey: 'pattern.turtle.blessing',
-        introImage: 'assets/images/station-cake/pattern-turtle.svg',
-        moldImage: 'assets/images/station-cake/pattern-turtle.svg',
-        cakeImage: 'assets/images/station-cake/pattern-turtle.svg'
+        introImage: 'assets/images/station-cake/icon-turtle.png',
+        moldImage: 'assets/images/station-cake/mold-turtle.png',
+        cakeImage: 'assets/images/station-cake/cake-turtle.png'
     },
     {
-        id: 'peach',
-        nameKey: 'pattern.peach.name',
-        meaningKey: 'pattern.peach.meaning',
-        blessingKey: 'pattern.peach.blessing',
-        introImage: 'assets/images/station-cake/pattern-peach.svg',
-        moldImage: 'assets/images/station-cake/pattern-peach.svg',
-        cakeImage: 'assets/images/station-cake/pattern-peach.svg'
+        id: 'luck',
+        nameKey: 'pattern.luck.name',
+        meaningKey: 'pattern.luck.meaning',
+        blessingKey: 'pattern.luck.blessing',
+        introImage: 'assets/images/station-cake/icon-luck.png',
+        moldImage: 'assets/images/station-cake/mold-luck.png',
+        cakeImage: 'assets/images/station-cake/cake-luck.png'
     },
     {
         id: 'fish',
         nameKey: 'pattern.fish.name',
         meaningKey: 'pattern.fish.meaning',
         blessingKey: 'pattern.fish.blessing',
-        introImage: 'assets/images/station-cake/pattern-fish.svg',
-        moldImage: 'assets/images/station-cake/pattern-fish.svg',
-        cakeImage: 'assets/images/station-cake/pattern-fish.svg'
+        introImage: 'assets/images/station-cake/icon-fish.png',
+        moldImage: 'assets/images/station-cake/mold-fish.png',
+        cakeImage: 'assets/images/station-cake/cake-fish.png'
     },
     {
         id: 'linked-coins',
         nameKey: 'pattern.linkedCoins.name',
         meaningKey: 'pattern.linkedCoins.meaning',
         blessingKey: 'pattern.linkedCoins.blessing',
-        introImage: 'assets/images/station-cake/pattern-linked-coins.svg',
-        moldImage: 'assets/images/station-cake/pattern-linked-coins.svg',
-        cakeImage: 'assets/images/station-cake/pattern-linked-coins.svg'
+        introImage: 'assets/images/station-cake/icon-coins.png',
+        moldImage: 'assets/images/station-cake/mold-coins.png',
+        cakeImage: 'assets/images/station-cake/cake-coins.png'
     }
 ];
 

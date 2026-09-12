@@ -68,9 +68,17 @@ const Station34CombinedGame = {
             const action = actionLabel
                 ? `<button type="button" class="station-primary combined-story-action" data-story-action hidden>${actionLabel}</button>`
                 : '';
+            const tableProps = (sectionId === 'cakeEntry' && sourceLine.narration)
+                ? `<div class="cake-entry-props" aria-hidden="true">
+                        <img class="cake-entry-prop-dough" src="assets/images/station-cake/dough-in-bowl.png" alt="">
+                        <img class="cake-entry-prop-filling" src="assets/images/station-cake/filling-bowl.png" alt="">
+                        <img class="cake-entry-prop-mold" src="assets/images/station-cake/mold-blank.png" alt="">
+                    </div>`
+                : '';
             this.container.innerHTML = `
                 <section class="combined-story${line.narration ? ' is-narration' : ''}">
                     <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
+                    ${tableProps}
                     <div class="combined-story-character-stage">${character}</div>
                     <div class="combined-dialogue-box${actionLabel ? ' has-action' : ''}" data-dialogue-advance role="button" tabindex="0" aria-label="${this.tr('story.action.continueDialogue')}">
                         <div class="combined-dialogue-speaker">${line.speaker}${cue}</div>
@@ -246,23 +254,24 @@ const Station34CombinedGame = {
         });
     },
 
+    // 粄印完成：比照搖籃站作法，先看祝福卡成果，再由「去找阿嬤」進入離開引導對話。
     afterCake(result) {
         CakeStationGame.stop();
         if (!this.active || !result?.pattern) return;
-        this.createShell('cake');
-        const tokens = {
-            patternName: result.pattern.name,
-            meaning: result.pattern.meaning,
-            blessing: result.pattern.blessing
-        };
-        const opts = this.only === 'cake' ? { actionLabelKey: 'story.action.seeResult' } : {};
-        this.showDialogue('cakeExit', () => this.showCard(result.pattern), tokens, opts);
+        const pattern = result.pattern;
+        CakeStationGame.showCompletedResult(pattern, { onExit: () => this.afterCakeResult(pattern) });
     },
 
-    showCard(pattern) {
+    afterCakeResult(pattern) {
         this.removeShell();
         if (!this.active) return;
-        CakeStationGame.showCompletedResult(pattern, { onExit: () => this.showEnding() });
+        this.createShell('cake');
+        const tokens = { patternName: pattern.name, meaning: pattern.meaning, blessing: pattern.blessing };
+        if (this.only === 'cake') {
+            this.showDialogue('cakeExit', () => this.close(), tokens, { actionLabelKey: 'story.action.returnLobby' });
+        } else {
+            this.showDialogue('cakeExit', () => this.showEnding(), tokens, { actionLabelKey: 'story.action.finishJourney' });
+        }
     },
 
     showEnding() {

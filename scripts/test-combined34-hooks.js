@@ -93,12 +93,13 @@ function loadGame(relativePath, exportExpression, extras = {}) {
 }
 
 {
+    // 粄印完成應先看祝福卡成果，再由「去找阿嬤」進入 cakeExit 離開引導對話（比照搖籃站）。
     const cradle = { stop() {} };
     let cardTransition = null;
     const cake = {
         stop() {},
         showCompletedResult(pattern, options) {
-            cardTransition = { pattern, hasOnExit: typeof options.onExit === 'function' };
+            cardTransition = { pattern, onExit: options.onExit };
         }
     };
     const { game } = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
@@ -107,19 +108,20 @@ function loadGame(relativePath, exportExpression, extras = {}) {
     });
     let transition = null;
     game.active = true;
+    game.only = 'cake';
     game.createShell = () => {};
-    game.showDialogue = (sectionId, onComplete, tokens) => { transition = { sectionId, tokens }; };
-    game.afterCake({
-        pattern: { id: 'peach', name: '桃紋', meaning: '福壽吉祥', blessing: '願你喜樂常在。' }
-    });
-    assert.strictEqual(transition.sectionId, 'cakeExit');
+    game.removeShell = () => {};
+    game.showDialogue = (sectionId, onComplete, tokens, opts) => { transition = { sectionId, tokens, opts }; };
+    const targetPattern = { id: 'peach', name: '桃紋', meaning: '福壽吉祥', blessing: '願你喜樂常在。' };
+    game.afterCake({ pattern: targetPattern });
+
+    assert.strictEqual(cardTransition.pattern.id, 'peach', '應先呼叫 showCompletedResult 顯示祝福卡成果');
+    assert.strictEqual(transition, null, '看到成果前不應提前進入離開對話');
+
+    cardTransition.onExit();
+    assert.strictEqual(transition.sectionId, 'cakeExit', '按下「去找阿嬤」後才進入 cakeExit 對話');
     assert.strictEqual(transition.tokens.patternName, '桃紋');
     assert.strictEqual(game.interpolate('選擇「{{patternName}}」', transition.tokens), '選擇「桃紋」');
-
-    game.removeShell = () => {};
-    game.showCard({ id: 'peach' });
-    assert.strictEqual(cardTransition.pattern.id, 'peach');
-    assert.strictEqual(cardTransition.hasOnExit, true);
 }
 
 {
