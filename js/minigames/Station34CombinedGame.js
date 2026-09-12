@@ -197,27 +197,33 @@ const Station34CombinedGame = {
         if (!this.active) return;
         this.createShell('cradle');
         if (this.only === 'cradle') {
-            this.showDialogue('cradleExit', () => this.showCradleResult(result), {}, { actionLabelKey: 'story.action.seeResult' });
+            this.showCradleResult(result);
         } else {
             this.showDialogue('cradleExit', () => this.showDialogue('cakeEntry', () => this.startCake()));
         }
     },
 
-    // 搖籃單關版：離開對話後在自己的殼層 render 結果頁。
+    // 搖籃單關版：先看成果頁，再由「去找阿嬤」進入離開引導對話。
     showCradleResult(result) {
         if (!this.container) return;
         const assisted = !!(result && result.assisted);
         this.container.className = 'station-demo station-demo-cradle';
         this.container.innerHTML = `
             <section class="station-panel station-result-panel cradle-result-panel has-guide">
-                <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
-                <h1>${this.tr('station.cradle.result.title')}</h1>
-                <div class="cradle-result-baby" aria-hidden="true">😴</div>
-                <p class="station-copy">${this.tr('station.cradle.result.copy')}</p>
-                ${assisted ? `<p class="cradle-assisted-note">${this.tr('station.cradle.result.assisted')}</p>` : `<p class="cradle-perfect-note">${this.tr('station.cradle.result.perfect')}</p>`}
+                <div class="cradle-result-head">
+                    <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
+                    <h1>${this.tr('station.cradle.result.title')}</h1>
+                </div>
+                <div class="cradle-result-body">
+                    <img class="cradle-result-baby" src="assets/images/station-cradle/cradle-result.png" alt="${this.tr('station.cradle.result.art')}">
+                    <div class="cradle-result-copy">
+                        <p class="station-copy">${this.tr('station.cradle.result.copy')}</p>
+                        ${assisted ? `<p class="cradle-assisted-note">${this.tr('station.cradle.result.assisted')}</p>` : `<p class="cradle-perfect-note">${this.tr('station.cradle.result.perfect')}</p>`}
+                    </div>
+                </div>
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
-                    <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
+                    <button type="button" class="station-secondary" data-back>${this.tr('station.cradle.result.findGrandma')}</button>
                 </div>
                 <img class="station-guide station-guide-result" src="assets/images/characters/grandma.png" alt="${this.tr('story.speaker.grandma')}">
             </section>
@@ -226,7 +232,9 @@ const Station34CombinedGame = {
             this.playClick();
             this.startCradle(); // 重玩只回遊戲，不重播對話
         });
-        this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
+        this.container.querySelector('[data-back]').addEventListener('click', () => {
+            this.showDialogue('cradleExit', () => this.close(), {}, { actionLabelKey: 'story.action.returnLobby' });
+        });
     },
 
     startCake() {

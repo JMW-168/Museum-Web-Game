@@ -1,6 +1,6 @@
 // sw.js - Service Worker
 // 快取名稱（更新版本時記得修改）
-const CACHE_NAME = 'museum-web-game-v73';
+const CACHE_NAME = 'museum-web-game-v85';
 
 // 只預快取核心殼層；大型圖片改由 fetch 時漸進快取，避免手機更新時卡在 loading。
 const urlsToCache = [
@@ -25,6 +25,12 @@ const urlsToCache = [
   'js/minigames/CradleStationGame.js',
   'js/minigames/CakeStationGame.js',
   'js/minigames/Station34CombinedGame.js',
+  'assets/images/station-cradle/baby-crying.png',
+  'assets/images/station-cradle/baby-calm.png',
+  'assets/images/station-cradle/baby-asleep.png',
+  'assets/images/station-cradle/cradle-back.png',
+  'assets/images/station-cradle/cradle-front.png',
+  'assets/images/station-cradle/cradle-result.png',
   'assets/images/station-cake/pattern-peach.svg',
   'js/minigames/StationDemoGame.js',
 ];

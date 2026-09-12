@@ -1,6 +1,6 @@
 // 搖籃哄睡（站點 3）與粿印製作（站點 4）的角色對話。
 // 每站拆成 entry（進入引導）與 exit（離開引導）兩段：
-//   單關版：entry → 遊戲 → exit → 結果頁（exit 末句 CTA 由呼叫端覆寫成「看看成果」）。
+//   單關版：entry → 遊戲 → 結果頁 → exit（exit 末句 CTA 由呼叫端覆寫成「返回大廳」）。
 //   完整劇情體驗：cradleEntry → 搖籃 → cradleExit → cakeEntry → 粿印 → cakeExit → 祝福卡。
 const Station34CombinedStory = {
     sections: {

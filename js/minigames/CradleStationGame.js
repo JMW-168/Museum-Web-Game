@@ -8,13 +8,38 @@ const CradleStationGame = {
     cycleMs: 2400,
     targetSeconds: 10,
     assistAfterMs: 25000,
+    sleepStagePercent: 67,
     mode: 'standalone',
     guideShown: false,
     onComplete: null,
     onExit: null,
+    babyImages: {
+        crying: 'assets/images/station-cradle/baby-crying.png',
+        calming: 'assets/images/station-cradle/baby-calm.png',
+        asleep: 'assets/images/station-cradle/baby-asleep.png'
+    },
+    resultImage: 'assets/images/station-cradle/cradle-result.png',
 
     tr(key, tokens) {
         return typeof window.t === 'function' ? window.t(key, tokens) : key;
+    },
+
+    getBabyImage(stage) {
+        return this.babyImages[stage] || this.babyImages.crying;
+    },
+
+    getBabyStage(percent) {
+        if (percent >= this.sleepStagePercent) return 'asleep';
+        if (percent >= 35) return 'calming';
+        return 'crying';
+    },
+
+    preloadBabyImages() {
+        if (typeof Image === 'undefined') return;
+        [...Object.values(this.babyImages), this.resultImage].forEach((src) => {
+            const image = new Image();
+            image.src = src;
+        });
     },
 
     start(options = {}) {
@@ -25,6 +50,7 @@ const CradleStationGame = {
         if (window.StationDemoGame) window.StationDemoGame.stop();
         showScene('game-container');
         if (window.AudioManager) AudioManager.stopBGM();
+        this.preloadBabyImages();
         this.createShell();
         // 進入引導對話由 Station34CombinedGame（orchestrator）在呼叫本 start 之前播完；
         // 這裡直接進遊戲。prepareAudio 在使用者手勢鏈內（對話 CTA → onComplete → start）。
@@ -78,7 +104,7 @@ const CradleStationGame = {
                     <div class="cradle-rope cradle-rope-right" data-rope-right></div>
                     <div class="cradle-sling" data-player>
                         <span class="cradle-knot"></span>
-                        <span class="cradle-baby" data-baby>😢</span>
+                        <img class="cradle-baby" data-baby src="${this.getBabyImage('crying')}" alt="">
                     </div>
                     <span class="cradle-hand-hint" data-hand-hint>${this.tr('station.cradle.drag')}</span>
                 </div>
@@ -256,11 +282,14 @@ const CradleStationGame = {
         if (control) control.setAttribute('aria-valuenow', String(Math.round(this.state.playerPosition * 100)));
         if (assist) assist.textContent = this.tr(this.state.assisted ? 'station.cradle.assisted' : 'station.cradle.follow');
 
-        const nextStage = percent >= 100 ? 'asleep' : percent >= 35 ? 'calming' : 'crying';
+        const nextStage = this.getBabyStage(percent);
         if (nextStage !== this.state.feedbackStage) this.updateAudioStage(nextStage);
-        if (baby) baby.textContent = nextStage === 'calming' ? '😌' : '😢';
+        if (baby && baby.getAttribute('src') !== this.getBabyImage(nextStage)) {
+            baby.setAttribute('src', this.getBabyImage(nextStage));
+        }
         if (feedback) {
-            if (!operating) feedback.textContent = this.tr('station.cradle.idle');
+            if (nextStage === 'asleep') feedback.textContent = this.tr('station.cradle.asleep');
+            else if (!operating) feedback.textContent = this.tr('station.cradle.idle');
             else if (gap <= this.state.tolerance && nextStage === 'calming') feedback.textContent = this.tr('station.cradle.calming');
             else if (gap <= this.state.tolerance) feedback.textContent = this.tr('station.cradle.following');
             else feedback.textContent = this.tr('station.cradle.offGuide');
@@ -273,9 +302,10 @@ const CradleStationGame = {
         this.state.finished = true;
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
-        this.updateAudioStage('asleep');
+        if (this.state.feedbackStage !== 'asleep') this.updateAudioStage('asleep');
         const assisted = this.state.assisted;
         this.removeListeners();
+        if (!this.state || !this.container) return;
         const result = { assisted };
         window.dispatchEvent(new CustomEvent('cradle-station-complete', { detail: result }));
         if (this.onComplete) {
@@ -284,11 +314,17 @@ const CradleStationGame = {
         }
         this.container.innerHTML = `
             <section class="station-panel station-result-panel cradle-result-panel has-guide">
-                <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
-                <h1>${this.tr('station.cradle.result.title')}</h1>
-                <div class="cradle-result-baby" aria-hidden="true">😴</div>
-                <p class="station-copy">${this.tr('station.cradle.result.copy')}</p>
-                ${assisted ? `<p class="cradle-assisted-note">${this.tr('station.cradle.result.assisted')}</p>` : `<p class="cradle-perfect-note">${this.tr('station.cradle.result.perfect')}</p>`}
+                <div class="cradle-result-head">
+                    <div class="station-kicker-line">${this.tr('station.cradle.kicker')}</div>
+                    <h1>${this.tr('station.cradle.result.title')}</h1>
+                </div>
+                <div class="cradle-result-body">
+                    <img class="cradle-result-baby" src="${this.resultImage}" alt="${this.tr('station.cradle.result.art')}">
+                    <div class="cradle-result-copy">
+                        <p class="station-copy">${this.tr('station.cradle.result.copy')}</p>
+                        ${assisted ? `<p class="cradle-assisted-note">${this.tr('station.cradle.result.assisted')}</p>` : `<p class="cradle-perfect-note">${this.tr('station.cradle.result.perfect')}</p>`}
+                    </div>
+                </div>
                 <div class="station-actions">
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
                     <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
