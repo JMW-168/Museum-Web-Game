@@ -33,14 +33,21 @@ function loadGame(relativePath, exportExpression, extras = {}) {
 
 {
     const { game } = loadGame('js/minigames/CradleStationGame.js', 'CradleStationGame');
+    assert.strictEqual(game.getBabyImage('crying'), 'assets/images/station-cradle/baby-crying.png');
+    assert.strictEqual(game.getBabyImage('calming'), 'assets/images/station-cradle/baby-calm.png');
+    assert.strictEqual(game.getBabyImage('asleep'), 'assets/images/station-cradle/baby-asleep.png');
+    assert.strictEqual(game.getBabyStage(34), 'crying');
+    assert.strictEqual(game.getBabyStage(35), 'calming');
+    assert.strictEqual(game.getBabyStage(66), 'calming');
+    assert.strictEqual(game.getBabyStage(67), 'asleep', '最後約三分之一應提前切換成睡著狀態');
     let result = null;
-    game.container = {};
+    game.container = { querySelector: () => null };
     game.state = { finished: false, assisted: true };
     game.removeListeners = () => {};
     game.updateAudioStage = () => {};
     game.onComplete = (detail) => { result = detail; };
     game.finishGame();
-    assert.deepStrictEqual({ ...result }, { assisted: true });
+    assert.deepStrictEqual({ ...result }, { assisted: true }, '遊戲完成後應直接進入成果流程，不額外延遲');
 }
 
 {
@@ -210,6 +217,60 @@ function makeFakeBox() {
     assert.strictEqual(typeof backHandler, 'function', '結果頁應綁定去找阿罵');
     backHandler();
     assert.strictEqual(exitSection, 'fireExit', '按「去找阿罵」後才播放離開對話');
+}
+
+{
+    // 第三關單玩結束：比照一、二關先顯示結果頁，再從結果頁進入收尾對話。
+    const cradle = { stop() {} };
+    const { game } = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
+        CradleStationGame: cradle
+    });
+    const result = { assisted: false };
+    const events = [];
+    game.active = true;
+    game.only = 'cradle';
+    game.createShell = () => { game.container = {}; };
+    const originalShowCradleResult = game.showCradleResult;
+    game.showCradleResult = (value) => events.push({ type: 'result', value });
+    game.showDialogue = () => events.push({ type: 'dialogue' });
+    game.afterCradle(result);
+    assert.deepStrictEqual(events, [{ type: 'result', value: result }], '第三關單玩結束應先顯示結果頁');
+    game.showCradleResult = originalShowCradleResult;
+
+    events.length = 0;
+    game.only = null;
+    game.showDialogue = (sectionId) => events.push({ type: 'dialogue', sectionId });
+    game.afterCradle(result);
+    assert.deepStrictEqual(events, [{ type: 'dialogue', sectionId: 'cradleExit' }], '完整劇情仍應從第三關收尾對話接往第四關');
+
+    let retryHandler = null;
+    let backHandler = null;
+    const retryButton = { addEventListener: (type, handler) => { if (type === 'click') retryHandler = handler; } };
+    const backButton = { addEventListener: (type, handler) => { if (type === 'click') backHandler = handler; } };
+    game.container = {
+        className: '',
+        innerHTML: '',
+        querySelector: (selector) => (selector === '[data-retry]' ? retryButton : backButton)
+    };
+    game.tr = (key) => ({
+        'station.cradle.result.findGrandma': '去找阿嬤',
+        'game.retry': '再玩一次'
+    }[key] || key);
+    let exitTransition = null;
+    game.showDialogue = (sectionId, onComplete, tokens, opts) => {
+        exitTransition = { sectionId, onComplete, tokens, opts };
+    };
+    game.showCradleResult(result);
+    assert.ok(game.container.innerHTML.includes('data-retry'), '第三關結果頁應顯示再玩一次按鈕');
+    assert.ok(game.container.innerHTML.includes('data-back'), '第三關結果頁應顯示去找阿嬤按鈕');
+    assert.ok(game.container.innerHTML.includes('去找阿嬤'), '第三關離開按鈕應比照前兩關改為角色引導');
+    assert.ok(game.container.innerHTML.includes('assets/images/station-cradle/cradle-result.png'), '第三關結果頁應顯示嬰兒與吊床合併圖');
+    assert.ok(game.container.innerHTML.includes('cradle-result-body'), '第三關結果頁應使用與前兩關一致的圖文分欄');
+    assert.strictEqual(typeof retryHandler, 'function', '第三關結果頁應綁定再玩一次');
+    assert.strictEqual(typeof backHandler, 'function', '第三關結果頁應綁定去找阿嬤');
+    backHandler();
+    assert.strictEqual(exitTransition.sectionId, 'cradleExit', '按「去找阿嬤」後才播放收尾對話');
+    assert.strictEqual(exitTransition.opts.actionLabelKey, 'story.action.returnLobby', '收尾對話按鈕應返回大廳');
 }
 
 {

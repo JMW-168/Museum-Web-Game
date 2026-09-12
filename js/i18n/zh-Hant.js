@@ -238,7 +238,7 @@ window.I18n.register('zh-Hant', {
     'station.tea.guide.process': '把食材拖到這裡加工：研磨沿著碗邊畫圈，切料則連點菜刀。',
 
     // 搖籃哄睡
-    'station.cradle.kicker': '關卡三 / 站點 3',
+    'station.cradle.kicker': '站點三：搖籃哄睡',
     'station.cradle.title': '搖籃哄睡',
     'station.cradle.stability': '穩定度 {{percent}}%',
     'station.cradle.follow': '跟著光點慢慢搖',
@@ -252,10 +252,13 @@ window.I18n.register('zh-Hant', {
     'station.cradle.calming': '哭聲漸漸小了，繼續保持這個節奏。',
     'station.cradle.following': '跟上了，輕輕地繼續搖。',
     'station.cradle.offGuide': '稍微偏離導引了，穩定度只會慢慢回退。',
+    'station.cradle.asleep': '嬰孩睡著了，保持這個節奏。',
     'station.cradle.result.title': '嬰孩睡著了',
+    'station.cradle.result.art': '睡著的嬰兒躺在吊床裡',
     'station.cradle.result.copy': '這只用麵粉袋改成的搖籃，養大了家裡不少人。',
     'station.cradle.result.assisted': '阿嬤陪你把節奏放寬了一點，一樣順利哄睡了。',
     'station.cradle.result.perfect': '你穩穩跟上整段節奏，哭聲也慢慢停了。',
+    'station.cradle.result.findGrandma': '去找阿嬤',
     'station.cradle.guide.rhythm': '這個光點會左右擺動，是搖籃該跟上的節奏。',
     'station.cradle.guide.follow': '拖曳搖籃、或按鍵盤左右方向鍵，跟著光點一起擺。',
 

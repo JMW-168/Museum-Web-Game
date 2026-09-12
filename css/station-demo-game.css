@@ -124,12 +124,32 @@
     position: absolute;
     z-index: 3;
     top: -4%;
-    width: 4px;
+    width: 7px;
     height: 70%;
     transform-origin: top center;
     border-radius: 999px;
-    background: linear-gradient(90deg, #6a4e2f, #d5b16e 48%, #6a4e2f);
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(69, 43, 23, 0.72);
+    background:
+        repeating-linear-gradient(105deg, rgba(255, 239, 177, 0.34) 0 1px, transparent 1px 4px),
+        linear-gradient(90deg, #4c321d 0%, #9b7040 24%, #d0aa66 48%, #8a6036 72%, #3d2819 100%);
+    box-shadow:
+        inset 1px 0 rgba(255, 230, 166, 0.24),
+        inset -1px 0 rgba(48, 29, 16, 0.42),
+        0 2px 5px rgba(0, 0, 0, 0.48);
+}
+
+.cradle-rope::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent 0 6px,
+        rgba(255, 235, 176, 0.3) 6px 8px,
+        rgba(48, 30, 17, 0.3) 8px 10px
+    );
+    pointer-events: none;
 }
 
 .cradle-rope-left {
@@ -144,18 +164,13 @@
     position: absolute;
     z-index: 5;
     left: 50%;
-    bottom: 12%;
-    width: clamp(128px, 24vw, 260px);
-    height: clamp(72px, 15vh, 130px);
+    bottom: 1%;
+    width: clamp(210px, 34vw, 370px);
+    aspect-ratio: 825 / 482;
     transform: translateX(-50%);
     transform-origin: center 20%;
-    border: 4px solid #d5b77b;
-    border-top-width: 8px;
-    border-radius: 15% 15% 48% 48% / 18% 18% 72% 72%;
-    background:
-        repeating-linear-gradient(135deg, transparent 0 13px, rgba(105, 74, 48, 0.16) 13px 16px),
-        linear-gradient(#d9c28d, #aa8257);
-    box-shadow: inset 0 -13px 18px rgba(72, 45, 27, 0.25), 0 14px 18px rgba(0, 0, 0, 0.4);
+    background: url('../assets/images/station-cradle/cradle-back.png') center / contain no-repeat;
+    filter: drop-shadow(0 14px 12px rgba(0, 0, 0, 0.38));
     transition: filter 0.16s ease;
 }
 
@@ -163,23 +178,29 @@
     filter: drop-shadow(0 0 9px rgba(144, 255, 190, 0.72));
 }
 
-.cradle-knot {
+/* 素材依序疊成「吊床後層 → 嬰兒狀態 → 吊床前層」。 */
+.cradle-sling::after {
+    content: "";
     position: absolute;
-    left: 50%;
-    top: -18px;
-    width: 26px;
-    height: 18px;
-    transform: translateX(-50%);
-    border-radius: 50%;
-    background: #8a623c;
+    z-index: 2;
+    inset: 0;
+    background: url('../assets/images/station-cradle/cradle-front.png') center / contain no-repeat;
+    pointer-events: none;
+}
+
+.cradle-knot {
+    display: none;
 }
 
 .cradle-baby {
     position: absolute;
     left: 50%;
-    top: 48%;
+    top: 50%;
+    width: 100%;
+    height: auto;
     transform: translate(-50%, -50%);
-    font-size: clamp(32px, 6vw, 62px);
+    z-index: 1;
+    pointer-events: none;
     filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.24));
 }
 
@@ -223,22 +244,15 @@
     text-align: center;
 }
 
-.cradle-result-baby {
-    margin: 0 auto 6px;
-    font-size: clamp(54px, 10vw, 96px);
-    line-height: 1;
-}
-
 .cradle-assisted-note,
 .cradle-perfect-note {
-    width: min(92%, 620px);
-    margin: 10px auto 0;
+    margin: 10px 0 0;
     padding: 7px 10px;
     border-radius: 8px;
     color: #d7f3df;
     background: rgba(84, 133, 101, 0.24);
     font-size: clamp(12px, 1.7vw, 16px);
-    text-align: center;
+    text-align: left;
 }
 
 @keyframes cradle-hint-pulse {
@@ -279,13 +293,8 @@
     }
 
     .cradle-sling {
-        width: clamp(116px, 22vw, 182px);
-        height: clamp(62px, 17vh, 88px);
-        bottom: 9%;
-    }
-
-    .cradle-baby {
-        font-size: clamp(28px, 5.5vw, 44px);
+        width: clamp(200px, 32vw, 285px);
+        bottom: 0;
     }
 
     .cradle-progress {
@@ -298,65 +307,6 @@
         font-size: 10px;
     }
 
-    .station-demo-cradle .station-panel.cradle-result-panel {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 94px;
-        grid-template-rows: auto auto auto auto 1fr;
-        column-gap: 10px;
-        width: min(96%, 920px);
-        height: calc(100% - 12px);
-        padding: 8px 12px;
-        align-content: center;
-    }
-
-    .station-demo-cradle .cradle-result-panel > :not(.station-guide) {
-        grid-column: 1;
-    }
-
-    .station-demo-cradle .cradle-result-panel .station-kicker-line {
-        margin-bottom: 1px;
-    }
-
-    .station-demo-cradle .cradle-result-panel h1 {
-        margin: 2px auto;
-        font-size: clamp(21px, 4vw, 29px);
-    }
-
-    .cradle-result-baby {
-        margin: 0 auto;
-        font-size: 46px;
-    }
-
-    .cradle-assisted-note,
-    .cradle-perfect-note {
-        align-self: start;
-    }
-
-    .station-demo-cradle .cradle-result-panel .station-copy,
-    .cradle-assisted-note,
-    .cradle-perfect-note {
-        margin-top: 3px;
-        font-size: 12px;
-        line-height: 1.3;
-    }
-
-    .station-demo-cradle .cradle-result-panel .station-actions {
-        margin-top: 5px;
-    }
-
-    .station-demo-cradle .cradle-result-panel .station-actions button {
-        padding: 5px 10px;
-        font-size: 11px;
-    }
-
-    .station-demo-cradle .cradle-result-panel .station-guide-result {
-        position: static;
-        grid-column: 2;
-        grid-row: 1 / 6;
-        align-self: end;
-        width: 100%;
-        max-height: 76%;
-    }
 }
 
 @media (orientation: landscape) and (max-height: 400px) {
@@ -492,6 +442,35 @@
     bottom: 16px;
     min-width: 126px;
     margin: 0;
+    padding: 10px 20px;
+    border: 3px solid rgba(237, 197, 113, 0.98);
+    border-radius: 14px;
+    color: #fff1cf;
+    background:
+        linear-gradient(115deg, rgba(255, 248, 211, 0.24), transparent 42%),
+        linear-gradient(165deg, #b78345, #825833 68%, #583824);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 235, 192, 0.18),
+        0 4px 0 #2c1d18,
+        0 8px 14px rgba(0, 0, 0, 0.32);
+    font-size: clamp(16px, 1.8vw, 20px);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.48);
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.combined-story-action:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.combined-story-action:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2c1d18, 0 4px 8px rgba(0, 0, 0, 0.28);
+}
+
+.combined-story-action:focus-visible {
+    outline: 3px solid rgba(255, 226, 137, 0.96);
+    outline-offset: 3px;
 }
 
 .combined-story-action[hidden] {
@@ -556,12 +535,12 @@
         min-height: 106px;
         max-height: 42%;
         padding: 17px 18px 12px;
-        border-width: 2px;
+        border-width: 3px;
         border-radius: 12px;
     }
 
     .combined-dialogue-box.has-action {
-        padding-right: 142px;
+        padding-right: 160px;
     }
 
     .combined-dialogue-speaker {
@@ -569,22 +548,24 @@
         left: 14px;
         min-width: 82px;
         padding: 5px 12px;
-        font-size: clamp(14px, 2vw, 18px);
+        font-size: clamp(16px, 2.2vw, 20px);
     }
 
     .combined-dialogue-text {
         min-height: 2.6em;
         padding-top: 27px;
-        font-size: clamp(15px, 2.15vw, 20px);
+        font-size: clamp(19px, 2.8vw, 24px);
         line-height: 1.4;
     }
 
     .combined-story-action {
         right: 12px;
         bottom: 10px;
-        min-width: 112px;
-        padding: 7px 10px;
-        font-size: 13px;
+        min-width: 128px;
+        padding: 9px 16px;
+        border-radius: 13px;
+        font-size: 16px;
+        box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.14), 0 3px 0 #2c1d18, 0 6px 10px rgba(0, 0, 0, 0.28);
     }
 
     .station-coach-line {
@@ -611,19 +592,20 @@
     }
 
     .combined-dialogue-box.has-action {
-        padding-right: 128px;
+        padding-right: 142px;
     }
 
     .combined-dialogue-text {
         padding-top: 25px;
-        font-size: clamp(13px, 2vw, 17px);
+        font-size: clamp(16px, 2.3vw, 19px);
         line-height: 1.32;
     }
 
     .combined-story-action {
-        min-width: 102px;
-        padding: 5px 8px;
-        font-size: 11px;
+        min-width: 116px;
+        padding: 6px 11px;
+        border-radius: 11px;
+        font-size: 14px;
     }
 }
 
@@ -707,8 +689,8 @@
     margin-top: 12px;
 }
 
-/* 關卡一、二結果頁：行為按鈕移到文字區右下角（搖籃結果頁不受影響）。 */
-.station-result-panel:not(.cradle-result-panel) .station-actions {
+/* 各關結果頁的行為按鈕統一置於文字區右下角。 */
+.station-result-panel .station-actions {
     justify-content: flex-end;
 }
 
@@ -1884,26 +1866,31 @@
 
 /* 結果頁：成果圖在左、文字在右、角色置右放大、按鈕右下。
    面板填滿遊戲區高度，標題／圖文／按鈕三段平均分布，避免上下大片空白。 */
-.tea-result-panel {
+.tea-result-panel,
+.cradle-result-panel {
     width: min(88%, 1040px);
     min-height: min(94%, 560px);
     max-height: 100%;
     justify-content: space-between;
 }
 
-.tea-result-panel.has-guide {
+.tea-result-panel.has-guide,
+.cradle-result-panel.has-guide {
     padding-right: clamp(172px, 28vw, 340px);
 }
 
-.tea-result-head {
+.tea-result-head,
+.cradle-result-head {
     flex: 0 0 auto;
 }
 
-.tea-result-panel h1 {
+.tea-result-panel h1,
+.cradle-result-panel h1 {
     margin-bottom: 4px;
 }
 
-.tea-result-body {
+.tea-result-body,
+.cradle-result-body {
     display: flex;
     align-items: center;
     gap: clamp(16px, 3vw, 34px);
@@ -1911,7 +1898,8 @@
     min-height: 0;
 }
 
-.tea-result-panel .station-actions {
+.tea-result-panel .station-actions,
+.cradle-result-panel .station-actions {
     flex: 0 0 auto;
     margin-top: 0;
 }
@@ -1927,6 +1915,70 @@
 .tea-result-copy {
     flex: 1 1 auto;
     min-width: 0;
+}
+
+.cradle-result-baby {
+    flex: 0 0 auto;
+    display: block;
+    width: min(38%, 320px);
+    max-height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 9px rgba(0, 0, 0, 0.34));
+}
+
+.cradle-result-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cradle-result-head .station-kicker-line {
+    margin-bottom: clamp(8px, 1.5vh, 14px);
+}
+
+.cradle-result-panel .station-copy {
+    font-size: clamp(19px, 2.35vw, 24px);
+    line-height: 1.55;
+}
+
+.cradle-result-panel .cradle-assisted-note,
+.cradle-result-panel .cradle-perfect-note {
+    font-size: clamp(16px, 1.9vw, 20px);
+    line-height: 1.4;
+}
+
+.cradle-result-panel .station-actions button {
+    min-width: clamp(112px, 14vw, 154px);
+    padding: 10px 20px;
+    border: 2px solid rgba(210, 168, 99, 0.9);
+    border-radius: 14px;
+    color: #fff0cf;
+    background:
+        linear-gradient(115deg, rgba(255, 231, 181, 0.14), transparent 42%),
+        linear-gradient(165deg, #805a3c, #553829 68%, #3d2921);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 235, 192, 0.16),
+        0 4px 0 #2d1e19,
+        0 8px 14px rgba(0, 0, 0, 0.3);
+    font-size: clamp(16px, 1.8vw, 20px);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.46);
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.cradle-result-panel .station-actions .station-primary {
+    border-color: rgba(232, 192, 111, 0.96);
+    background:
+        linear-gradient(115deg, rgba(255, 244, 205, 0.2), transparent 42%),
+        linear-gradient(165deg, #a77942, #765033 68%, #523526);
+}
+
+.cradle-result-panel .station-actions button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.cradle-result-panel .station-actions button:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2d1e19, 0 4px 8px rgba(0, 0, 0, 0.26);
 }
 
 .tea-result-ingredients {
@@ -2052,31 +2104,36 @@
         font-size: 14px;
     }
 
-    .tea-result-panel {
+    .tea-result-panel,
+    .cradle-result-panel {
         width: min(96%, 980px);
         min-height: min(92%, 300px);
         padding: 12px 16px 12px;
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 3px;
     }
 
-    .tea-result-panel.has-guide {
+    .tea-result-panel.has-guide,
+    .cradle-result-panel.has-guide {
         padding-right: clamp(120px, 24vw, 190px);
     }
 
-    .tea-result-panel .station-kicker-line {
+    .tea-result-panel .station-kicker-line,
+    .cradle-result-panel .station-kicker-line {
         margin-bottom: 2px;
         font-size: 11px;
     }
 
-    .tea-result-panel h1 {
+    .tea-result-panel h1,
+    .cradle-result-panel h1 {
         margin-bottom: 3px;
         font-size: clamp(22px, 4.2vw, 30px);
         line-height: 1.05;
     }
 
-    .tea-result-body {
-        gap: 10px;
+    .tea-result-body,
+    .cradle-result-body {
+        gap: clamp(20px, 4vw, 34px);
         flex: 0 1 auto;
     }
 
@@ -2090,34 +2147,66 @@
         line-height: 1.25;
     }
 
-    .tea-result-panel .station-copy {
+    .tea-result-panel .station-copy,
+    .cradle-result-panel .station-copy {
         font-size: 14px;
         line-height: 1.35;
     }
 
     .tea-result-panel .tea-assisted-note,
-    .tea-result-panel .tea-perfect-note {
+    .tea-result-panel .tea-perfect-note,
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
         margin-top: 4px;
         padding: 3px 6px;
         font-size: 13px;
         line-height: 1.2;
     }
 
-    .tea-result-panel .station-actions {
+    .tea-result-panel .station-actions,
+    .cradle-result-panel .station-actions {
         gap: 7px;
         margin-top: 2px;
     }
 
-    .tea-result-panel .station-actions button {
+    .tea-result-panel .station-actions button,
+    .cradle-result-panel .station-actions button {
         margin: 0;
         min-width: 82px;
         padding: 5px 10px;
         font-size: 12px;
     }
 
-    .tea-result-panel .station-guide-result {
+    .tea-result-panel .station-guide-result,
+    .cradle-result-panel .station-guide-result {
         width: clamp(128px, 26vw, 196px);
         max-height: 94%;
+    }
+
+    .cradle-result-baby {
+        width: min(34%, 180px);
+        max-height: 132px;
+    }
+
+    .cradle-result-panel .station-kicker-line {
+        margin-bottom: 7px;
+    }
+
+    .cradle-result-panel .station-copy {
+        font-size: 16px;
+    }
+
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
+        padding: 5px 8px;
+        font-size: 15px;
+        line-height: 1.3;
+    }
+
+    .cradle-result-panel .station-actions button {
+        min-width: 104px;
+        padding: 7px 14px;
+        font-size: 14px;
     }
 }
 
@@ -2155,30 +2244,35 @@
         width: min(30%, 104px);
     }
 
-    .tea-result-panel {
+    .tea-result-panel,
+    .cradle-result-panel {
         min-height: min(98%, 340px);
         padding: 6px 10px 6px;
         gap: 1px;
     }
 
-    .tea-result-panel.has-guide {
+    .tea-result-panel.has-guide,
+    .cradle-result-panel.has-guide {
         padding-right: clamp(104px, 22vw, 160px);
     }
 
-    .tea-result-panel h1 {
+    .tea-result-panel h1,
+    .cradle-result-panel h1 {
         margin-bottom: 0;
         font-size: 20px;
     }
 
-    .tea-result-body {
-        gap: 5px;
+    .tea-result-body,
+    .cradle-result-body {
+        gap: 14px;
     }
 
     .tea-result-art {
         width: min(29%, 136px);
     }
 
-    .tea-result-panel .station-copy {
+    .tea-result-panel .station-copy,
+    .cradle-result-panel .station-copy {
         font-size: 11px;
         line-height: 1.25;
     }
@@ -2189,22 +2283,52 @@
     }
 
     .tea-result-panel .tea-assisted-note,
-    .tea-result-panel .tea-perfect-note {
+    .tea-result-panel .tea-perfect-note,
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
         margin-top: 2px;
         font-size: 11px;
     }
 
-    .tea-result-panel .station-actions {
+    .tea-result-panel .station-actions,
+    .cradle-result-panel .station-actions {
         margin-top: 1px;
     }
 
-    .tea-result-panel .station-actions button {
+    .tea-result-panel .station-actions button,
+    .cradle-result-panel .station-actions button {
         font-size: 11.5px;
     }
 
-    .tea-result-panel .station-guide-result {
+    .tea-result-panel .station-guide-result,
+    .cradle-result-panel .station-guide-result {
         width: clamp(108px, 22vw, 168px);
         max-height: 92%;
+    }
+
+    .cradle-result-baby {
+        width: min(29%, 136px);
+        max-height: 88px;
+    }
+
+    .cradle-result-panel .station-kicker-line {
+        margin-bottom: 4px;
+    }
+
+    .cradle-result-panel .station-copy {
+        font-size: 13px;
+    }
+
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+
+    .cradle-result-panel .station-actions button {
+        min-width: 92px;
+        padding: 5px 10px;
+        font-size: 12.5px;
     }
 }
 
@@ -2683,7 +2807,8 @@
 .station-demo-fire .station-actions.compact button,
 .station-demo-fire .station-water-fixed,
 .station-demo-fire .station-corner-exit,
-.station-demo-tea .station-corner-exit {
+.station-demo-tea .station-corner-exit,
+.station-demo-cradle .station-corner-exit {
     color: #f4e4bd;
     border: 2px solid rgba(197, 155, 91, 0.86);
     border-radius: 8px 11px 7px 10px;
@@ -2708,14 +2833,16 @@
 .station-demo-fire .station-actions.compact button:hover,
 .station-demo-fire .station-water-fixed:hover,
 .station-demo-fire .station-corner-exit:hover,
-.station-demo-tea .station-corner-exit:hover {
+.station-demo-tea .station-corner-exit:hover,
+.station-demo-cradle .station-corner-exit:hover {
     filter: brightness(1.08);
 }
 
 .station-demo-fire .station-actions.compact button:active,
 .station-demo-fire .station-water-fixed:active,
 .station-demo-fire .station-corner-exit:active,
-.station-demo-tea .station-corner-exit:active {
+.station-demo-tea .station-corner-exit:active,
+.station-demo-cradle .station-corner-exit:active {
     transform: translateY(3px);
     box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.16), 0 1px 0 #291b17, 0 4px 8px rgba(0, 0, 0, 0.24);
 }
@@ -2763,8 +2890,108 @@
     line-height: 1.65;
 }
 
+/* ========== 關卡三美術統一：比照關卡一的木牌資訊與大字介面 ========== */
+
+.station-demo-cradle .station-hud {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(6px, 1.2vw, 14px);
+    color: #3e291d;
+    font-size: clamp(17px, 1.65vw, 23px);
+    font-weight: 700;
+    line-height: 1.25;
+    text-shadow: none;
+}
+
+.station-demo-cradle .station-hud > span {
+    min-width: 0;
+    padding: clamp(7px, 1.2vh, 11px) clamp(9px, 1.4vw, 15px);
+    border: 2px solid rgba(91, 57, 34, 0.82);
+    border-radius: 8px 11px 7px 10px;
+    background:
+        repeating-linear-gradient(8deg, transparent 0 12px, rgba(91, 57, 34, 0.08) 12px 14px),
+        linear-gradient(105deg, rgba(255, 244, 212, 0.34), transparent 42%),
+        linear-gradient(165deg, rgba(210, 176, 119, 0.97), rgba(166, 122, 73, 0.97));
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 239, 198, 0.4),
+        0 3px 0 rgba(49, 31, 23, 0.62),
+        0 7px 14px rgba(0, 0, 0, 0.22);
+    text-align: center;
+}
+
+.station-demo-cradle .cradle-hud [data-assist] {
+    color: #46301f;
+}
+
+.station-demo-cradle.cradle-assisted .cradle-hud [data-assist] {
+    color: #294d39;
+    background:
+        linear-gradient(105deg, rgba(255, 244, 212, 0.28), transparent 42%),
+        linear-gradient(165deg, rgba(190, 185, 125, 0.98), rgba(133, 144, 87, 0.98));
+}
+
+.station-demo-cradle .cradle-instruction {
+    width: fit-content;
+    max-width: 88%;
+    justify-self: center;
+    padding: 6px 18px;
+    border: 1px solid rgba(190, 145, 85, 0.82);
+    border-radius: 7px 10px 6px 9px;
+    color: #f4e4bd;
+    background:
+        linear-gradient(115deg, rgba(255, 228, 169, 0.1), transparent 40%),
+        linear-gradient(160deg, rgba(92, 62, 43, 0.94), rgba(55, 38, 29, 0.96));
+    box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.12), 0 4px 10px rgba(0, 0, 0, 0.28);
+    font-size: clamp(16px, 1.7vw, 22px);
+}
+
+.station-demo-cradle .cradle-scene {
+    border-color: rgba(126, 82, 48, 0.9);
+    box-shadow:
+        inset 0 0 35px rgba(4, 11, 12, 0.55),
+        0 0 0 3px rgba(201, 158, 91, 0.42),
+        0 9px 22px rgba(0, 0, 0, 0.34);
+}
+
+.station-demo-cradle .cradle-guide-track,
+.station-demo-cradle .cradle-progress {
+    border: 2px solid rgba(105, 68, 40, 0.92);
+    background: linear-gradient(180deg, rgba(76, 52, 37, 0.94), rgba(38, 29, 24, 0.96));
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(198, 157, 93, 0.36);
+}
+
+.station-demo-cradle .cradle-feedback {
+    width: fit-content;
+    max-width: 90%;
+    justify-self: center;
+    padding: 5px 16px;
+    border: 1px solid rgba(177, 132, 77, 0.68);
+    border-radius: 7px 9px 6px 8px;
+    color: #f1dfb7;
+    background: linear-gradient(160deg, rgba(70, 50, 37, 0.9), rgba(39, 31, 27, 0.94));
+    font-size: clamp(15px, 1.55vw, 21px);
+}
+
 @media (orientation: landscape) and (max-height: 560px) {
     .station-demo-fire .station-hud {
+        font-size: 14px;
+    }
+
+    .station-demo-cradle .station-hud {
+        gap: 5px;
+        padding-right: 66px;
+        font-size: 14px;
+    }
+
+    .station-demo-cradle .station-hud > span {
+        padding: 4px 7px;
+        border-width: 1px;
+    }
+
+    .station-demo-cradle .cradle-instruction,
+    .station-demo-cradle .cradle-feedback {
+        padding-top: 3px;
+        padding-bottom: 3px;
         font-size: 14px;
     }
 
@@ -2799,6 +3026,22 @@
 @media (orientation: landscape) and (max-height: 400px) {
     .station-demo-fire .station-hud {
         gap: 4px;
+        font-size: 12px;
+    }
+
+    .station-demo-cradle .station-hud {
+        gap: 4px;
+        font-size: 12px;
+    }
+
+    .station-demo-cradle .station-hud > span {
+        padding: 2px 4px;
+    }
+
+    .station-demo-cradle .cradle-instruction,
+    .station-demo-cradle .cradle-feedback {
+        padding-top: 2px;
+        padding-bottom: 2px;
         font-size: 12px;
     }
 
@@ -3037,6 +3280,48 @@
     cursor: pointer;
 }
 
+/* 四關共用的提示動畫按鈕：以暖木色取代生硬的系統灰色。 */
+.station-demo .station-guide-tip .station-guide-next,
+.station-demo .station-guide-skip {
+    border: 2px solid rgba(211, 170, 101, 0.92);
+    border-radius: 14px;
+    color: #fff1d0;
+    background:
+        linear-gradient(115deg, rgba(255, 239, 196, 0.18), transparent 42%),
+        linear-gradient(165deg, #8a603f, #5b3c2b 68%, #3f2a21);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 235, 192, 0.18),
+        0 4px 0 #2c1d18,
+        0 8px 14px rgba(0, 0, 0, 0.32);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.48);
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.station-demo .station-guide-tip .station-guide-next {
+    border-color: rgba(237, 197, 113, 0.98);
+    background:
+        linear-gradient(115deg, rgba(255, 248, 211, 0.24), transparent 42%),
+        linear-gradient(165deg, #b78345, #825833 68%, #583824);
+}
+
+.station-demo .station-guide-tip .station-guide-next:hover,
+.station-demo .station-guide-skip:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.station-demo .station-guide-tip .station-guide-next:active,
+.station-demo .station-guide-skip:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2c1d18, 0 4px 8px rgba(0, 0, 0, 0.28);
+}
+
+.station-demo .station-guide-tip .station-guide-next:focus-visible,
+.station-demo .station-guide-skip:focus-visible {
+    outline: 3px solid rgba(255, 226, 137, 0.96);
+    outline-offset: 3px;
+}
+
 .station-demo-tea .station-guide-tip-text {
     font-size: clamp(16px, 2.1vw, 21px);
 }
@@ -3066,5 +3351,11 @@
     .station-guide-tip .station-guide-next {
         padding: 5px 12px;
         min-width: 84px;
+    }
+
+    .station-demo .station-guide-tip .station-guide-next,
+    .station-demo .station-guide-skip {
+        border-radius: 11px;
+        box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.14), 0 3px 0 #2c1d18, 0 6px 10px rgba(0, 0, 0, 0.28);
     }
 }
