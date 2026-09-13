@@ -933,7 +933,6 @@ const StationDemoGame = {
             grind: {
                 title: this.tr('station.tea.grind.title'),
                 verb: this.tr('station.tea.grind.verb'),
-                instruction: this.tr('station.tea.grind.instruction'),
                 target: 5,
                 unit: this.tr('station.tea.grind.unit'),
                 toolClass: 'grind',
@@ -948,7 +947,6 @@ const StationDemoGame = {
             chop: {
                 title: this.tr('station.tea.chop.title'),
                 verb: this.tr('station.tea.chop.verb'),
-                instruction: this.tr('station.tea.chop.instruction'),
                 target: 6,
                 unit: this.tr('station.tea.chop.unit'),
                 toolClass: 'chop',

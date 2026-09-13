@@ -1432,7 +1432,7 @@
     display: grid;
     /* 軌道是找食材與拖曳的主操作區，保留較大的視覺與操作空間；
        下方石臼／砧板縮回足夠完成研磨或切料的高度。 */
-    grid-template-rows: minmax(112px, 1.12fr) minmax(108px, 0.88fr);
+    grid-template-rows: minmax(112px, 1.35fr) minmax(96px, 0.65fr);
     gap: clamp(6px, 1.3vh, 12px);
     min-height: 0;
 }
@@ -2069,7 +2069,7 @@
     }
 
     .tea-game-area {
-        grid-template-rows: minmax(92px, 1.08fr) minmax(92px, 0.92fr);
+        grid-template-rows: minmax(92px, 1.3fr) minmax(80px, 0.7fr);
         gap: 4px;
     }
 
@@ -2226,7 +2226,7 @@
     }
 
     .tea-game-area {
-        grid-template-rows: minmax(76px, 1.12fr) minmax(72px, 0.88fr);
+        grid-template-rows: minmax(76px, 1.3fr) minmax(64px, 0.7fr);
     }
 
     .tea-ingredient-grid {
