@@ -933,7 +933,6 @@ const StationDemoGame = {
             grind: {
                 title: this.tr('station.tea.grind.title'),
                 verb: this.tr('station.tea.grind.verb'),
-                instruction: this.tr('station.tea.grind.instruction'),
                 target: 5,
                 unit: this.tr('station.tea.grind.unit'),
                 toolClass: 'grind',
@@ -948,7 +947,6 @@ const StationDemoGame = {
             chop: {
                 title: this.tr('station.tea.chop.title'),
                 verb: this.tr('station.tea.chop.verb'),
-                instruction: this.tr('station.tea.chop.instruction'),
                 target: 6,
                 unit: this.tr('station.tea.chop.unit'),
                 toolClass: 'chop',
@@ -1145,7 +1143,6 @@ const StationDemoGame = {
                     <span>${this.tr('station.tea.progress', { current: Math.min(this.state.currentIndex + 1, order.length), total: order.length })}</span>
                     <span class="tea-timer${this.state.timeLeft <= 5 ? ' urgent' : ''}">${this.tr('station.tea.remaining', { seconds: `<b data-tea-time>${Math.ceil(this.state.timeLeft)}</b>` })}</span>
                 </div>
-                <div class="tea-instruction">${config.instruction}</div>
                 <div class="tea-order" data-tea-order aria-label="${this.tr('station.tea.order')}">${orderMarkup}</div>
                 <div class="tea-game-area">
                     ${ingredientSourceMarkup}
