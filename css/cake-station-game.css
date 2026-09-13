@@ -2,7 +2,8 @@
     position: absolute;
     inset: 0;
     z-index: 40;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     color: #fff8df;
     background:
         linear-gradient(rgba(19, 13, 8, 0.42), rgba(12, 9, 6, 0.7)),
@@ -53,7 +54,10 @@ body.cake-station-active #game-wrapper {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .cake-card-panel,
@@ -72,7 +76,7 @@ body.cake-station-active #game-wrapper {
 .cake-step-label,
 .station-demo-cake .station-kicker-line {
     color: #f3d384;
-    font-size: clamp(17px, 2.2vw, 22px);
+    font-size: clamp(30px, 3.6vw, 39px);
     letter-spacing: .08em;
 }
 
@@ -103,8 +107,7 @@ body.cake-station-active #game-wrapper {
 
 .cake-intro-copy h1,
 .cake-match-panel h1,
-.cake-select-panel h1,
-.cake-result-copy h1 {
+.cake-select-panel h1 {
     margin: 3px 0 10px;
     color: #fff8df;
     font-size: clamp(32px, 5.5vw, 62px);
@@ -138,7 +141,7 @@ body.cake-station-active #game-wrapper {
     border: 1px solid rgba(255, 255, 255, .24);
     border-radius: 999px;
     color: rgba(255, 255, 255, .52);
-    font-size: clamp(10px, 1.4vw, 14px);
+    font-size: clamp(19.5px, 2.4vw, 25.5px);
 }
 
 .cake-intro-dots span.read {
@@ -155,6 +158,7 @@ body.cake-station-active #game-wrapper {
 .station-demo-cake .cake-actions button {
     min-width: 126px;
     margin: 0;
+    font-size: clamp(22.5px, 2.7vw, 28.5px);
 }
 
 .cake-heading-row {
@@ -163,6 +167,10 @@ body.cake-station-active #game-wrapper {
     gap: 34px;
     align-items: end;
     padding-right: 70px;
+}
+
+.cake-heading-row .station-kicker-line {
+    white-space: nowrap;
 }
 
 .cake-match-panel h1 {
@@ -178,7 +186,7 @@ body.cake-station-active #game-wrapper {
     background: rgba(28, 22, 16, .5);
     backdrop-filter: blur(6px) saturate(1.1);
     color: #f3e6c8;
-    font-size: clamp(14px, 1.8vw, 19px);
+    font-size: clamp(25.5px, 3vw, 33px);
     line-height: 1.4;
 }
 
@@ -331,7 +339,7 @@ body.cake-station-active #game-wrapper {
     min-height: 1.4em;
     margin-top: clamp(18px, 3vh, 30px);
     color: #fff1c9;
-    font-size: clamp(14px, 1.8vw, 19px);
+    font-size: clamp(25.5px, 3vw, 33px);
     text-align: center;
 }
 
@@ -408,6 +416,16 @@ body.cake-station-active #game-wrapper {
 .cake-making-panel {
     display: grid;
     grid-template-rows: auto auto auto 1fr;
+}
+
+.cake-making-panel [data-dough],
+.cake-making-panel [data-filling],
+.cake-making-panel [data-mold-tool],
+.cake-making-panel [data-mold-tool] * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .cake-making-header {
@@ -806,6 +824,25 @@ body.cake-station-active #game-wrapper {
     box-shadow: 0 14px 30px rgba(0, 0, 0, .32);
 }
 
+.cake-result-copy .cake-result-meaning {
+    margin: 3px 0 8px;
+    color: #ffda78;
+    font-size: clamp(60px, 8.7vw, 99px);
+    line-height: 1.12;
+    text-align: left;
+}
+
+.cake-result-copy .cake-result-blessing {
+    margin: 4px 0 10px;
+    color: #f7ecd0;
+    font-size: clamp(27px, 3.15vw, 36px);
+    line-height: 1.45;
+}
+
+.cake-result-blessing strong {
+    color: #fff8df;
+}
+
 .cake-finished-cake {
     position: relative;
     display: grid;
@@ -840,8 +877,8 @@ body.cake-station-active #game-wrapper {
 }
 
 .cake-card-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     margin-top: 14px;
 }
@@ -851,7 +888,9 @@ body.cake-station-active #game-wrapper {
     align-items: center;
     justify-content: center;
     gap: 7px;
-    min-width: 150px;
+    width: 100%;
+    min-width: 0;
+    white-space: nowrap;
 }
 
 .cake-card-action span { font-size: 1.35em; line-height: 1; }
@@ -884,7 +923,7 @@ body.cake-station-active #game-wrapper {
     .cake-select-panel,
     .cake-making-panel { padding: 7px 12px; }
 
-    .cake-step-label { font-size: 10px; }
+    .cake-step-label { font-size: 22.5px; }
 
     .cake-intro-card {
         grid-template-columns: minmax(128px, .72fr) minmax(0, 1.28fr);
@@ -898,21 +937,21 @@ body.cake-station-active #game-wrapper {
 
     .cake-intro-copy h1,
     .cake-match-panel h1,
-    .cake-select-panel h1,
-    .cake-result-copy h1 { margin: 1px 0 3px; font-size: clamp(25px, 4.5vw, 36px); }
+    .cake-select-panel h1 { margin: 1px 0 3px; font-size: clamp(25px, 4.5vw, 36px); }
 
     .cake-intro-copy p,
     .cake-result-copy p { margin: 3px 0; font-size: clamp(11px, 1.8vw, 14px); line-height: 1.3; }
     .cake-intro-copy .cake-meaning,
     .cake-result-copy .cake-meaning { font-size: clamp(16px, 2.6vw, 21px); }
     .cake-intro-dots { margin-top: 2px; }
-    .cake-intro-dots span { padding: 2px 7px; font-size: 9px; }
+    .cake-intro-dots span { padding: 2px 7px; font-size: 19.5px; }
     .station-demo-cake .cake-actions { margin-top: 4px; }
-    .station-demo-cake .cake-actions button { min-width: 96px; padding: 5px 9px; font-size: 11px; }
+    .station-demo-cake .cake-actions button { min-width: 96px; padding: 5px 9px; font-size: 22.5px; }
 
-    .cake-heading-row { grid-template-columns: 210px minmax(0, 1fr); gap: 16px; padding-right: 64px; }
+    .cake-heading-row { grid-template-columns: max-content minmax(0, 1fr); gap: 16px; padding-right: 64px; }
+    .cake-heading-row .station-kicker-line { font-size: 24px; }
     .cake-heading-row p,
-    .cake-select-help { font-size: 11px; line-height: 1.25; }
+    .cake-select-help { padding: 5px 10px; font-size: 22.5px; line-height: 1.2; }
     .cake-match-board { grid-template-rows: 100px 43px 74px; width: min(82%, 760px); height: 220px; margin-top: 3px; }
     .cake-match-row { gap: 8px; }
     .cake-match-pattern { padding: 4px 6px 12px; }
@@ -923,7 +962,7 @@ body.cake-station-active #game-wrapper {
     .cake-connector-top { top: -9px; }
     .cake-fixed-line,
     .cake-live-line { stroke-width: 3.5; }
-    .cake-match-feedback { margin-top: 10px; font-size: 12px; }
+    .cake-match-feedback { margin-top: 4px; font-size: 22.5px; }
 
     .cake-pattern-options { gap: 8px; width: min(86%, 820px); height: 218px; margin-top: 4px; }
     .station-demo-cake .cake-pattern-option { grid-template-rows: minmax(70px, 1fr) auto auto; min-height: 0; padding: 6px; border-radius: 10px; }
@@ -959,9 +998,11 @@ body.cake-station-active #game-wrapper {
 
     .cake-result-panel { grid-template-columns: minmax(180px, .8fr) minmax(0, 1.2fr); gap: 20px; padding: 12px 72px; }
     .cake-finished-cake { width: min(52vh, 300px); }
+    .cake-result-copy .cake-result-meaning { margin: 1px 0 4px; font-size: clamp(63px, 9vw, 78px); }
+    .cake-result-copy .cake-result-blessing { margin: 2px 0 6px; font-size: 22.5px; line-height: 1.2; }
     .cake-result-caption { margin-top: 12px; padding: 3px 9px; font-size: 9px; }
     .cake-card-actions { gap: 6px; margin-top: 7px; }
-    .cake-card-action { min-width: 124px; padding: 7px 10px; font-size: 11px; }
+    .cake-card-action { padding: 7px 6px; font-size: 11px; }
     .cake-share-feedback { margin-top: 3px; font-size: 9px; }
 }
 
@@ -969,8 +1010,8 @@ body.cake-station-active #game-wrapper {
     .cake-intro-card { height: 206px; }
     .cake-pattern-frame { height: min(30vw, 178px); }
     .cake-pattern-options { height: 190px; }
-    .cake-match-board { grid-template-rows: 83px 34px 58px; height: 178px; }
-    .cake-match-pattern img { height: 57px; }
+    .cake-match-board { grid-template-rows: 78px 32px 55px; height: 168px; }
+    .cake-match-pattern img { height: 52px; }
     .cake-workbench { height: 232px; }
     .cake-step-track { margin-top: 0; }
     .cake-result-panel { padding: 8px 64px; }

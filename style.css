@@ -25,19 +25,26 @@ html[lang="zh-Hans"] {
     user-select: none;
 }
 
-html,
-body {
+html {
     width: 100%;
-    height: var(--app-height, 100dvh);
+    min-height: 100%;
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background: #000;
+    touch-action: manipulation;
 }
 
 body {
+    width: 100%;
+    min-height: var(--app-height, 100dvh);
+    margin: 0;
     position: relative;
     padding-bottom: env(safe-area-inset-bottom);
+    overflow: visible;
     font-family: var(--game-font);
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
 }
 
 button {

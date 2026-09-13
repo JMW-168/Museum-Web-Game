@@ -200,6 +200,7 @@ function loadI18n(extra = {}) {
     assert.strictEqual(opening.speaker, '阿嬤');
     assert.ok(opening.text.includes('廚房'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龜紋');
+    assert.ok(context.CakeStationGame.patterns.every((pattern) => pattern.blessing.startsWith('祝你')), '繁體四種祝福應統一使用「祝你」');
 
     I18n.setLocale('zh-Hans');
     const ending = context.Station34CombinedGame.localizeLine(
@@ -211,6 +212,7 @@ function loadI18n(extra = {}) {
     assert.ok(!ending.text.includes('{{patternName}}'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龟纹');
     assert.strictEqual(context.CakeStationGame.patterns[2].meaning, '年年有余');
+    assert.ok(context.CakeStationGame.patterns.every((pattern) => pattern.blessing.startsWith('祝你')), '簡體四種祝福應統一使用「祝你」');
 }
 
 console.log('i18n ok');
