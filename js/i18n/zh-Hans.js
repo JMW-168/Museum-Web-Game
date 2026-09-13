@@ -6,6 +6,7 @@ window.I18n.register('zh-Hans', {
 
     // 首页
     'title.alt': '森美兰客家文化博物馆・传统日常再现',
+    'title.image': 'assets/images/title/title-20260904-simplified.png',
     'menu.start': '搭乘时光机',
     'menu.exit': '回到现实',
 
@@ -64,11 +65,6 @@ window.I18n.register('zh-Hans', {
     'ending.subtitle': '谢谢你来到客家土楼，和我们一起留下这段生活记忆。',
     'ending.return': '返回入口',
 
-    // 完整剧情体验：上下半场之间的中场过场
-    'story.intermission.kicker': '上半场完成',
-    'story.intermission.title': '前半段的故事，先到这里',
-    'story.intermission.subtitle': '灶台的火顾好了，擂茶也端上桌。接下来换一段从摇篮到红粄的故事。',
-    'story.intermission.continue': '继续下半场',
 
     // 剧情共用角色与操作
     'story.speaker.grandma': '阿嬷',
@@ -92,11 +88,11 @@ window.I18n.register('zh-Hans', {
     'story.combined12.afterFire.1': '以前没有钱买柴，去山上捡树枝也要煮出一餐热饭。人穷，志气不可以短！',
     'story.combined12.afterFire.2': '灶火终于旺起来了，锅里的水开始「咕噜咕噜」滚……',
     'story.combined12.beforeTea.1': '哦，火生好了啊？来，换阿公教你一样东西——擂茶。',
+    'story.combined12.beforeTea.2.cue': '缓步走入厨房',
+    'story.combined12.beforeTea.2': '擂茶是客人来一定要有的准备。',
     'story.combined12.afterTea.1': '擂茶是最花工的啦。但是我们客家人，再忙、再穷，客人来了一碗热茶一定要有。这个是礼貌，也是家教。',
     'story.combined12.afterTea.2.cue': '想起以前的事',
     'story.combined12.afterTea.2': '我阿爸那时候，家里连盐都快没有了，还是留一碗擂茶给老师喝。',
-    'story.combined12.coaching.fire': '对，就是酱！……欸欸，慢一点，不要把火弄熄掉！',
-    'story.combined12.coaching.tea': '顺时钟转，不要急，酱茶叶才不会飞出来。',
 
     // 关卡三四合并剧情
     'story.combined34.opening.1': '厨房外面突然听到 baby 在哭。',

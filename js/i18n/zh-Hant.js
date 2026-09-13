@@ -7,6 +7,7 @@ window.I18n.register('zh-Hant', {
 
     // 首頁
     'title.alt': '森美蘭客家文化博物館・傳統日常再現',
+    'title.image': 'assets/images/title/title-20260904.png',
     'menu.start': '搭乘時光機',
     'menu.exit': '回到現實',
 
@@ -65,12 +66,6 @@ window.I18n.register('zh-Hant', {
     'ending.subtitle': '謝謝你來到客家土樓，和我們一起留下這段生活記憶。',
     'ending.return': '返回入口',
 
-    // 完整劇情體驗：上下半場之間的中場過場
-    'story.intermission.kicker': '上半場完成',
-    'story.intermission.title': '前半段的故事，先到這裡',
-    'story.intermission.subtitle': '灶台的火顧好了，擂茶也端上桌。接下來換一段從搖籃到紅粄的故事。',
-    'story.intermission.continue': '繼續下半場',
-
     // 劇情共用角色與操作
     'story.speaker.grandma': '阿嬤',
     'story.speaker.grandpa': '阿公',
@@ -93,11 +88,11 @@ window.I18n.register('zh-Hant', {
     'story.combined12.afterFire.1': '以前沒有錢買柴，去山上撿樹枝也要煮出一餐熱飯。人窮，志氣不可以短！',
     'story.combined12.afterFire.2': '灶火終於旺起來了，鍋裡的水開始「咕嚕咕嚕」滾……',
     'story.combined12.beforeTea.1': '哦，火生好了啊？來，換阿公教你一樣東西——擂茶。',
+    'story.combined12.beforeTea.2.cue': '緩步走入廚房',
+    'story.combined12.beforeTea.2': '擂茶是客人來一定要有的準備。',
     'story.combined12.afterTea.1': '擂茶是最花工的啦。但是我們客家人，再忙、再窮，客人來了一碗熱茶一定要有。這個是禮貌，也是家教。',
     'story.combined12.afterTea.2.cue': '想起以前的事',
     'story.combined12.afterTea.2': '我阿爸那時候，家裡連鹽都快沒有了，還是留一碗擂茶給老師喝。',
-    'story.combined12.coaching.fire': '對，就是酱！……欸欸，慢一點，不要把火弄熄掉！',
-    'story.combined12.coaching.tea': '順時鐘轉，不要急，酱茶葉才不會飛出來。',
 
     // 關卡三四合併劇情
     'story.combined34.opening.1': '廚房外面突然聽到 baby 在哭。',
