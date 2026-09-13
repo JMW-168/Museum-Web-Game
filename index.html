@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=115">
+    <link rel="stylesheet" href="style.css?v=116">
     <link rel="stylesheet" href="css/station-demo-game.css?v=116">
     <link rel="stylesheet" href="css/cake-station-game.css?v=71">
 </head>
@@ -92,6 +92,17 @@
         </div>
 
         <button id="install-app-btn" class="install-app-btn" type="button" hidden data-i18n="install.label">安装</button>
+        <aside id="ios-install-guide" class="ios-install-guide" role="dialog" aria-modal="false" aria-labelledby="ios-install-guide-title" hidden>
+            <button type="button" class="ios-install-guide-close" data-ios-install-close data-i18n-attr="aria-label:install.ios.close">关闭</button>
+            <p class="ios-install-guide-kicker" data-i18n="install.ios.kicker">iPhone／iPad Safari</p>
+            <h2 id="ios-install-guide-title" data-i18n="install.ios.title">将游戏加入主画面</h2>
+            <ol class="ios-install-guide-steps">
+                <li data-i18n="install.ios.step1">点选 Safari 工具列的「分享」按钮。</li>
+                <li data-i18n="install.ios.step2">向下滑动并选择「加入主画面」。</li>
+                <li data-i18n="install.ios.step3">点选「加入」后，即可从主画面开启游戏。</li>
+            </ol>
+            <p class="ios-install-guide-note" data-i18n="install.ios.note">加入后会以横向全萤幕体验游戏。</p>
+        </aside>
         <div id="pwa-update-banner" class="pwa-update-banner" role="status" hidden>
             <span data-i18n="pwa.update.message">新版本已准备完成。</span>
             <div class="pwa-update-actions">
@@ -161,8 +172,8 @@
 
     <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
     <script src="js/i18n/i18n.js?v=45"></script>
-    <script src="js/i18n/zh-Hant.js?v=114"></script>
-    <script src="js/i18n/zh-Hans.js?v=114"></script>
+    <script src="js/i18n/zh-Hant.js?v=115"></script>
+    <script src="js/i18n/zh-Hans.js?v=115"></script>
 
     <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js?v=114"></script>
@@ -186,6 +197,6 @@
     <script src="js/minigames/StationDemoGame.js?v=80"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
-    <script src="js/main.js?v=115"></script>
+    <script src="js/main.js?v=116"></script>
 </body>
 </html>
