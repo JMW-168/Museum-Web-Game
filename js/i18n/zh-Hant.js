@@ -49,6 +49,9 @@ window.I18n.register('zh-Hant', {
     'level.story.kicker': '約 10 分鐘',
     'level.story.title': '完整劇情體驗',
     'level.story.desc': '跟著阿嬤阿公，完整體驗上述四項客家故事。',
+    'level.collect.kicker': '徵集活動',
+    'level.collect.title': '客家老物件徵集',
+    'level.collect.desc': '家裡有阿公阿婆留下來的舊東西嗎？粄模、揹帶、花布、油燈、算盤、老照片……只要和客家生活有關，我們都想聽聽它的故事',
 
     // 退出確認
     'exit.title': '你確定要退出嗎？',
@@ -65,6 +68,7 @@ window.I18n.register('zh-Hant', {
     'ending.title': '感謝遊玩',
     'ending.subtitle': '謝謝你來到客家土樓，和我們一起留下這段生活記憶。',
     'ending.return': '返回入口',
+    'ending.collect': '提供客家老物件',
 
     // 劇情共用角色與操作
     'story.speaker.grandma': '阿嬤',

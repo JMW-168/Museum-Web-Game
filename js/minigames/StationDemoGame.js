@@ -319,19 +319,6 @@ const StationDemoGame = {
             .catch((error) => this.showFireLoadError(error));
     },
 
-    finishCombinedFire() {
-        if (!this.state) return;
-        this.state.finished = true;
-        if (this.animationId) cancelAnimationFrame(this.animationId);
-        this.animationId = null;
-        this.stopFireMusic();
-        this.releaseFireAssets();
-        this.showCombinedDialogue('fireExit', () => {
-            this.station = this.getStation('tea');
-            this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
-        });
-    },
-
     startCombinedTea() {
         this.station = this.getStation('tea');
         this.setShellTheme('tea');
@@ -1684,11 +1671,7 @@ const StationDemoGame = {
         this.station.fireSummary = this.tr('station.fire.summary', {
             score: totalScore
         });
-        if (this.mode === 'combined') {
-            this.finishCombinedFire();
-            return;
-        }
-        // 單關版：先看結果，再由「去找阿罵」進入離開引導對話。
+        // 灶台結果頁在單關版與融合版都會顯示，再由「去找阿罵」進入離開引導對話。
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         this.stopFireMusic();
@@ -1725,7 +1708,14 @@ const StationDemoGame = {
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => {
-            this.showCombinedDialogue('fireExit', () => this.close(), { actionLabelKey: 'story.action.returnLobby' });
+            if (this.mode === 'combined') {
+                this.showCombinedDialogue('fireExit', () => {
+                    this.station = this.getStation('tea');
+                    this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
+                });
+            } else {
+                this.showCombinedDialogue('fireExit', () => this.close(), { actionLabelKey: 'story.action.returnLobby' });
+            }
         });
     },
 

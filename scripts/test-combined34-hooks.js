@@ -256,7 +256,7 @@ function makeFakeBox() {
 }
 
 {
-    // 第三關單玩結束：比照一、二關先顯示結果頁，再從結果頁進入收尾對話。
+    // 第三關單玩與完整劇情結束都應先顯示結果頁，比照一、二關，再從結果頁進入收尾對話。
     const cradle = { stop() {} };
     const { game } = loadGame('js/minigames/Station34CombinedGame.js', 'Station34CombinedGame', {
         CradleStationGame: cradle
@@ -268,16 +268,14 @@ function makeFakeBox() {
     game.createShell = () => { game.container = {}; };
     const originalShowCradleResult = game.showCradleResult;
     game.showCradleResult = (value) => events.push({ type: 'result', value });
-    game.showDialogue = () => events.push({ type: 'dialogue' });
     game.afterCradle(result);
     assert.deepStrictEqual(events, [{ type: 'result', value: result }], '第三關單玩結束應先顯示結果頁');
-    game.showCradleResult = originalShowCradleResult;
 
     events.length = 0;
     game.only = null;
-    game.showDialogue = (sectionId) => events.push({ type: 'dialogue', sectionId });
     game.afterCradle(result);
-    assert.deepStrictEqual(events, [{ type: 'dialogue', sectionId: 'cradleExit' }], '完整劇情仍應從第三關收尾對話接往第四關');
+    assert.deepStrictEqual(events, [{ type: 'result', value: result }], '完整劇情第三關結束也應先顯示結果頁，不能直接跳過去對話');
+    game.showCradleResult = originalShowCradleResult;
 
     let retryHandler = null;
     let backHandler = null;
@@ -292,7 +290,10 @@ function makeFakeBox() {
         'station.cradle.result.findGrandma': '去找阿嬤',
         'game.retry': '再玩一次'
     }[key] || key);
+
+    // 單關版：結果頁「去找阿嬤」應收尾後返回大廳。
     let exitTransition = null;
+    game.only = 'cradle';
     game.showDialogue = (sectionId, onComplete, tokens, opts) => {
         exitTransition = { sectionId, onComplete, tokens, opts };
     };
@@ -306,7 +307,20 @@ function makeFakeBox() {
     assert.strictEqual(typeof backHandler, 'function', '第三關結果頁應綁定去找阿嬤');
     backHandler();
     assert.strictEqual(exitTransition.sectionId, 'cradleExit', '按「去找阿嬤」後才播放收尾對話');
-    assert.strictEqual(exitTransition.opts.actionLabelKey, 'story.action.returnLobby', '收尾對話按鈕應返回大廳');
+    assert.strictEqual(exitTransition.opts.actionLabelKey, 'story.action.returnLobby', '單關版收尾對話按鈕應返回大廳');
+
+    // 完整劇情：結果頁「去找阿嬤」收尾後應接第四關，不是返回大廳。
+    game.only = null;
+    game.showDialogue = (sectionId, onComplete) => {
+        exitTransition = { sectionId, onComplete };
+    };
+    game.showCradleResult(result);
+    backHandler();
+    assert.strictEqual(exitTransition.sectionId, 'cradleExit', '完整劇情按「去找阿嬤」後也先播放收尾對話');
+    let cakeEntryTransition = null;
+    game.showDialogue = (sectionId) => { cakeEntryTransition = { sectionId }; };
+    exitTransition.onComplete();
+    assert.strictEqual(cakeEntryTransition.sectionId, 'cakeEntry', '完整劇情收尾對話後應接第四關 cakeEntry');
 }
 
 {

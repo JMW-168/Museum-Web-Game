@@ -48,6 +48,9 @@ window.I18n.register('zh-Hans', {
     'level.story.kicker': '约 10 分钟',
     'level.story.title': '完整剧情体验',
     'level.story.desc': '跟着阿嬷阿公，完整体验上述四项客家故事。',
+    'level.collect.kicker': '征集活动',
+    'level.collect.title': '客家老物件征集',
+    'level.collect.desc': '家里有阿公阿婆留下来的旧东西吗？粄模、揹带、花布、油灯、算盘、老照片……只要和客家生活有关，我们都想听听它的故事',
 
     // 退出确认
     'exit.title': '你确定要退出吗？',
@@ -64,6 +67,7 @@ window.I18n.register('zh-Hans', {
     'ending.title': '感谢游玩',
     'ending.subtitle': '谢谢你来到客家土楼，和我们一起留下这段生活记忆。',
     'ending.return': '返回入口',
+    'ending.collect': '提供客家老物件',
 
 
     // 剧情共用角色与操作

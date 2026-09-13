@@ -1940,7 +1940,8 @@
 .station-demo-fire .station-result-panel .station-actions button,
 .tea-result-panel .station-actions button,
 .cradle-result-panel .station-actions button,
-.ending-actions button {
+.ending-actions button,
+.ending-actions a {
     min-width: clamp(112px, 14vw, 154px);
     padding: 10px 20px;
     border: 2px solid rgba(210, 168, 99, 0.9);
@@ -1971,7 +1972,8 @@
 .station-demo-fire .station-result-panel .station-actions button:hover,
 .tea-result-panel .station-actions button:hover,
 .cradle-result-panel .station-actions button:hover,
-.ending-actions button:hover {
+.ending-actions button:hover,
+.ending-actions a:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
 }
@@ -1979,7 +1981,8 @@
 .station-demo-fire .station-result-panel .station-actions button:active,
 .tea-result-panel .station-actions button:active,
 .cradle-result-panel .station-actions button:active,
-.ending-actions button:active {
+.ending-actions button:active,
+.ending-actions a:active {
     transform: translateY(3px);
     box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2d1e19, 0 4px 8px rgba(0, 0, 0, 0.26);
 }
@@ -3137,9 +3140,12 @@
 .ending-actions {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
 }
 
-.ending-actions button {
+.ending-actions button,
+.ending-actions a {
     min-width: clamp(150px, 30vw, 220px);
 }
 
