@@ -1,6 +1,9 @@
 // 現行入口只保留模式選擇、PWA 安裝、場景切換與六個站點入口。
 let gameMode = null;
 let deferredInstallPrompt = null;
+let waitingServiceWorker = null;
+let isApplyingServiceWorkerUpdate = false;
+let hasDismissedServiceWorkerUpdate = false;
 
 // ========== 多語系 ==========
 // 繁體字型只在首次切到繁體時載入，避免簡體使用者（預設）付出多餘請求。
@@ -89,14 +92,14 @@ function showScene(sceneId) {
     if (window.Logger) Logger.info('切換場景到:', sceneId);
     if (window.SceneManager?.show) {
         SceneManager.show(sceneId);
-        return;
+    } else {
+        document.querySelectorAll('.scene').forEach((scene) => {
+            scene.style.display = 'none';
+        });
+        const target = document.getElementById(sceneId);
+        if (target) target.style.display = 'flex';
     }
-
-    document.querySelectorAll('.scene').forEach((scene) => {
-        scene.style.display = 'none';
-    });
-    const target = document.getElementById(sceneId);
-    if (target) target.style.display = 'flex';
+    updateServiceWorkerUpdateBanner();
 }
 
 function setupInstallButton() {
@@ -115,6 +118,65 @@ function setupInstallButton() {
 function updateInstallButton() {
     const installButton = document.getElementById('install-app-btn');
     if (installButton) installButton.hidden = !deferredInstallPrompt || isStandaloneDisplay();
+}
+
+function isUpdateSafeScene() {
+    return ['start-menu', 'level-select'].some((sceneId) => {
+        const scene = document.getElementById(sceneId);
+        return scene && getComputedStyle(scene).display !== 'none';
+    });
+}
+
+function updateServiceWorkerUpdateBanner() {
+    const banner = document.getElementById('pwa-update-banner');
+    if (!banner) return;
+    banner.hidden = !waitingServiceWorker || hasDismissedServiceWorkerUpdate || !isUpdateSafeScene();
+}
+
+function setWaitingServiceWorker(worker) {
+    waitingServiceWorker = worker;
+    hasDismissedServiceWorkerUpdate = false;
+    updateServiceWorkerUpdateBanner();
+}
+
+function setupServiceWorkerUpdate() {
+    const updateButton = document.getElementById('pwa-update-now');
+    const laterButton = document.getElementById('pwa-update-later');
+
+    updateButton?.addEventListener('click', () => {
+        if (!waitingServiceWorker || isApplyingServiceWorkerUpdate) return;
+        isApplyingServiceWorkerUpdate = true;
+        updateButton.disabled = true;
+        waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
+    });
+
+    laterButton?.addEventListener('click', () => {
+        hasDismissedServiceWorkerUpdate = true;
+        updateServiceWorkerUpdateBanner();
+    });
+
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (isApplyingServiceWorkerUpdate) window.location.reload();
+    });
+
+    navigator.serviceWorker.register('sw.js?v=114', { updateViaCache: 'none' })
+        .then((registration) => {
+            const inspectWorker = (worker) => {
+                if (!worker) return;
+                worker.addEventListener('statechange', () => {
+                    if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                        setWaitingServiceWorker(worker);
+                    }
+                });
+            };
+
+            if (registration.waiting) setWaitingServiceWorker(registration.waiting);
+            inspectWorker(registration.installing);
+            registration.addEventListener('updatefound', () => inspectWorker(registration.installing));
+        })
+        .catch((error) => console.warn('Service Worker 註冊失敗：', error));
 }
 
 function bindStationButtons() {
@@ -154,6 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.I18n?.init();
     setupLanguageSwitch();
     setupInstallButton();
+    setupServiceWorkerUpdate();
     window.AudioManager?.init();
     window.SceneManager?.init();
     window.LoadingManager?.init();

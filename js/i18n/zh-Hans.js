@@ -3,6 +3,9 @@ window.I18n.register('zh-Hans', {
     // 加载 / 安装
     'loading.text': '资源加载中...',
     'install.label': '安装',
+    'pwa.update.message': '新版本已准备完成。',
+    'pwa.update.action': '更新并重新载入',
+    'pwa.update.later': '稍后',
 
     // 首页
     'title.alt': '森美兰客家文化博物馆・传统日常再现',

@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=54">
+    <link rel="stylesheet" href="style.css?v=114">
     <link rel="stylesheet" href="css/station-demo-game.css?v=90">
     <link rel="stylesheet" href="css/cake-station-game.css?v=71">
 </head>
@@ -92,6 +92,13 @@
         </div>
 
         <button id="install-app-btn" class="install-app-btn" type="button" hidden data-i18n="install.label">安装</button>
+        <div id="pwa-update-banner" class="pwa-update-banner" role="status" hidden>
+            <span data-i18n="pwa.update.message">新版本已准备完成。</span>
+            <div class="pwa-update-actions">
+                <button id="pwa-update-now" type="button" data-i18n="pwa.update.action">更新并重新载入</button>
+                <button id="pwa-update-later" type="button" data-i18n="pwa.update.later">稍后</button>
+            </div>
+        </div>
 
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
@@ -154,15 +161,15 @@
 
     <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
     <script src="js/i18n/i18n.js?v=45"></script>
-    <script src="js/i18n/zh-Hant.js?v=85"></script>
-    <script src="js/i18n/zh-Hans.js?v=85"></script>
+    <script src="js/i18n/zh-Hant.js?v=114"></script>
+    <script src="js/i18n/zh-Hans.js?v=114"></script>
 
     <!-- ========== 共用系統 ========== -->
-    <script src="js/core/Logger.js"></script>
-    <script src="js/core/ErrorReporter.js"></script>
-    <script src="js/core/LoadingManager.js"></script>
-    <script src="js/core/AudioManager.js"></script>
-    <script src="js/core/SceneManager.js"></script>
+    <script src="js/core/Logger.js?v=114"></script>
+    <script src="js/core/ErrorReporter.js?v=114"></script>
+    <script src="js/core/LoadingManager.js?v=114"></script>
+    <script src="js/core/AudioManager.js?v=114"></script>
+    <script src="js/core/SceneManager.js?v=114"></script>
 
     <!-- ========== 現行站點資料 ========== -->
     <script src="js/data/stationCombinedStory.js?v=54"></script>
@@ -179,19 +186,6 @@
     <script src="js/minigames/StationDemoGame.js?v=79"></script>
     
     <!-- ========== 主入口（最後載入） ========== -->
-    <script src="js/main.js?v=48"></script>
-    
-    <!-- ========== Service Worker 註冊（PWA） ========== -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js?v=77').then(function(registration) {
-                    console.log('✅ Service Worker 註冊成功，範圍:', registration.scope);
-                }).catch(function(error) {
-                    console.log('❌ Service Worker 註冊失敗:', error);
-                });
-            });
-        }
-    </script>
+    <script src="js/main.js?v=114"></script>
 </body>
 </html>
