@@ -37,6 +37,8 @@ const FireStationGame = {
             nextSpawnAt: 0,
             fireTargetX: null,
             fireTargetTrackWidth: 0,
+            fireTargetY: null,
+            fireTargetTrackHeight: 0,
             totalBeats: FireStationGame.fireBeatTimes.length,
             idealMin: 60,
             idealMax: 86,
@@ -340,14 +342,16 @@ const FireStationGame = {
         const track = game.container.querySelector('.fire-track');
         const trackWidth = track ? track.clientWidth : 1;
         const targetX = FireStationGame.getFireTargetX(game, trackWidth);
+        const targetY = FireStationGame.getFireTargetY(game, trackWidth);
         const stillActive = [];
 
         game.state.beats.forEach((beat) => {
             const progress = (elapsed - beat.spawnedAtMs) / beat.travelMs;
-            // 木柴由右向左飄向灶口。
+            // 木柴由右向左飄向灶口，高度對齊灶口實際位置。
             const startX = trackWidth + beat.el.offsetWidth;
             const x = startX + (progress * (targetX - startX));
             beat.el.style.left = `${x}px`;
+            if (targetY !== null) beat.el.style.top = `${targetY}px`;
 
             if (!beat.hit && x < targetX - 100) {
                 beat.hit = true;
@@ -519,6 +523,25 @@ const FireStationGame = {
             return targetX;
         }
         return trackWidth * 0.15;
+    },
+
+    // 木柴的飄動高度要對齊灶口（火焰元素）實際渲染的垂直中心，不能只固定在軌道正中間，
+    // 否則在灶台圖片較高／灶口偏下的版面（例如手機橫向）柴火會飄在灶口上方。
+    getFireTargetY(game, trackWidth) {
+        if (game.state?.fireTargetY !== null && game.state?.fireTargetTrackHeight === trackWidth) {
+            return game.state.fireTargetY;
+        }
+        const track = game.container?.querySelector('.fire-track');
+        const flame = game.container?.querySelector('.fire-flame-img');
+        if (track && flame) {
+            const trackBounds = track.getBoundingClientRect();
+            const flameBounds = flame.getBoundingClientRect();
+            const targetY = flameBounds.top + flameBounds.height / 2 - trackBounds.top;
+            game.state.fireTargetY = targetY;
+            game.state.fireTargetTrackHeight = trackWidth;
+            return targetY;
+        }
+        return null;
     },
 
     updateFireStability(game, delta) {
