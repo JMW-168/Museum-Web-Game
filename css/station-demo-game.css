@@ -1361,7 +1361,7 @@
     /* 預留右上「離開」按鈕的寬度，避免與「剩餘秒數」重疊。 */
     padding-right: clamp(96px, 10vw, 122px);
     align-items: center;
-    font-size: clamp(15px, 1.9vw, 20px);
+    font-size: clamp(17px, 2.2vw, 23px);
 }
 
 .tea-hud > span {
@@ -1401,18 +1401,18 @@
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.26);
     color: #efe4cd;
-    font-size: clamp(14px, 1.75vw, 18px);
+    font-size: clamp(16px, 2vw, 21px);
     white-space: nowrap;
 }
 
 .tea-order span b {
     display: grid;
     place-items: center;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.14);
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .tea-order span.current {
@@ -1432,7 +1432,7 @@
     display: grid;
     /* 軌道是找食材與拖曳的主操作區，保留較大的視覺與操作空間；
        下方石臼／砧板縮回足夠完成研磨或切料的高度。 */
-    grid-template-rows: minmax(112px, 1.35fr) minmax(96px, 0.65fr);
+    grid-template-rows: minmax(112px, 1.2fr) minmax(96px, 0.8fr);
     gap: clamp(6px, 1.3vh, 12px);
     min-height: 0;
 }
@@ -1478,7 +1478,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     color: rgba(255, 243, 201, 0.32);
-    font-size: clamp(13px, 1.55vw, 16px);
+    font-size: clamp(15px, 1.8vw, 19px);
     white-space: nowrap;
     pointer-events: none;
 }
@@ -1604,7 +1604,7 @@
 
 .tea-ingredient-name {
     display: block;
-    font-size: clamp(14px, 1.65vw, 17px);
+    font-size: clamp(16px, 1.9vw, 20px);
     line-height: 1.1;
     pointer-events: none;
 }
@@ -1787,7 +1787,7 @@
     border-radius: 999px;
     background: rgba(8, 18, 18, 0.82);
     color: #fff1bd;
-    font-size: clamp(14px, 1.65vw, 17px);
+    font-size: clamp(16px, 1.9vw, 20px);
     line-height: 1.1;
     pointer-events: none;
 }
@@ -1851,7 +1851,7 @@
     margin: 0 auto;
     padding: 5px 14px;
     text-align: center;
-    font-size: clamp(17px, 2.35vw, 24px);
+    font-size: clamp(19px, 2.6vw, 27px);
     line-height: 1.2;
 }
 
@@ -2063,13 +2063,13 @@
     }
 
     .tea-order span b {
-        width: 15px;
-        height: 15px;
-        font-size: 9px;
+        width: 17px;
+        height: 17px;
+        font-size: 11px;
     }
 
     .tea-game-area {
-        grid-template-rows: minmax(92px, 1.3fr) minmax(80px, 0.7fr);
+        grid-template-rows: minmax(92px, 1.2fr) minmax(80px, 0.8fr);
         gap: 4px;
     }
 
@@ -2101,7 +2101,7 @@
     .tea-action-progress {
         bottom: 4px;
         padding: 3px 7px;
-        font-size: 10px;
+        font-size: 12px;
     }
 
     .tea-action-meter {
@@ -2111,7 +2111,7 @@
 
     .station-demo-tea .tea-feedback {
         padding: 3px 10px;
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .tea-result-panel,
@@ -2222,11 +2222,11 @@
 
 @media (orientation: landscape) and (max-height: 400px) {
     .tea-order span {
-        font-size: 11px;
+        font-size: 13px;
     }
 
     .tea-game-area {
-        grid-template-rows: minmax(76px, 1.3fr) minmax(64px, 0.7fr);
+        grid-template-rows: minmax(76px, 1.2fr) minmax(64px, 0.8fr);
     }
 
     .tea-ingredient-grid {
@@ -2234,7 +2234,7 @@
     }
 
     .tea-ingredient-name {
-        font-size: 11px;
+        font-size: 13px;
     }
 
     .tea-drop-zone {
