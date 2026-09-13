@@ -1,6 +1,22 @@
 /* 站點一：灶台生火 —— 玩法與版面規則（Issue #90 從 station-game.css 拆出） */
 
 .station-game-fire {
+    /* 站點一可調尺寸：響應式斷點只改這幾個值（Issue #90 收斂重複尺寸）。
+       只收斂目前實際生效（未被 Issue #54 統一美術區塊蓋掉）的尺寸鏈。 */
+    --fire-track-min-h: 150px;
+    --fire-target-w: clamp(216px, 28vw, 356px);
+    --fire-target-h: clamp(150px, 19vw, 246px);
+    --fire-hud-pad-r: 86px;
+    --fire-meter-wrap-w: min(74%, 780px);
+    --fire-meter-wrap-mb: clamp(92px, 18vh, 150px);
+    --fire-action-min-w: clamp(124px, 15vw, 180px);
+    --fire-action-pad: clamp(12px, 2vh, 18px) clamp(18px, 2.4vw, 28px);
+    --fire-beat-w: clamp(88px, 9vw, 126px);
+    --fire-beat-h: clamp(48px, 5.5vw, 74px);
+    --fire-beat-big-w: clamp(112px, 11vw, 154px);
+    --fire-beat-big-h: clamp(58px, 6.5vw, 88px);
+    --fire-meter-h: clamp(18px, 3vh, 24px);
+    --fire-meter-border-w: 3px;
     background:
         linear-gradient(rgba(9, 15, 16, 0.5), rgba(9, 15, 16, 0.72)),
         url('../assets/images/station-fire/background.webp') center / cover no-repeat;
@@ -357,7 +373,7 @@
 }
 
 .station-game-fire .station-hud {
-    padding-right: 86px;
+    padding-right: var(--fire-hud-pad-r);
 }
 
 
@@ -368,7 +384,7 @@
 .station-game-fire .fire-track {
     align-self: stretch;
     height: auto;
-    min-height: 150px;
+    min-height: var(--fire-track-min-h);
     margin: 0;
     border: 0;
     background:
@@ -408,8 +424,8 @@
 .station-game-fire .fire-target {
     left: 16%;
     z-index: 3;
-    width: clamp(216px, 28vw, 356px);
-    height: clamp(150px, 19vw, 246px);
+    width: var(--fire-target-w);
+    height: var(--fire-target-h);
     border: 0;
     background: transparent;
     overflow: visible;
@@ -522,9 +538,9 @@
     flex-direction: column;
     align-items: center;
     gap: clamp(4px, 1vh, 8px);
-    width: min(74%, 780px);
+    width: var(--fire-meter-wrap-w);
     /* 上移與底部按鈕拉開距離。 */
-    margin: 0 auto clamp(92px, 18vh, 150px);
+    margin: 0 auto var(--fire-meter-wrap-mb);
 }
 
 .fire-meter-label {
@@ -587,8 +603,8 @@
 
 .station-game-fire .station-actions.compact button,
 .station-game-fire .station-water-fixed {
-    min-width: clamp(124px, 15vw, 180px);
-    padding: clamp(12px, 2vh, 18px) clamp(18px, 2.4vw, 28px);
+    min-width: var(--fire-action-min-w);
+    padding: var(--fire-action-pad);
     font-size: clamp(16px, 1.7vw, 21px);
 }
 
@@ -622,21 +638,15 @@
         gap: 5px;
     }
 
-    .station-game-fire .station-hud {
-        padding-right: 72px;
-    }
-    .station-game-fire .fire-track {
-        min-height: 116px;
-    }
-
-    .station-game-fire .fire-target {
-        width: clamp(180px, 30vw, 244px);
-        height: clamp(120px, 20vw, 164px);
-    }
-
-    .fire-meter-wrap {
-        width: 66%;
-        margin-bottom: clamp(52px, 13vh, 84px);
+    .station-game-fire {
+        --fire-hud-pad-r: 72px;
+        --fire-track-min-h: 116px;
+        --fire-target-w: clamp(180px, 30vw, 244px);
+        --fire-target-h: clamp(120px, 20vw, 164px);
+        --fire-meter-wrap-w: 66%;
+        --fire-meter-wrap-mb: clamp(52px, 13vh, 84px);
+        --fire-action-min-w: 82px;
+        --fire-action-pad: 6px 11px;
     }
 
     .station-game-fire .station-feedback {
@@ -646,34 +656,23 @@
 
     .station-game-fire .station-actions.compact button,
     .station-game-fire .station-water-fixed {
-        min-width: 82px;
-        padding: 6px 11px;
         font-size: 12px;
     }
 }
 
 @media (orientation: landscape) and (max-height: 400px) {
-    .station-game-fire .fire-track {
-        min-height: 92px;
-    }
-
-    .station-game-fire .fire-target {
-        width: clamp(150px, 32vw, 200px);
-        height: clamp(100px, 22vw, 134px);
-    }
-
-    .station-game-fire .fire-meter {
-        height: 12px;
-    }
-
-    .fire-meter-wrap {
-        margin-bottom: clamp(44px, 11vh, 64px);
+    .station-game-fire {
+        --fire-track-min-h: 92px;
+        --fire-target-w: clamp(150px, 32vw, 200px);
+        --fire-target-h: clamp(100px, 22vw, 134px);
+        --fire-meter-h: 12px;
+        --fire-meter-wrap-mb: clamp(44px, 11vh, 64px);
+        --fire-action-min-w: 72px;
+        --fire-action-pad: 5px 9px;
     }
 
     .station-game-fire .station-actions.compact button,
     .station-game-fire .station-water-fixed {
-        min-width: 72px;
-        padding: 5px 9px;
         font-size: 10px;
     }
 }
@@ -759,13 +758,13 @@
 }
 
 .station-game-fire .fire-beat {
-    width: clamp(88px, 9vw, 126px);
-    height: clamp(48px, 5.5vw, 74px);
+    width: var(--fire-beat-w);
+    height: var(--fire-beat-h);
 }
 
 .station-game-fire .fire-beat.big {
-    width: clamp(112px, 11vw, 154px);
-    height: clamp(58px, 6.5vw, 88px);
+    width: var(--fire-beat-big-w);
+    height: var(--fire-beat-big-h);
 }
 
 .station-game-fire .fire-flame-img {
@@ -773,8 +772,8 @@
 }
 
 .station-game-fire .fire-meter {
-    height: clamp(18px, 3vh, 24px);
-    border: 3px solid rgba(246, 219, 155, 0.92);
+    height: var(--fire-meter-h);
+    border: var(--fire-meter-border-w) solid rgba(246, 219, 155, 0.92);
     border-radius: 999px;
     background: #292722;
     box-shadow:
@@ -861,25 +860,19 @@
         box-shadow: inset 0 0 0 1px rgba(255, 239, 198, 0.24), 0 2px 0 rgba(49, 31, 23, 0.54);
     }
 
-    .station-game-fire .fire-meter {
-        height: 17px;
-        border-width: 2px;
+    .station-game-fire {
+        --fire-meter-h: 17px;
+        --fire-meter-border-w: 2px;
+        --fire-beat-w: 78px;
+        --fire-beat-h: 46px;
+        --fire-beat-big-w: 98px;
+        --fire-beat-big-h: 56px;
     }
 
     .station-game-fire .station-actions.compact button,
     .station-game-fire .station-water-fixed,
     .station-game-fire .station-corner-exit {
         font-size: 14px;
-    }
-
-    .station-game-fire .fire-beat {
-        width: 78px;
-        height: 46px;
-    }
-
-    .station-game-fire .fire-beat.big {
-        width: 98px;
-        height: 56px;
     }
 }
 
@@ -892,14 +885,11 @@
         padding: 2px 4px;
     }
 
-    .station-game-fire .fire-beat {
-        width: 64px;
-        height: 38px;
-    }
-
-    .station-game-fire .fire-beat.big {
-        width: 82px;
-        height: 44px;
+    .station-game-fire {
+        --fire-beat-w: 64px;
+        --fire-beat-h: 38px;
+        --fire-beat-big-w: 82px;
+        --fire-beat-big-h: 44px;
     }
 
     .station-game-fire .fire-help-row {

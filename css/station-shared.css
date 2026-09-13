@@ -1,6 +1,14 @@
 /* 共用關卡介面：面板、HUD、按鈕、合併劇情、進入引導、結果頁（Issue #90 從 station-game.css 拆出） */
 
 .station-game {
+    /* 各站共用面板的可調尺寸，響應式斷點只改這幾個值（Issue #90 收斂重複尺寸）。 */
+    --panel-w: min(82%, 860px);
+    --panel-min-h: min(74%, 520px);
+    --panel-max-h: none;
+    --panel-pad: clamp(18px, 4vh, 34px);
+    --result-w: min(88%, 1040px);
+    --result-min-h: min(94%, 560px);
+    --result-max-h: 100%;
     position: absolute;
     inset: 0;
     z-index: 1200;
@@ -261,9 +269,10 @@
 
 .station-panel,
 .station-play {
-    width: min(82%, 860px);
-    min-height: min(74%, 520px);
-    padding: clamp(18px, 4vh, 34px);
+    width: var(--panel-w);
+    min-height: var(--panel-min-h);
+    max-height: var(--panel-max-h);
+    padding: var(--panel-pad);
     border: 2px solid rgba(255, 215, 0, 0.44);
     background: rgba(20, 36, 39, 0.92);
     box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
@@ -388,12 +397,11 @@
 }
 
 @media (max-width: 920px) and (orientation: landscape) {
-    .station-panel,
-    .station-play {
-        width: 90%;
-        min-height: auto;
-        max-height: calc(100% - 18px);
-        padding: 10px 14px;
+    .station-game {
+        --panel-w: 90%;
+        --panel-min-h: auto;
+        --panel-max-h: calc(100% - 18px);
+        --panel-pad: 10px 14px;
     }
 
     .station-play {
@@ -436,11 +444,10 @@
 }
 
 @media (max-width: 700px) and (orientation: landscape) {
-    .station-panel,
-    .station-play {
-        width: 94%;
-        max-height: calc(100% - 12px);
-        padding: 8px 10px;
+    .station-game {
+        --panel-w: 94%;
+        --panel-max-h: calc(100% - 12px);
+        --panel-pad: 8px 10px;
     }
 
     .station-play {
@@ -465,12 +472,11 @@
 }
 
 @media (orientation: landscape) and (max-height: 560px) {
-    .station-panel,
-    .station-play {
-        width: min(94%, 860px);
-        min-height: auto;
-        max-height: calc(100% - 12px);
-        padding: 8px 12px;
+    .station-game {
+        --panel-w: min(94%, 860px);
+        --panel-min-h: auto;
+        --panel-max-h: calc(100% - 12px);
+        --panel-pad: 8px 12px;
     }
 
     .station-play {
@@ -507,10 +513,9 @@
 }
 
 @media (orientation: landscape) and (max-height: 400px) {
-    .station-panel,
-    .station-play {
-        max-height: calc(100% - 8px);
-        padding: 6px 10px;
+    .station-game {
+        --panel-max-h: calc(100% - 8px);
+        --panel-pad: 6px 10px;
     }
 
     .station-play {
@@ -544,9 +549,9 @@
    面板填滿遊戲區高度，標題／圖文／按鈕三段平均分布，避免上下大片空白。 */
 .tea-result-panel,
 .cradle-result-panel {
-    width: min(88%, 1040px);
-    min-height: min(94%, 560px);
-    max-height: 100%;
+    width: var(--result-w);
+    min-height: var(--result-min-h);
+    max-height: var(--result-max-h);
     justify-content: space-between;
 }
 
@@ -703,10 +708,13 @@
 
 
 @media (orientation: landscape) and (max-height: 560px) {
+    .station-game {
+        --result-w: min(96%, 980px);
+        --result-min-h: min(92%, 300px);
+    }
+
     .tea-result-panel,
     .cradle-result-panel {
-        width: min(96%, 980px);
-        min-height: min(92%, 300px);
         padding: 12px 16px 12px;
         justify-content: space-between;
         gap: 3px;
@@ -810,9 +818,12 @@
 }
 
 @media (orientation: landscape) and (max-height: 400px) {
+    .station-game {
+        --result-min-h: min(98%, 340px);
+    }
+
     .tea-result-panel,
     .cradle-result-panel {
-        min-height: min(98%, 340px);
         padding: 6px 10px 6px;
         gap: 1px;
     }

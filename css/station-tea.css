@@ -1,6 +1,14 @@
 /* 站點二：擂茶料理 —— 玩法與版面規則（Issue #90 從 station-game.css 拆出） */
 
 .station-game-tea {
+    /* 站點二可調尺寸：響應式斷點只改這幾個值（Issue #90 收斂重複尺寸）。 */
+    --tea-drop-w: min(78vw, 680px);
+    --tea-drop-min-h: 150px;
+    --tea-mortar-max-w: 68%;
+    --tea-knife-w: min(36%, 178px);
+    --tea-moving-w: clamp(118px, 13vw, 148px);
+    --tea-moving-h: min(calc(100% - 14px), 164px);
+    --tea-decoy-w: clamp(96px, 10.5vw, 120px);
     background:
         linear-gradient(rgba(9, 15, 16, 0.2), rgba(9, 15, 16, 0.4)),
         url('../assets/images/station-tea/background.webp') center / cover no-repeat;
@@ -321,8 +329,8 @@
     z-index: 1;
     top: 50%;
     /* 卡片不再被拉成又高又窄，避免方形食材圖在卡片內留下大量空白。 */
-    width: clamp(118px, 13vw, 148px);
-    height: min(calc(100% - 14px), 164px);
+    width: var(--tea-moving-w);
+    height: var(--tea-moving-h);
     min-height: 0;
     transform: translate(-50%, -50%);
     will-change: left, transform;
@@ -353,7 +361,7 @@
 
 /* 干擾物（柴火／石頭）縮小，少擋到軌道提示文字。 */
 .tea-moving-item.tea-decoy {
-    width: clamp(96px, 10.5vw, 120px);
+    width: var(--tea-decoy-w);
 }
 
 .tea-decoy-art {
@@ -435,9 +443,9 @@
 
 .tea-drop-zone {
     position: relative;
-    width: min(78vw, 680px);
+    width: var(--tea-drop-w);
     height: 100%;
-    min-height: 150px;
+    min-height: var(--tea-drop-min-h);
     max-height: 270px;
     overflow: hidden;
     border: 0;
@@ -487,7 +495,7 @@
     z-index: 4;
     left: 31%;
     top: 39%;
-    width: min(36%, 178px);
+    width: var(--tea-knife-w);
     height: auto;
     object-fit: contain;
     filter: drop-shadow(0 7px 8px rgba(0, 0, 0, 0.4));
@@ -512,7 +520,7 @@
     /* 以高度為主軸，寬度自動，保留擂缽本身接近正圓的比例（不再被壓扁）。 */
     width: auto;
     height: calc(100% - 2px);
-    max-width: 68%;
+    max-width: var(--tea-mortar-max-w);
     transform: translate(-50%, -50%);
 }
 
@@ -738,18 +746,15 @@
         border-radius: 8px;
     }
 
+    .station-game-tea {
+        --tea-drop-w: min(70vw, 540px);
+        --tea-drop-min-h: 120px;
+        --tea-mortar-max-w: 62%;
+        --tea-knife-w: min(32%, 125px);
+    }
+
     .tea-drop-zone {
-        width: min(70vw, 540px);
-        min-height: 120px;
         border-radius: 15px;
-    }
-
-    .tea-mortar-art {
-        max-width: 62%;
-    }
-
-    .tea-knife-art {
-        width: min(32%, 125px);
     }
 
     .tea-target-label,
@@ -783,30 +788,18 @@
         width: min(82%, 650px);
     }
 
-    .tea-moving-item {
-        width: clamp(64px, 9vw, 88px);
-        height: calc(100% - 6px);
-    }
-
-    .tea-moving-item.tea-decoy {
-        width: clamp(52px, 7vw, 68px);
+    .station-game-tea {
+        --tea-moving-w: clamp(64px, 9vw, 88px);
+        --tea-moving-h: calc(100% - 6px);
+        --tea-decoy-w: clamp(52px, 7vw, 68px);
+        --tea-drop-w: min(64vw, 440px);
+        --tea-drop-min-h: 96px;
+        --tea-mortar-max-w: 60%;
+        --tea-knife-w: min(30%, 104px);
     }
 
     .tea-ingredient-name {
         font-size: 13px;
-    }
-
-    .tea-drop-zone {
-        width: min(64vw, 440px);
-        min-height: 96px;
-    }
-
-    .tea-mortar-art {
-        max-width: 60%;
-    }
-
-    .tea-knife-art {
-        width: min(30%, 104px);
     }
 }
 

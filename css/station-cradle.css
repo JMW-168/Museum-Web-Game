@@ -1,6 +1,15 @@
 /* 站點三：搖籃哄睡 —— 玩法與版面規則（Issue #90 從 station-game.css 拆出） */
 
 .station-game-cradle {
+    /* 站點三可調尺寸：響應式斷點只改這幾個值（Issue #90 收斂重複尺寸）。 */
+    --cradle-scene-min-h: 210px;
+    --cradle-scene-border-w: 3px;
+    --cradle-guide-dot-w: clamp(18px, 3vw, 28px);
+    --cradle-guide-dot-border-w: 3px;
+    --cradle-sling-w: clamp(210px, 34vw, 370px);
+    --cradle-progress-h: clamp(15px, 2.8vh, 24px);
+    --cradle-hud-gap: clamp(6px, 1.2vw, 14px);
+    --cradle-hud-font: clamp(17px, 1.65vw, 23px);
     background:
         linear-gradient(rgba(15, 22, 23, 0.36), rgba(10, 16, 18, 0.72)),
         url('../assets/images/station-cradle/background.webp') center 52% / cover no-repeat;
@@ -48,12 +57,12 @@
 
 .cradle-scene {
     position: relative;
-    min-height: 210px;
+    min-height: var(--cradle-scene-min-h);
     overflow: hidden;
     touch-action: none;
     user-select: none;
     cursor: grab;
-    border: 3px solid rgba(222, 194, 123, 0.72);
+    border: var(--cradle-scene-border-w) solid rgba(222, 194, 123, 0.72);
     border-radius: 18px;
     background:
         linear-gradient(rgba(8, 12, 13, 0.04), rgba(8, 12, 13, 0.2)),
@@ -88,10 +97,10 @@
     position: absolute;
     left: 8%;
     top: 50%;
-    width: clamp(18px, 3vw, 28px);
+    width: var(--cradle-guide-dot-w);
     aspect-ratio: 1;
     transform: translate(-50%, -50%);
-    border: 3px solid #fff7bc;
+    border: var(--cradle-guide-dot-border-w) solid #fff7bc;
     border-radius: 50%;
     background: #ffd75c;
     box-shadow: 0 0 9px #ffe783, 0 0 22px rgba(255, 218, 91, 0.86);
@@ -142,7 +151,7 @@
     z-index: 5;
     left: 50%;
     bottom: 1%;
-    width: clamp(210px, 34vw, 370px);
+    width: var(--cradle-sling-w);
     aspect-ratio: 825 / 482;
     transform: translateX(-50%);
     transform-origin: center 20%;
@@ -198,7 +207,7 @@
 
 .cradle-progress {
     width: min(76%, 760px);
-    height: clamp(15px, 2.8vh, 24px);
+    height: var(--cradle-progress-h);
     margin: 0 auto;
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.48);
@@ -253,9 +262,16 @@
         font-size: clamp(11px, 1.65vw, 14px);
     }
 
+    .station-game-cradle {
+        --cradle-scene-min-h: 0;
+        --cradle-scene-border-w: 2px;
+        --cradle-guide-dot-w: 17px;
+        --cradle-guide-dot-border-w: 2px;
+        --cradle-sling-w: clamp(200px, 32vw, 285px);
+        --cradle-progress-h: 12px;
+    }
+
     .cradle-scene {
-        min-height: 0;
-        border-width: 2px;
         border-radius: 12px;
     }
 
@@ -264,18 +280,8 @@
         height: 6px;
     }
 
-    .cradle-guide-dot {
-        width: 17px;
-        border-width: 2px;
-    }
-
     .cradle-sling {
-        width: clamp(200px, 32vw, 285px);
         bottom: 0;
-    }
-
-    .cradle-progress {
-        height: 12px;
     }
 
     .cradle-hand-hint {
@@ -299,13 +305,13 @@
         font-size: 10px;
     }
 
-    .cradle-sling {
-        width: 112px;
-        height: 58px;
+    .station-game-cradle {
+        --cradle-sling-w: 112px;
+        --cradle-progress-h: 9px;
     }
 
-    .cradle-progress {
-        height: 9px;
+    .cradle-sling {
+        height: 58px;
     }
 }
 
@@ -314,9 +320,9 @@
 .station-game-cradle .station-hud {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(6px, 1.2vw, 14px);
+    gap: var(--cradle-hud-gap);
     color: #3e291d;
-    font-size: clamp(17px, 1.65vw, 23px);
+    font-size: var(--cradle-hud-font);
     font-weight: 700;
     line-height: 1.25;
     text-shadow: none;
@@ -393,10 +399,13 @@
 
 
 @media (orientation: landscape) and (max-height: 560px) {
+    .station-game-cradle {
+        --cradle-hud-gap: 5px;
+        --cradle-hud-font: 14px;
+    }
+
     .station-game-cradle .station-hud {
-        gap: 5px;
         padding-right: 66px;
-        font-size: 14px;
     }
 
     .station-game-cradle .station-hud > span {
@@ -413,9 +422,9 @@
 }
 
 @media (orientation: landscape) and (max-height: 400px) {
-    .station-game-cradle .station-hud {
-        gap: 4px;
-        font-size: 12px;
+    .station-game-cradle {
+        --cradle-hud-gap: 4px;
+        --cradle-hud-font: 12px;
     }
 
     .station-game-cradle .station-hud > span {
