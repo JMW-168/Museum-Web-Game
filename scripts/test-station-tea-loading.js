@@ -19,9 +19,9 @@ function loadGame(ImageClass) {
     };
     context.window = context;
     vm.createContext(context);
-    const source = fs.readFileSync(path.join(root, 'js/minigames/StationDemoGame.js'), 'utf8');
+    const source = fs.readFileSync(path.join(root, 'js/minigames/StationGame.js'), 'utf8');
     vm.runInContext(source, context);
-    return context.StationDemoGame;
+    return context.StationGame;
 }
 
 class SuccessfulImage {

@@ -3,11 +3,11 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const css = fs.readFileSync(path.join(root, 'css', 'station-demo-game.css'), 'utf8');
-const game = fs.readFileSync(path.join(root, 'js', 'minigames', 'StationDemoGame.js'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'css', 'station-game.css'), 'utf8');
+const game = fs.readFileSync(path.join(root, 'js', 'minigames', 'StationGame.js'), 'utf8');
 
-const fireStoveRule = css.match(/\.station-demo-fire \.fire-stove-img \{([\s\S]*?)\n\}/);
-const fireFlameRule = css.match(/\.station-demo-fire \.fire-flame-img \{([\s\S]*?)\n\}/);
+const fireStoveRule = css.match(/\.station-game-fire \.fire-stove-img \{([\s\S]*?)\n\}/);
+const fireFlameRule = css.match(/\.station-game-fire \.fire-flame-img \{([\s\S]*?)\n\}/);
 
 assert(fireStoveRule, 'Fire stove rule must exist');
 assert(fireFlameRule, 'Fire flame rule must exist');

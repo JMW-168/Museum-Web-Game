@@ -206,7 +206,7 @@ function makeFakeBox() {
 
 {
     // 第一關單玩結束：先顯示結果頁，按「去找阿罵」後才播離開對話。
-    const { game } = loadGame('js/minigames/StationDemoGame.js', 'StationDemoGame');
+    const { game } = loadGame('js/minigames/StationGame.js', 'StationGame');
     const events = [];
     game.mode = 'single';
     game.state = {
@@ -329,7 +329,7 @@ function makeFakeBox() {
 
     for (const spec of [
         { file: 'js/minigames/Station34CombinedGame.js', name: 'Station34CombinedGame', finish: 'finishTyping', end: 'endDwell' },
-        { file: 'js/minigames/StationDemoGame.js', name: 'StationDemoGame', finish: 'finishCombinedTyping', end: 'endCombinedDwell' }
+        { file: 'js/minigames/StationGame.js', name: 'StationGame', finish: 'finishCombinedTyping', end: 'endCombinedDwell' }
     ]) {
         const { game } = loadGame(spec.file, spec.name, { CombinedStoryPacing: pacing });
         const box = makeFakeBox();
@@ -382,7 +382,7 @@ function makeFakeBox() {
     s34exit.game.active = false;
     s34exit.game.showEnding(); // 不應丟出錯誤
 
-    const demo = loadGame('js/minigames/StationDemoGame.js', 'StationDemoGame', {
+    const demo = loadGame('js/minigames/StationGame.js', 'StationGame', {
         showScene: () => {},
         EndingScreen: { show: (cb) => { demo.shown = cb; } }
     });

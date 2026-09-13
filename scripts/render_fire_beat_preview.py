@@ -46,7 +46,7 @@ def write_click_track(path: Path, beats: list[float], duration: float) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", type=Path, default=Path("js/minigames/StationDemoGame.js"))
+    parser.add_argument("--source", type=Path, default=Path("js/minigames/StationGame.js"))
     parser.add_argument("--music", type=Path, default=Path("assets/sounds/station-fire-theme.mp3"))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--duration", type=float, default=60.0)
