@@ -27,30 +27,32 @@ const StationDemoGame = {
     teaStageDurationMs: 45000,
     teaSpawnIntervalMs: 975,
     teaTravelMs: 1950,
-    teaImageUrls: [
-        'assets/images/station-tea/chop-tool-sprites-v2.png',
+    teaEssentialImageUrls: [
         'assets/images/station-tea/basil.png',
         'assets/images/station-tea/mint.png',
         'assets/images/station-tea/kuding.png',
         'assets/images/station-tea/peanut.png',
         'assets/images/station-tea/sesame.png',
-        'assets/images/station-tea/long-bean.png',
-        'assets/images/station-tea/radish.png',
-        'assets/images/station-tea/tree-veg.png',
-        'assets/images/station-tea/tofu.png',
-        'assets/images/station-tea/tea-leaves.png',
-        'assets/images/station-tea/knife.png',
         'assets/images/station-tea/pestle.png',
         'assets/images/station-tea/mortar-1.png',
         'assets/images/station-tea/mortar-2.png',
         'assets/images/station-tea/mortar-3.png',
         'assets/images/station-tea/mortar-4.png',
-        'assets/images/station-tea/chopped-bowls-strip.png',
-        'assets/images/station-tea/tea-result-v2.png',
         'assets/images/station-fire/wood-small.png',
         'assets/images/station-fire/wood-large.png',
         'assets/images/station-tea/stone.png'
     ],
+    teaDeferredImageUrls: [
+        'assets/images/station-tea/chop-tool-sprites-v2.png',
+        'assets/images/station-tea/long-bean.png',
+        'assets/images/station-tea/radish.png',
+        'assets/images/station-tea/tree-veg.png',
+        'assets/images/station-tea/tofu.png',
+        'assets/images/station-tea/knife.png',
+        'assets/images/station-tea/chopped-bowls-strip.png',
+        'assets/images/station-tea/tea-result-v2.png'
+    ],
+    teaAssetTimeoutMs: 12000,
     fireImageUrls: [
         'assets/images/station-fire/background.webp',
         'assets/images/characters/grandma.png',
@@ -333,9 +335,36 @@ const StationDemoGame = {
     startCombinedTea() {
         this.station = this.getStation('tea');
         this.setShellTheme('tea');
-        this.prepareTeaAssets()
-            .then(() => this.startTeaGame())
-            .catch((error) => this.showTeaLoadError(error));
+        return this.beginTeaAssetLoad();
+    },
+
+    beginTeaAssetLoad() {
+        const loadHost = this.container;
+        this.showTeaLoading();
+        return this.prepareTeaAssets()
+            .then(() => {
+                if (!loadHost || this.container !== loadHost) return;
+                this.preloadDeferredTeaAssets();
+                this.startTeaGame();
+            })
+            .catch((error) => {
+                if (!loadHost || this.container !== loadHost) return;
+                this.showTeaLoadError(error);
+            });
+    },
+
+    showTeaLoading() {
+        if (!this.container) return;
+        this.container.innerHTML = `
+            <section class="station-panel station-result-panel tea-loading-panel" aria-live="polite" aria-busy="true">
+                <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('story.action.leave')}</button>
+                <div class="station-kicker-line">${this.station.kicker}</div>
+                <h1>${this.tr('station.tea.loading.title')}</h1>
+                <p class="station-copy">${this.tr('station.tea.loading.copy')}</p>
+                <span class="tea-loading-spinner" aria-hidden="true"></span>
+            </section>
+        `;
+        this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
     },
 
     showCoachMessage(coachingId) {
@@ -972,13 +1001,37 @@ const StationDemoGame = {
         return shuffled;
     },
 
-    prepareTeaAssets() {
-        return Promise.all(this.teaImageUrls.map((src) => new Promise((resolve, reject) => {
+    loadTeaImages(urls, timeoutMs = 0) {
+        const request = Promise.all(urls.map((src) => new Promise((resolve, reject) => {
             const image = new Image();
             image.onload = resolve;
             image.onerror = () => reject(new Error(`無法載入 ${src}`));
             image.src = src;
         })));
+        if (!timeoutMs) return request;
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error(`素材載入超過 ${timeoutMs}ms`)), timeoutMs);
+            request.then(
+                (images) => {
+                    clearTimeout(timeout);
+                    resolve(images);
+                },
+                (error) => {
+                    clearTimeout(timeout);
+                    reject(error);
+                }
+            );
+        });
+    },
+
+    prepareTeaAssets() {
+        return this.loadTeaImages(this.teaEssentialImageUrls, this.teaAssetTimeoutMs);
+    },
+
+    preloadDeferredTeaAssets() {
+        this.loadTeaImages(this.teaDeferredImageUrls).catch((error) => {
+            if (window.Logger) window.Logger.warn('關卡二後續素材背景載入失敗，進入階段時會再次請求:', error);
+        });
     },
 
     showTeaLoadError(error) {
@@ -996,9 +1049,7 @@ const StationDemoGame = {
             </section>
         `;
         this.container.querySelector('[data-retry-load]').addEventListener('click', () => {
-            this.prepareTeaAssets()
-                .then(() => this.startTeaGame())
-                .catch((retryError) => this.showTeaLoadError(retryError));
+            this.beginTeaAssetLoad();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => this.close());
     },

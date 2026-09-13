@@ -422,7 +422,7 @@ const CakeStationGame = {
                     <button type="button" class="cake-mold-tool ${this.state.moldPositioned ? 'positioned' : ''} step-${step}" data-mold-tool aria-label="${this.tr('station.cake.make.toolFace', { name: face.name })}">
                         <span class="cake-mold-handle"><i></i></span>
                         <span class="cake-mold-block">
-                            <span class="cake-mold-face"><img src="${face.moldImage}" alt=""><b>${face.name}</b></span>
+                            <span class="cake-mold-face"><img src="${face.moldImage}" alt="" draggable="false"><b>${face.name}</b></span>
                             <span class="cake-mold-side"></span>
                             <span class="cake-press-fill" data-hold-fill></span>
                         </span>
@@ -434,6 +434,12 @@ const CakeStationGame = {
                     ${step === 'press' ? `<div class="cake-hold-label">${this.tr('station.cake.make.hold')}<br><strong>${this.tr('station.cake.make.oneSecond')}</strong></div>` : ''}
                 </div>
             </section>`;
+        const makingPanel = this.container.querySelector('.cake-making-panel');
+        const blockNativeImageAction = (event) => {
+            if (event.target.closest('[data-dough], [data-filling], [data-mold-tool]')) event.preventDefault();
+        };
+        this.listen(makingPanel, 'contextmenu', blockNativeImageAction);
+        this.listen(makingPanel, 'dragstart', blockNativeImageAction);
         this.listen(this.container.querySelector('[data-exit]'), 'click', () => this.close());
         const dough = this.container.querySelector('[data-dough]');
         const mold = this.container.querySelector('[data-mold-tool]');
@@ -712,16 +718,15 @@ const CakeStationGame = {
                     </div>
                 </div>
                 <div class="cake-result-copy">
-                    <div class="station-kicker-line">${this.tr('station.cake.result.kicker')}</div><h1>${pattern.name}</h1>
-                    <p class="cake-meaning">${pattern.meaning}</p><p>${pattern.blessing}</p>
+                    <div class="station-kicker-line">${this.tr('station.cake.result.kicker')}</div>
+                    <h1 class="cake-result-meaning">${pattern.meaning}</h1>
+                    <p class="cake-result-blessing"><strong>${pattern.name}：</strong>${pattern.blessing}</p>
                     <div class="cake-card-actions" aria-label="${this.tr('station.cake.result.actions')}">
                         <button type="button" class="station-primary cake-card-action" data-share-card><span aria-hidden="true">↗</span> ${this.tr('station.cake.result.share')}</button>
                         <button type="button" class="station-secondary cake-card-action" data-download-card><span aria-hidden="true">⇩</span> ${this.tr('station.cake.result.download')}</button>
+                        <button type="button" class="station-primary cake-card-action" data-back>${this.tr(this.mode === 'combined34-result' ? 'station.cake.result.findGrandma' : 'game.backToEntrance')}</button>
                     </div>
                     <p class="cake-share-feedback" data-share-feedback aria-live="polite"></p>
-                    <div class="station-actions cake-actions">
-                        <button type="button" class="station-primary" data-back>${this.tr(this.mode === 'combined34-result' ? 'station.cake.result.findGrandma' : 'game.backToEntrance')}</button>
-                    </div>
                 </div>
             </section>`;
         this.listen(this.container.querySelector('[data-share-card]'), 'click', () => this.shareBlessingCard(pattern));

@@ -63,6 +63,39 @@ function loadGame(relativePath, exportExpression, extras = {}) {
 
 {
     const pattern = {
+        id: 'luck',
+        name: '吉紋',
+        meaning: '大吉大利',
+        blessing: '祝你諸事大吉，平安順遂。',
+        cakeImage: 'assets/images/station-cake/cake-luck.png'
+    };
+    const controls = new Map();
+    const container = {
+        innerHTML: '',
+        querySelector(selector) {
+            if (!controls.has(selector)) controls.set(selector, { addEventListener() {}, removeEventListener() {} });
+            return controls.get(selector);
+        }
+    };
+    const { game } = loadGame('js/minigames/CakeStationGame.js', 'CakeStationGame', { CakePatterns: [pattern] });
+    game.container = container;
+    game.state = {};
+    game.mode = 'combined34-result';
+    game.tr = (key) => ({
+        'station.cake.result.kicker': '紅粄完成',
+        'station.cake.result.actions': '祝福卡操作',
+        'station.cake.result.share': '分享祝福卡',
+        'station.cake.result.download': '下載祝福卡',
+        'station.cake.result.findGrandma': '去找阿嬤'
+    }[key] || key);
+    game.showResult(pattern);
+    assert.ok(container.innerHTML.includes('<h1 class="cake-result-meaning">大吉大利</h1>'), '寓意應成為完成頁主標');
+    assert.ok(container.innerHTML.includes('<strong>吉紋：</strong>祝你諸事大吉，平安順遂。'), '下一行應合併花紋名與祝福');
+    assert.ok(container.innerHTML.indexOf('data-download-card') < container.innerHTML.indexOf('data-back'), '去找阿嬤應排在分享、下載右側');
+}
+
+{
+    const pattern = {
         id: 'peach',
         name: '桃紋',
         meaning: '福壽吉祥',
