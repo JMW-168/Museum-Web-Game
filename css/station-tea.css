@@ -480,7 +480,7 @@
     aspect-ratio: 783 / 495;
     max-width: 64%;
     transform: translate(-50%, -50%);
-    background-image: url('../assets/images/station-tea/chop-tool-sprites-v2.png');
+    background-image: url('../assets/images/station-tea/chop-tool-sprites-v2.webp');
     background-repeat: no-repeat;
     /* 只取精靈圖左格裡的砧板本體，等比例不變形。 */
     background-size: 226.6% 179.2%;
@@ -580,7 +580,7 @@
     width: 100%;
     /* 來源圖為四格 3:1 長條，因此每格寬高比約為 3:4。 */
     aspect-ratio: 3 / 4;
-    background-image: url('../assets/images/station-tea/chopped-bowls-strip.png');
+    background-image: url('../assets/images/station-tea/chopped-bowls-strip.webp');
     background-repeat: no-repeat;
     background-size: 400% 100%;
     background-position: var(--tea-bowl-x) 50%;

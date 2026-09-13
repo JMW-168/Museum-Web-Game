@@ -15,13 +15,13 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.opening.2',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.opening.3',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female',
                     actionLabelKey: 'story.action.startGame'
                 }
@@ -38,13 +38,13 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.afterCradle.1',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.afterCradle.reading',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 }
             ]
@@ -60,7 +60,7 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.afterCradle.3',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female',
                     actionLabelKey: 'story.action.startGame'
                 }
@@ -72,13 +72,13 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.cakeGuide.1',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.cakeGuide.2',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 }
             ]
@@ -89,13 +89,13 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.afterPress.1',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.afterPress.2',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 }
             ]
@@ -106,7 +106,7 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.ending.2',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {

@@ -589,7 +589,7 @@
     flex: 0 0 auto;
     width: min(38%, 320px);
     aspect-ratio: 1.12;
-    background: url('../assets/images/station-tea/tea-result-v2.png') center / contain no-repeat;
+    background: url('../assets/images/station-tea/tea-result-v2.webp') center / contain no-repeat;
     filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4));
 }
 

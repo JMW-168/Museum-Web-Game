@@ -15,7 +15,7 @@ const StationCombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined12.opening.1',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
@@ -26,13 +26,13 @@ const StationCombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined12.opening.3',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined12.opening.4',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female',
                     actionLabelKey: 'story.action.startGame'
                 }
@@ -44,7 +44,7 @@ const StationCombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined12.afterFire.1',
-                    image: 'assets/images/characters/grandma.png',
+                    image: 'assets/images/characters/grandma.webp',
                     voice: 'female'
                 },
                 {
@@ -60,14 +60,14 @@ const StationCombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandpa',
                     textKey: 'story.combined12.beforeTea.1',
-                    image: 'assets/images/characters/grandpa.png',
+                    image: 'assets/images/characters/grandpa.webp',
                     voice: 'male'
                 },
                 {
                     speakerKey: 'story.speaker.grandpa',
                     cueKey: 'story.combined12.beforeTea.2.cue',
                     textKey: 'story.combined12.beforeTea.2',
-                    image: 'assets/images/characters/grandpa.png',
+                    image: 'assets/images/characters/grandpa.webp',
                     voice: 'male',
                     actionLabelKey: 'story.action.startGame'
                 }
@@ -79,14 +79,14 @@ const StationCombinedStory = {
                 {
                     speakerKey: 'story.speaker.grandpa',
                     textKey: 'story.combined12.afterTea.1',
-                    image: 'assets/images/characters/grandpa.png',
+                    image: 'assets/images/characters/grandpa.webp',
                     voice: 'male'
                 },
                 {
                     speakerKey: 'story.speaker.grandpa',
                     cueKey: 'story.combined12.afterTea.2.cue',
                     textKey: 'story.combined12.afterTea.2',
-                    image: 'assets/images/characters/grandpa.png',
+                    image: 'assets/images/characters/grandpa.webp',
                     voice: 'male',
                     actionLabelKey: 'story.action.returnLobby'
                 }

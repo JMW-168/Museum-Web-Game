@@ -30,9 +30,11 @@ const Station34CombinedGame = {
         this.active = true;
         showScene('game-container');
         if (this.only === 'cake') {
+            if (typeof CakeStationGame !== 'undefined') CakeStationGame.warmCakeAssets?.();
             this.createShell('cake');
             this.showDialogue('cakeEntry', () => this.showDialogue('cakeGuide', () => this.startCake()));
         } else {
+            if (typeof CradleStationGame !== 'undefined') CradleStationGame.warmCradleAssets?.();
             this.createShell('cradle');
             this.showDialogue('cradleEntry', () => this.startCradle());
         }
@@ -70,9 +72,9 @@ const Station34CombinedGame = {
                 : '';
             const tableProps = (sectionId === 'cakeEntry' && sourceLine.narration)
                 ? `<div class="cake-entry-props" aria-hidden="true">
-                        <img class="cake-entry-prop-dough" src="assets/images/station-cake/dough-in-bowl.png" alt="">
-                        <img class="cake-entry-prop-filling" src="assets/images/station-cake/filling-bowl.png" alt="">
-                        <img class="cake-entry-prop-mold" src="assets/images/station-cake/mold-blank.png" alt="">
+                        <img class="cake-entry-prop-dough" src="assets/images/station-cake/dough-in-bowl.webp" alt="">
+                        <img class="cake-entry-prop-filling" src="assets/images/station-cake/filling-bowl.webp" alt="">
+                        <img class="cake-entry-prop-mold" src="assets/images/station-cake/mold-blank.webp" alt="">
                     </div>`
                 : '';
             this.container.innerHTML = `
@@ -211,6 +213,7 @@ const Station34CombinedGame = {
     showCradleResult(result) {
         if (!this.container) return;
         const assisted = !!(result && result.assisted);
+        if (!this.only && typeof CakeStationGame !== 'undefined') CakeStationGame.warmCakeAssets?.();
         this.container.className = 'station-game station-game-cradle';
         this.container.innerHTML = `
             <section class="station-panel station-result-panel cradle-result-panel has-guide">
@@ -219,7 +222,7 @@ const Station34CombinedGame = {
                     <h1>${this.tr('station.cradle.result.title')}</h1>
                 </div>
                 <div class="cradle-result-body">
-                    <img class="cradle-result-baby" src="assets/images/station-cradle/cradle-result.png" alt="${this.tr('station.cradle.result.art')}">
+                    <img class="cradle-result-baby" src="assets/images/station-cradle/cradle-result.webp" alt="${this.tr('station.cradle.result.art')}">
                     <div class="cradle-result-copy">
                         <p class="station-copy">${this.tr('station.cradle.result.copy')}</p>
                         ${assisted ? `<p class="cradle-assisted-note">${this.tr('station.cradle.result.assisted')}</p>` : `<p class="cradle-perfect-note">${this.tr('station.cradle.result.perfect')}</p>`}
@@ -229,7 +232,7 @@ const Station34CombinedGame = {
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
                     <button type="button" class="station-secondary" data-back>${this.tr('station.cradle.result.findGrandma')}</button>
                 </div>
-                <img class="station-guide station-guide-result" src="assets/images/characters/grandma.png" alt="${this.tr('story.speaker.grandma')}">
+                <img class="station-guide station-guide-result" src="assets/images/characters/grandma.webp" alt="${this.tr('story.speaker.grandma')}">
             </section>
         `;
         this.container.querySelector('[data-retry]').addEventListener('click', () => {

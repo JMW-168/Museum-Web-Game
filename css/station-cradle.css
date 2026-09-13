@@ -155,7 +155,7 @@
     aspect-ratio: 825 / 482;
     transform: translateX(-50%);
     transform-origin: center 20%;
-    background: url('../assets/images/station-cradle/cradle-back.png') center / contain no-repeat;
+    background: url('../assets/images/station-cradle/cradle-back.webp') center / contain no-repeat;
     filter: drop-shadow(0 14px 12px rgba(0, 0, 0, 0.38));
     transition: filter 0.16s ease;
 }
@@ -170,7 +170,7 @@
     position: absolute;
     z-index: 2;
     inset: 0;
-    background: url('../assets/images/station-cradle/cradle-front.png') center / contain no-repeat;
+    background: url('../assets/images/station-cradle/cradle-front.webp') center / contain no-repeat;
     pointer-events: none;
 }
 

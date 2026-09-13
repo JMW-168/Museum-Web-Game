@@ -14,11 +14,22 @@ const CradleStationGame = {
     onComplete: null,
     onExit: null,
     babyImages: {
-        crying: 'assets/images/station-cradle/baby-crying.png',
-        calming: 'assets/images/station-cradle/baby-calm.png',
-        asleep: 'assets/images/station-cradle/baby-asleep.png'
+        crying: 'assets/images/station-cradle/baby-crying.webp',
+        calming: 'assets/images/station-cradle/baby-calm.webp',
+        asleep: 'assets/images/station-cradle/baby-asleep.webp'
     },
-    resultImage: 'assets/images/station-cradle/cradle-result.png',
+    resultImage: 'assets/images/station-cradle/cradle-result.webp',
+    essentialImageUrls: [
+        'assets/images/station-cradle/background.webp',
+        'assets/images/station-cradle/cradle-back.webp',
+        'assets/images/station-cradle/cradle-front.webp',
+        'assets/images/station-cradle/baby-crying.webp'
+    ],
+    deferredImageUrls: [
+        'assets/images/station-cradle/baby-calm.webp',
+        'assets/images/station-cradle/baby-asleep.webp',
+        'assets/images/station-cradle/cradle-result.webp'
+    ],
 
     tr(key, tokens) {
         return typeof window.t === 'function' ? window.t(key, tokens) : key;
@@ -40,6 +51,15 @@ const CradleStationGame = {
             const image = new Image();
             image.src = src;
         });
+    },
+
+    warmCradleAssets() {
+        if (typeof LoadingManager === 'undefined' || !LoadingManager.preloadImages) return Promise.resolve();
+        return LoadingManager.preloadImages(this.essentialImageUrls, { timeoutMs: 12000 })
+            .then(() => LoadingManager.preloadImages(this.deferredImageUrls, { timeoutMs: 12000 }))
+            .catch((error) => {
+                if (window.Logger) window.Logger.warn('關卡三進場前預載失敗，進入後仍會由瀏覽器重試:', error);
+            });
     },
 
     start(options = {}) {
@@ -329,7 +349,7 @@ const CradleStationGame = {
                     <button type="button" class="station-primary" data-retry>${this.tr('game.retry')}</button>
                     <button type="button" class="station-secondary" data-back>${this.tr('game.backToEntrance')}</button>
                 </div>
-                <img class="station-guide station-guide-result" src="assets/images/characters/grandma.png" alt="${this.tr('story.speaker.grandma')}">
+                <img class="station-guide station-guide-result" src="assets/images/characters/grandma.webp" alt="${this.tr('story.speaker.grandma')}">
             </section>
         `;
         this.listen(this.container.querySelector('[data-retry]'), 'click', () => {

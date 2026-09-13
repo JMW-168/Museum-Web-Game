@@ -3,29 +3,30 @@ const TeaStationGame = {
     teaSpawnIntervalMs: 975,
     teaTravelMs: 1950,
     teaEssentialImageUrls: [
-        'assets/images/station-tea/basil.png',
-        'assets/images/station-tea/mint.png',
-        'assets/images/station-tea/kuding.png',
-        'assets/images/station-tea/peanut.png',
-        'assets/images/station-tea/sesame.png',
-        'assets/images/station-tea/pestle.png',
-        'assets/images/station-tea/mortar-1.png',
-        'assets/images/station-tea/mortar-2.png',
-        'assets/images/station-tea/mortar-3.png',
-        'assets/images/station-tea/mortar-4.png',
-        'assets/images/station-fire/wood-small.png',
-        'assets/images/station-fire/wood-large.png',
-        'assets/images/station-tea/stone.png'
+        'assets/images/station-tea/background.webp',
+        'assets/images/station-tea/basil.webp',
+        'assets/images/station-tea/mint.webp',
+        'assets/images/station-tea/kuding.webp',
+        'assets/images/station-tea/peanut.webp',
+        'assets/images/station-tea/sesame.webp',
+        'assets/images/station-tea/pestle.webp',
+        'assets/images/station-tea/mortar-1.webp',
+        'assets/images/station-tea/mortar-2.webp',
+        'assets/images/station-tea/mortar-3.webp',
+        'assets/images/station-tea/mortar-4.webp',
+        'assets/images/station-fire/wood-small.webp',
+        'assets/images/station-fire/wood-large.webp',
+        'assets/images/station-tea/stone.webp'
     ],
     teaDeferredImageUrls: [
-        'assets/images/station-tea/chop-tool-sprites-v2.png',
-        'assets/images/station-tea/long-bean.png',
-        'assets/images/station-tea/radish.png',
-        'assets/images/station-tea/tree-veg.png',
-        'assets/images/station-tea/tofu.png',
-        'assets/images/station-tea/knife.png',
-        'assets/images/station-tea/chopped-bowls-strip.png',
-        'assets/images/station-tea/tea-result-v2.png'
+        'assets/images/station-tea/chop-tool-sprites-v2.webp',
+        'assets/images/station-tea/long-bean.webp',
+        'assets/images/station-tea/radish.webp',
+        'assets/images/station-tea/tree-veg.webp',
+        'assets/images/station-tea/tofu.webp',
+        'assets/images/station-tea/knife.webp',
+        'assets/images/station-tea/chopped-bowls-strip.webp',
+        'assets/images/station-tea/tea-result-v2.webp'
     ],
     teaAssetTimeoutMs: 12000,
 
@@ -73,11 +74,11 @@ const TeaStationGame = {
                 unit: game.tr('station.tea.grind.unit'),
                 toolClass: 'grind',
                 items: [
-                    { id: 'kuding', name: game.tr('ingredient.kuding'), image: 'assets/images/station-tea/kuding.png' },
-                    { id: 'mint', name: game.tr('ingredient.mint'), image: 'assets/images/station-tea/mint.png' },
-                    { id: 'basil', name: game.tr('ingredient.basil'), image: 'assets/images/station-tea/basil.png' },
-                    { id: 'sesame', name: game.tr('ingredient.sesame'), image: 'assets/images/station-tea/sesame.png' },
-                    { id: 'peanut', name: game.tr('ingredient.peanut'), image: 'assets/images/station-tea/peanut.png' }
+                    { id: 'kuding', name: game.tr('ingredient.kuding'), image: 'assets/images/station-tea/kuding.webp' },
+                    { id: 'mint', name: game.tr('ingredient.mint'), image: 'assets/images/station-tea/mint.webp' },
+                    { id: 'basil', name: game.tr('ingredient.basil'), image: 'assets/images/station-tea/basil.webp' },
+                    { id: 'sesame', name: game.tr('ingredient.sesame'), image: 'assets/images/station-tea/sesame.webp' },
+                    { id: 'peanut', name: game.tr('ingredient.peanut'), image: 'assets/images/station-tea/peanut.webp' }
                 ]
             },
             chop: {
@@ -87,10 +88,10 @@ const TeaStationGame = {
                 unit: game.tr('station.tea.chop.unit'),
                 toolClass: 'chop',
                 items: [
-                    { id: 'long-bean', name: game.tr('ingredient.longBean'), image: 'assets/images/station-tea/long-bean.png' },
-                    { id: 'radish', name: game.tr('ingredient.radish'), image: 'assets/images/station-tea/radish.png' },
-                    { id: 'tree-veg', name: game.tr('ingredient.treeVeg'), image: 'assets/images/station-tea/tree-veg.png' },
-                    { id: 'tofu', name: game.tr('ingredient.tofu'), image: 'assets/images/station-tea/tofu.png' }
+                    { id: 'long-bean', name: game.tr('ingredient.longBean'), image: 'assets/images/station-tea/long-bean.webp' },
+                    { id: 'radish', name: game.tr('ingredient.radish'), image: 'assets/images/station-tea/radish.webp' },
+                    { id: 'tree-veg', name: game.tr('ingredient.treeVeg'), image: 'assets/images/station-tea/tree-veg.webp' },
+                    { id: 'tofu', name: game.tr('ingredient.tofu'), image: 'assets/images/station-tea/tofu.webp' }
                 ]
             }
         };
@@ -107,6 +108,9 @@ const TeaStationGame = {
     },
 
     loadTeaImages(urls, timeoutMs = 0) {
+        if (typeof LoadingManager !== 'undefined' && LoadingManager.preloadImages) {
+            return LoadingManager.preloadImages(urls, { timeoutMs: timeoutMs || 12000 });
+        }
         const request = Promise.all(urls.map((src) => new Promise((resolve, reject) => {
             const image = new Image();
             image.onload = resolve;
@@ -131,6 +135,12 @@ const TeaStationGame = {
 
     prepareTeaAssets() {
         return TeaStationGame.loadTeaImages(TeaStationGame.teaEssentialImageUrls, TeaStationGame.teaAssetTimeoutMs);
+    },
+
+    warmTeaAssets() {
+        return TeaStationGame.prepareTeaAssets().catch((error) => {
+            if (window.Logger) window.Logger.warn('關卡二進場前預載失敗，正式進入時會重試:', error);
+        });
     },
 
     preloadDeferredTeaAssets() {
@@ -262,12 +272,12 @@ const TeaStationGame = {
             ? `
                 <img class="tea-mortar-art" data-tea-mortar src="${TeaStationGame.getTeaMortarImage(game)}" alt="">
                 ${activeIngredientMarkup}
-                <img class="tea-pestle-art" data-tea-pestle src="assets/images/station-tea/pestle.png" alt="">
+                <img class="tea-pestle-art" data-tea-pestle src="assets/images/station-tea/pestle.webp" alt="">
             `
             : `
                 <span class="tea-cutting-board-art" aria-hidden="true"></span>
                 ${activeIngredientMarkup}
-                <img class="tea-knife-art" src="assets/images/station-tea/knife.png" alt="">
+                <img class="tea-knife-art" src="assets/images/station-tea/knife.webp" alt="">
                 ${choppedBowlsMarkup}
             `;
 
@@ -414,9 +424,9 @@ const TeaStationGame = {
     getTeaDecoyItem(game) {
         if (!game.state) return null;
         const decoys = [
-            { id: 'wood-small', name: game.tr('ingredient.woodSmall'), image: 'assets/images/station-fire/wood-small.png' },
-            { id: 'stone', name: game.tr('ingredient.stone'), image: 'assets/images/station-tea/stone.png' },
-            { id: 'wood-large', name: game.tr('ingredient.woodLarge'), image: 'assets/images/station-fire/wood-large.png' }
+            { id: 'wood-small', name: game.tr('ingredient.woodSmall'), image: 'assets/images/station-fire/wood-small.webp' },
+            { id: 'stone', name: game.tr('ingredient.stone'), image: 'assets/images/station-tea/stone.webp' },
+            { id: 'wood-large', name: game.tr('ingredient.woodLarge'), image: 'assets/images/station-fire/wood-large.webp' }
         ];
         const item = decoys[game.state.teaDecoySpawnCount++ % decoys.length];
         return { ...item, isDecoy: true };
@@ -641,7 +651,7 @@ const TeaStationGame = {
     getTeaMortarImage(game) {
         const completedCount = game.state?.completed?.grind?.length || 0;
         const stage = Math.min(4, completedCount + 1);
-        return `assets/images/station-tea/mortar-${stage}.png`;
+        return `assets/images/station-tea/mortar-${stage}.webp`;
     },
 
     updateTeaMortar(game) {

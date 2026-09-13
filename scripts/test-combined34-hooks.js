@@ -34,9 +34,9 @@ function loadGame(relativePath, exportExpression, extras = {}, extraSourcePaths 
 
 {
     const { game } = loadGame('js/minigames/CradleStationGame.js', 'CradleStationGame');
-    assert.strictEqual(game.getBabyImage('crying'), 'assets/images/station-cradle/baby-crying.png');
-    assert.strictEqual(game.getBabyImage('calming'), 'assets/images/station-cradle/baby-calm.png');
-    assert.strictEqual(game.getBabyImage('asleep'), 'assets/images/station-cradle/baby-asleep.png');
+    assert.strictEqual(game.getBabyImage('crying'), 'assets/images/station-cradle/baby-crying.webp');
+    assert.strictEqual(game.getBabyImage('calming'), 'assets/images/station-cradle/baby-calm.webp');
+    assert.strictEqual(game.getBabyImage('asleep'), 'assets/images/station-cradle/baby-asleep.webp');
     assert.strictEqual(game.getBabyStage(34), 'crying');
     assert.strictEqual(game.getBabyStage(35), 'calming');
     assert.strictEqual(game.getBabyStage(66), 'calming');
@@ -68,7 +68,7 @@ function loadGame(relativePath, exportExpression, extras = {}, extraSourcePaths 
         name: '吉紋',
         meaning: '大吉大利',
         blessing: '祝你諸事大吉，平安順遂。',
-        cakeImage: 'assets/images/station-cake/cake-luck.png'
+        cakeImage: 'assets/images/station-cake/cake-luck.webp'
     };
     const controls = new Map();
     const container = {
@@ -300,7 +300,7 @@ function makeFakeBox() {
     assert.ok(game.container.innerHTML.includes('data-retry'), '第三關結果頁應顯示再玩一次按鈕');
     assert.ok(game.container.innerHTML.includes('data-back'), '第三關結果頁應顯示去找阿嬤按鈕');
     assert.ok(game.container.innerHTML.includes('去找阿嬤'), '第三關離開按鈕應比照前兩關改為角色引導');
-    assert.ok(game.container.innerHTML.includes('assets/images/station-cradle/cradle-result.png'), '第三關結果頁應顯示嬰兒與吊床合併圖');
+    assert.ok(game.container.innerHTML.includes('assets/images/station-cradle/cradle-result.webp'), '第三關結果頁應顯示嬰兒與吊床合併圖');
     assert.ok(game.container.innerHTML.includes('cradle-result-body'), '第三關結果頁應使用與前兩關一致的圖文分欄');
     assert.strictEqual(typeof retryHandler, 'function', '第三關結果頁應綁定再玩一次');
     assert.strictEqual(typeof backHandler, 'function', '第三關結果頁應綁定去找阿嬤');
