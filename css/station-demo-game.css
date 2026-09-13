@@ -1430,9 +1430,7 @@
 
 .tea-game-area {
     display: grid;
-    /* 軌道是找食材與拖曳的主操作區，保留較大的視覺與操作空間；
-       下方石臼／砧板縮回足夠完成研磨或切料的高度。 */
-    grid-template-rows: minmax(112px, 1.2fr) minmax(96px, 0.8fr);
+    grid-template-rows: minmax(76px, 0.62fr) minmax(134px, 1.38fr);
     gap: clamp(6px, 1.3vh, 12px);
     min-height: 0;
 }
@@ -1477,8 +1475,8 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    color: rgba(255, 243, 201, 0.32);
-    font-size: clamp(15px, 1.8vw, 19px);
+    color: rgba(255, 243, 201, 0.46);
+    font-size: clamp(17px, 2.1vw, 22px);
     white-space: nowrap;
     pointer-events: none;
 }
@@ -1623,8 +1621,8 @@
     position: relative;
     width: min(78vw, 680px);
     height: 100%;
-    min-height: 112px;
-    max-height: 240px;
+    min-height: 150px;
+    max-height: 270px;
     overflow: hidden;
     border: 0;
     border-radius: 26px;
@@ -2069,7 +2067,7 @@
     }
 
     .tea-game-area {
-        grid-template-rows: minmax(92px, 1.2fr) minmax(80px, 0.8fr);
+        grid-template-rows: minmax(62px, 0.58fr) minmax(108px, 1.42fr);
         gap: 4px;
     }
 
@@ -2085,7 +2083,7 @@
 
     .tea-drop-zone {
         width: min(70vw, 540px);
-        min-height: 96px;
+        min-height: 120px;
         border-radius: 15px;
     }
 
@@ -2226,7 +2224,7 @@
     }
 
     .tea-game-area {
-        grid-template-rows: minmax(76px, 1.2fr) minmax(64px, 0.8fr);
+        grid-template-rows: 51px minmax(82px, 1fr);
     }
 
     .tea-ingredient-grid {
@@ -2239,7 +2237,7 @@
 
     .tea-drop-zone {
         width: min(64vw, 440px);
-        min-height: 72px;
+        min-height: 96px;
     }
 
     .tea-mortar-art {
