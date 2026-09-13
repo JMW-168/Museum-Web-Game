@@ -523,6 +523,85 @@ button {
 
 .install-app-btn[hidden] { display: none; }
 
+.ios-install-guide {
+    position: absolute;
+    z-index: 97;
+    left: 50%;
+    top: 50%;
+    width: min(440px, calc(100% - 28px));
+    padding: clamp(18px, 3vw, 28px);
+    transform: translate(-50%, -50%);
+    color: #fff6de;
+    border: 2px solid rgba(255, 215, 136, 0.88);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(47, 68, 62, 0.98), rgba(23, 39, 37, 0.99));
+    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.56);
+}
+
+.ios-install-guide[hidden] { display: none; }
+
+.ios-install-guide-close {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: #fff6de;
+    border: 1px solid rgba(255, 246, 222, 0.62);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.18);
+    font-size: 0;
+}
+
+.ios-install-guide-close::before,
+.ios-install-guide-close::after {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 15px;
+    height: 2px;
+    content: '';
+    background: currentColor;
+}
+
+.ios-install-guide-close::before { transform: translate(-50%, -50%) rotate(45deg); }
+.ios-install-guide-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.ios-install-guide-kicker {
+    margin: 0 42px 5px 0;
+    color: #ffd77b;
+    font-size: clamp(13px, 1.8vw, 16px);
+    letter-spacing: 0.06em;
+}
+
+.ios-install-guide h2 {
+    margin: 0 36px 14px 0;
+    color: #fff1c9;
+    font-size: clamp(23px, 3.4vw, 34px);
+    line-height: 1.25;
+}
+
+.ios-install-guide-steps {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding-left: 1.5em;
+    font-size: clamp(15px, 2.1vw, 20px);
+    line-height: 1.5;
+}
+
+.ios-install-guide-steps li::marker { color: #ffd77b; font-weight: 700; }
+
+.ios-install-guide-note {
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 246, 222, 0.24);
+    color: #c7ead2;
+    font-size: clamp(13px, 1.8vw, 16px);
+    line-height: 1.4;
+}
+
 .pwa-update-banner {
     position: absolute;
     right: max(14px, env(safe-area-inset-right));

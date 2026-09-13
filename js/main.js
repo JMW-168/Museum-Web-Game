@@ -24,6 +24,7 @@ function applyLocale(locale) {
         button.classList.toggle('is-active', button.dataset.lang === locale);
         button.setAttribute('aria-pressed', String(button.dataset.lang === locale));
     });
+    updateInstallButton();
 }
 
 function setupLanguageSwitch() {
@@ -61,6 +62,13 @@ window.addEventListener('appinstalled', () => {
 
 function isStandaloneDisplay() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function isIosSafari() {
+    const userAgent = window.navigator.userAgent;
+    const isIosDevice = /iPad|iPhone|iPod/.test(userAgent)
+        || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+    return isIosDevice && /Safari/.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA/.test(userAgent);
 }
 
 function showAgeSelect() {
@@ -135,20 +143,36 @@ function setupGameViewportGestureGuard() {
 
 function setupInstallButton() {
     const installButton = document.getElementById('install-app-btn');
+    const iosGuide = document.getElementById('ios-install-guide');
     if (!installButton) return;
     installButton.addEventListener('click', async () => {
+        if (isIosSafari() && !isStandaloneDisplay()) {
+            if (iosGuide) iosGuide.hidden = false;
+            return;
+        }
         if (!deferredInstallPrompt) return;
         deferredInstallPrompt.prompt();
         await deferredInstallPrompt.userChoice;
         deferredInstallPrompt = null;
         updateInstallButton();
     });
+    iosGuide?.querySelector('[data-ios-install-close]')?.addEventListener('click', () => {
+        iosGuide.hidden = true;
+    });
     updateInstallButton();
 }
 
 function updateInstallButton() {
     const installButton = document.getElementById('install-app-btn');
-    if (installButton) installButton.hidden = !deferredInstallPrompt || isStandaloneDisplay();
+    const iosGuide = document.getElementById('ios-install-guide');
+    const shouldShowIosGuide = isIosSafari() && !isStandaloneDisplay();
+    if (installButton) {
+        installButton.hidden = (!deferredInstallPrompt && !shouldShowIosGuide) || isStandaloneDisplay();
+        installButton.textContent = shouldShowIosGuide
+            ? (window.t ? t('install.ios.label') : '加入主畫面')
+            : (window.t ? t('install.label') : '安裝');
+    }
+    if (iosGuide) iosGuide.hidden = !shouldShowIosGuide;
 }
 
 function isUpdateSafeScene() {
@@ -192,7 +216,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=116', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=117', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
