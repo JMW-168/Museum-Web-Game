@@ -80,11 +80,11 @@ const CakeStationGame = {
         this.container.innerHTML = `
             <section class="cake-card-panel">
                 <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
+                <div class="station-kicker-line">${this.tr('station.cake.kicker')}</div>
                 <div class="cake-step-label">${this.tr('station.cake.intro.progress', { current: index + 1, total: this.patterns.length })}</div>
                 <div class="cake-intro-card">
                     <div class="cake-pattern-frame"><img src="${pattern.introImage}" alt="${pattern.name}"></div>
                     <div class="cake-intro-copy">
-                        <div class="station-kicker-line">${this.tr('station.cake.kicker')}</div>
                         <h1>${pattern.name}</h1>
                         <p class="cake-meaning">${pattern.meaning}</p>
                         <p>${pattern.blessing}</p>
@@ -349,7 +349,6 @@ const CakeStationGame = {
             <section class="cake-select-panel">
                 <button type="button" class="station-secondary station-corner-exit" data-exit>${this.tr('station.cake.leave')}</button>
                 <div class="station-kicker-line">${this.tr('station.cake.kicker')}</div>
-                <h1>${this.tr('station.cake.select.title')}</h1>
                 <p class="cake-select-help">${this.tr('station.cake.select.help')}</p>
                 <div class="cake-pattern-options">
                     ${this.patterns.map((pattern) => `<button type="button" class="cake-pattern-option" data-select-pattern="${pattern.id}">

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap');
 
 @font-face {
     font-family: 'BpmfZihiKai';
@@ -9,12 +9,12 @@
 :root {
     --app-height: 100dvh;
     color-scheme: dark;
-    /* 介面字型：繁體用思源宋體 TC；簡體時由 html[lang] 覆寫（Noto Serif SC 於切換時載入）。 */
-    --game-font: 'Noto Serif TC', 'PMingLiU', 'Songti TC', serif;
+    /* 介面字型：簡體（預設）用思源宋體 SC；繁體時由 html[lang] 覆寫（Noto Serif TC 於切換時載入）。 */
+    --game-font: 'Noto Serif SC', 'PMingLiU', 'Songti SC', serif;
 }
 
-html[lang="zh-Hans"] {
-    --game-font: 'Noto Serif SC', 'Noto Serif TC', 'SimSun', 'Songti SC', serif;
+html[lang="zh-Hant"] {
+    --game-font: 'Noto Serif TC', 'Noto Serif SC', 'SimSun', 'Songti TC', serif;
 }
 
 * {

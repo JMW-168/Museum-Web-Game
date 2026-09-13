@@ -3,13 +3,13 @@ let gameMode = null;
 let deferredInstallPrompt = null;
 
 // ========== 多語系 ==========
-// 簡體字型只在首次切到簡體時載入，避免繁體使用者付出多餘請求。
+// 繁體字型只在首次切到繁體時載入，避免簡體使用者（預設）付出多餘請求。
 function ensureLocaleFont(locale) {
-    if (locale !== 'zh-Hans' || document.getElementById('font-noto-serif-sc')) return;
+    if (locale !== 'zh-Hant' || document.getElementById('font-noto-serif-tc')) return;
     const link = document.createElement('link');
-    link.id = 'font-noto-serif-sc';
+    link.id = 'font-noto-serif-tc';
     link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap';
+    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap';
     document.head.appendChild(link);
 }
 
@@ -158,7 +158,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.SceneManager?.init();
     window.LoadingManager?.init();
 
-    await showAgeSelect();
+    // 暫時停用進場的「選擇遊戲模式」畫面（小朋友版／一般版），目前用不到。要恢復就取消下面這行註解，並刪掉這行隱藏。
+    // await showAgeSelect();
+    const ageSelectDialog = document.getElementById('age-select-dialog');
+    if (ageSelectDialog) ageSelectDialog.style.display = 'none';
 
     // 首頁 → 引導說明頁（土樓旁白 → 爺爺奶奶歡迎）→ 選擇遊戲頁
     document.getElementById('startBtn')?.addEventListener('click', () => {

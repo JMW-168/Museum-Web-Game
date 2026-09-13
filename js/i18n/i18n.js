@@ -3,18 +3,18 @@
 // 介面透過 t(key, tokens) 取字串，靜態 DOM 用 data-i18n / data-i18n-attr 標記。
 const I18n = {
     STORAGE_KEY: 'museum-game-lang',
-    DEFAULT_LOCALE: 'zh-Hant',
+    DEFAULT_LOCALE: 'zh-Hans',
     SUPPORTED: ['zh-Hant', 'zh-Hans'],
 
     dicts: {},
-    locale: 'zh-Hant',
+    locale: 'zh-Hans',
     listeners: [],
 
     register(locale, dict) {
         this.dicts[locale] = Object.assign(this.dicts[locale] || {}, dict || {});
     },
 
-    // 讀取記憶的語言；讀取失敗或非法值時回退預設（繁體）。
+    // 讀取記憶的語言；讀取失敗或非法值時回退預設（簡體）。
     getStoredLocale() {
         try {
             const stored = window.localStorage.getItem(this.STORAGE_KEY);

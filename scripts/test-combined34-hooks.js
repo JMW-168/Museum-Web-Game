@@ -144,12 +144,13 @@ function loadGame(relativePath, exportExpression, extras = {}) {
     game.only = 'cake';
     game.createShell = () => {};
     game.removeShell = () => {};
-    game.showDialogue = (sectionId, onComplete, tokens, opts) => { transition = { sectionId, tokens, opts }; };
+    game.showDialogue = (sectionId, onComplete, tokens, opts) => { transition = { sectionId, onComplete, tokens, opts }; };
     const targetPattern = { id: 'peach', name: '桃紋', meaning: '福壽吉祥', blessing: '願你喜樂常在。' };
     game.afterCake({ pattern: targetPattern });
 
-    assert.strictEqual(cardTransition.pattern.id, 'peach', '應先呼叫 showCompletedResult 顯示祝福卡成果');
-    assert.strictEqual(transition, null, '看到成果前不應提前進入離開對話');
+    assert.strictEqual(transition.sectionId, 'cakeAfterPress', '壓制完成後應先播放完成對話');
+    transition.onComplete();
+    assert.strictEqual(cardTransition.pattern.id, 'peach', '完成對話後才顯示祝福卡成果');
 
     cardTransition.onExit();
     assert.strictEqual(transition.sectionId, 'cakeExit', '按下「去找阿嬤」後才進入 cakeExit 對話');

@@ -8,6 +8,11 @@ const StationCombinedStory = {
             theme: 'fire',
             lines: [
                 {
+                    speakerKey: 'story.speaker.narrator',
+                    textKey: 'story.combined12.opening.0',
+                    narration: true
+                },
+                {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined12.opening.1',
                     image: 'assets/images/characters/grandma.png',

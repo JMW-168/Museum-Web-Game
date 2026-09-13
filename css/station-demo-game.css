@@ -1973,6 +1973,8 @@
     line-height: 1.4;
 }
 
+.station-demo-fire .station-result-panel .station-actions button,
+.tea-result-panel .station-actions button,
 .cradle-result-panel .station-actions button {
     min-width: clamp(112px, 14vw, 154px);
     padding: 10px 20px;
@@ -1991,6 +1993,8 @@
     transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
 }
 
+.station-demo-fire .station-result-panel .station-actions .station-primary,
+.tea-result-panel .station-actions .station-primary,
 .cradle-result-panel .station-actions .station-primary {
     border-color: rgba(232, 192, 111, 0.96);
     background:
@@ -1998,11 +2002,15 @@
         linear-gradient(165deg, #a77942, #765033 68%, #523526);
 }
 
+.station-demo-fire .station-result-panel .station-actions button:hover,
+.tea-result-panel .station-actions button:hover,
 .cradle-result-panel .station-actions button:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
 }
 
+.station-demo-fire .station-result-panel .station-actions button:active,
+.tea-result-panel .station-actions button:active,
 .cradle-result-panel .station-actions button:active {
     transform: translateY(3px);
     box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2d1e19, 0 4px 8px rgba(0, 0, 0, 0.26);
@@ -2148,13 +2156,13 @@
     .tea-result-panel .station-kicker-line,
     .cradle-result-panel .station-kicker-line {
         margin-bottom: 2px;
-        font-size: 11px;
+        font-size: clamp(14px, 2vw, 18px);
     }
 
     .tea-result-panel h1,
     .cradle-result-panel h1 {
         margin-bottom: 3px;
-        font-size: clamp(22px, 4.2vw, 30px);
+        font-size: clamp(26px, 5vw, 38px);
         line-height: 1.05;
     }
 
@@ -2342,6 +2350,10 @@
         margin-bottom: 4px;
     }
 
+    .cradle-result-panel h1 {
+        font-size: clamp(34px, 6vw, 58px);
+    }
+
     .cradle-result-panel .station-copy {
         font-size: 13px;
     }
@@ -2352,6 +2364,8 @@
         font-size: 12px;
     }
 
+    .station-demo-fire .station-result-panel .station-actions button,
+    .tea-result-panel .station-actions button,
     .cradle-result-panel .station-actions button {
         min-width: 92px;
         padding: 5px 10px;
