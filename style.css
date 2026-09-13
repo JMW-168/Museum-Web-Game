@@ -47,6 +47,19 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
+/* 進入任何遊戲場景後鎖住 Safari 的頁面手勢；離開遊戲即由 showScene 移除。 */
+html.game-input-locked,
+body.game-input-locked {
+    overscroll-behavior: none;
+}
+
+body.game-input-locked #game-container {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 button {
     cursor: pointer;
     color: #fff;

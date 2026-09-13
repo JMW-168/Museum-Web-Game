@@ -1628,6 +1628,8 @@
     border-radius: 26px;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.18) 72%);
     touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
     user-select: none;
     cursor: pointer;
     transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;

@@ -1471,8 +1471,19 @@ const StationDemoGame = {
     bindTeaChopping() {
         const target = this.container.querySelector('[data-tea-drop]');
         if (!target) return;
+        // iOS Safari 對快速連點的 viewport 手勢不完全遵守 touch-action。
+        // 限制在「正在切料」的砧板，使用 non-passive 原生事件取消預設行為，
+        // 不影響食材拖曳、研磨手勢或砧板以外的頁面捲動。
+        const blockNativeChopGesture = (event) => {
+            if (!this.state?.processing || this.state.transitioning || this.state.phase !== 'chop') return;
+            event.preventDefault();
+        };
+        target.addEventListener('touchstart', blockNativeChopGesture, { passive: false });
+        target.addEventListener('touchmove', blockNativeChopGesture, { passive: false });
+        target.addEventListener('touchend', blockNativeChopGesture, { passive: false });
+        target.addEventListener('gesturestart', blockNativeChopGesture, { passive: false });
         target.addEventListener('pointerdown', (event) => {
-            if (!this.state?.processing || this.state.transitioning) return;
+            if (!this.state?.processing || this.state.transitioning || this.state.phase !== 'chop') return;
             event.preventDefault();
             this.state.actionProgress++;
             this.playTeaChopSound();
