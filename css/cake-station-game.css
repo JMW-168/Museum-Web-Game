@@ -1067,12 +1067,3 @@ body.cake-station-active #game-wrapper {
     .cake-step-track { margin-top: 0; }
     .cake-result-panel { padding: 8px 64px; }
 }
-
-@media (orientation: landscape) and (max-height: 560px) {
-    #level-select .station-entry-list.has-cake-station { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    #level-select .station-entry-list.has-cake-station .station-entry-combined,
-    #level-select .station-entry-list.has-cake-station .station-entry-collect {
-        grid-column: span 2;
-        min-height: 54px;
-    }
-}

@@ -670,6 +670,78 @@ button {
 .confirm-yes { background: #e67e22; }
 .confirm-no { background: #7f8c8d; }
 
+/* ========== 通關致謝畫面（Issue #30） ========== */
+/* 原放在 station-game.css，屬於全螢幕場景，跟 #start-menu/#level-select/.intro-scene 同一類（Issue #90 歸位） */
+.ending-screen {
+    z-index: 1300;
+}
+
+.ending-panel {
+    width: min(86%, 720px);
+    padding: clamp(24px, 6vh, 48px) clamp(22px, 5vw, 46px);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: 18px;
+    background: rgba(18, 30, 33, 0.94);
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.ending-kicker {
+    color: #ffd700;
+    font-size: clamp(13px, 1.9vw, 17px);
+    letter-spacing: 0.14em;
+    margin-bottom: clamp(10px, 2vh, 18px);
+}
+
+.ending-title {
+    margin: 0 0 clamp(12px, 2.4vh, 22px);
+    color: #fff;
+    font-size: clamp(32px, 6vw, 56px);
+    line-height: 1.15;
+}
+
+.ending-subtitle {
+    margin: 0 auto clamp(20px, 4vh, 34px);
+    max-width: 34em;
+    color: #f4ead2;
+    font-size: clamp(16px, 2.3vw, 22px);
+    line-height: 1.7;
+}
+
+.ending-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.ending-actions button,
+.ending-actions a {
+    min-width: clamp(150px, 30vw, 220px);
+}
+
+@media (orientation: landscape) and (max-height: 460px) {
+    .ending-panel {
+        padding: clamp(14px, 5vh, 24px) clamp(18px, 5vw, 32px);
+    }
+
+    .ending-kicker {
+        margin-bottom: 6px;
+    }
+
+    .ending-title {
+        margin-bottom: 8px;
+        font-size: clamp(24px, 5.4vw, 38px);
+    }
+
+    .ending-subtitle {
+        margin-bottom: 14px;
+        font-size: clamp(13px, 2vw, 17px);
+        line-height: 1.5;
+    }
+}
+
 @media (orientation: landscape) and (max-height: 560px) {
     .age-dialog-content { width: 85%; padding: 12px 20px; }
     .age-buttons { gap: 12px; }
@@ -697,6 +769,13 @@ button {
     #level-select .station-kicker { width: 100%; text-align: left; font-size: clamp(11px, 1.5vw, 14px); }
     #level-select .station-title { margin-top: 5px; font-size: clamp(19px, 2.8vw, 25px); }
     #level-select .station-desc { font-size: clamp(11px, 1.5vw, 14px); line-height: 1.35; }
+    /* 粄印站啟用時選單多一欄；原放在 cake-station-game.css，邏輯上是全域選單規則（Issue #90 歸位） */
+    #level-select .station-entry-list.has-cake-station { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    #level-select .station-entry-list.has-cake-station .station-entry-combined,
+    #level-select .station-entry-list.has-cake-station .station-entry-collect {
+        grid-column: span 2;
+        min-height: 54px;
+    }
     .back-btn { top: 5px; left: 5px; padding: 4px 8px; font-size: 11px; }
     .install-app-btn { right: 6px; bottom: 6px; min-width: 64px; padding: 5px 10px; font-size: 11px; }
     .pwa-update-banner { right: 6px; bottom: 6px; gap: 8px; padding: 7px 8px; font-size: 11px; }
