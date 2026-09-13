@@ -4,7 +4,7 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const css = fs.readFileSync(path.join(root, 'css', 'station-game.css'), 'utf8');
-const game = fs.readFileSync(path.join(root, 'js', 'minigames', 'StationGame.js'), 'utf8');
+const game = fs.readFileSync(path.join(root, 'js', 'minigames', 'FireStationGame.js'), 'utf8');
 
 const fireStoveRule = css.match(/\.station-game-fire \.fire-stove-img \{([\s\S]*?)\n\}/);
 const fireFlameRule = css.match(/\.station-game-fire \.fire-flame-img \{([\s\S]*?)\n\}/);

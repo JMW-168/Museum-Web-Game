@@ -5,7 +5,7 @@ const vm = require('vm');
 
 const root = path.resolve(__dirname, '..');
 
-function loadGame(relativePath, exportExpression, extras = {}) {
+function loadGame(relativePath, exportExpression, extras = {}, extraSourcePaths = []) {
     const context = {
         console,
         setTimeout,
@@ -26,8 +26,9 @@ function loadGame(relativePath, exportExpression, extras = {}) {
     context.window = context;
     context.dispatchEvent = () => {};
     vm.createContext(context);
+    const extraSource = extraSourcePaths.map((p) => fs.readFileSync(path.join(root, p), 'utf8')).join('\n');
     const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
-    vm.runInContext(`${source}\nwindow.__testedGame = ${exportExpression};`, context);
+    vm.runInContext(`${extraSource}\n${source}\nwindow.__testedGame = ${exportExpression};`, context);
     return { game: context.__testedGame, context };
 }
 
@@ -206,7 +207,7 @@ function makeFakeBox() {
 
 {
     // 第一關單玩結束：先顯示結果頁，按「去找阿罵」後才播離開對話。
-    const { game } = loadGame('js/minigames/StationGame.js', 'StationGame');
+    const { game, context } = loadGame('js/minigames/StationGame.js', 'StationGame', {}, ['js/minigames/FireStationGame.js']);
     const events = [];
     game.mode = 'single';
     game.state = {
@@ -218,12 +219,10 @@ function makeFakeBox() {
     };
     game.station = {};
     game.tr = (key) => key;
-    game.isFireInSafeRange = () => true;
-    game.stopFireMusic = () => {};
     const originalShowResult = game.showResult;
     game.showResult = () => events.push('result');
     game.showCombinedDialogue = () => events.push('dialogue');
-    game.showFireResult();
+    context.FireStationGame.showFireResult(game);
     assert.deepStrictEqual(events, ['result'], '第一關單玩結束應先顯示結果頁');
     game.showResult = originalShowResult;
 

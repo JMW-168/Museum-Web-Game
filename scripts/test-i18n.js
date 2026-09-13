@@ -151,6 +151,8 @@ function loadI18n(extra = {}) {
         'js/data/station34CombinedStory.js',
         'js/data/cakePatterns.js',
         'js/minigames/StationGame.js',
+        'js/minigames/FireStationGame.js',
+        'js/minigames/TeaStationGame.js',
         'js/minigames/CradleStationGame.js',
         'js/minigames/CakeStationGame.js',
         'js/minigames/Station34CombinedGame.js'
