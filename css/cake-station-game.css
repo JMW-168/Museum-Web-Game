@@ -78,6 +78,16 @@ body.cake-station-active #game-wrapper {
     color: #f3d384;
     font-size: clamp(30px, 3.6vw, 39px);
     letter-spacing: .08em;
+    white-space: nowrap;
+}
+
+/* 花紋介紹頁／選花紋頁移到畫面左上角的站點名稱，改用跟其他關卡 HUD 一樣的字級。 */
+.cake-card-panel > .station-kicker-line,
+.cake-card-panel > .cake-step-label,
+.cake-select-panel > .station-kicker-line {
+    font-size: clamp(14px, 2vw, 18px);
+    letter-spacing: normal;
+    text-align: left;
 }
 
 .cake-intro-card {
@@ -110,23 +120,46 @@ body.cake-station-active #game-wrapper {
 .cake-select-panel h1 {
     margin: 3px 0 10px;
     color: #fff8df;
-    font-size: clamp(32px, 5.5vw, 62px);
     text-align: left;
+}
+
+.cake-match-panel h1,
+.cake-select-panel h1 {
+    font-size: clamp(32px, 5.5vw, 62px);
+}
+
+/* 花紋介紹頁的花紋名稱／寓意／祝福句，字級比其他卡片畫面大一些。 */
+.cake-intro-copy h1 {
+    font-size: clamp(54px, 9vw, 102px);
 }
 
 .cake-intro-copy p,
 .cake-result-copy p {
     margin: 8px 0;
     color: #f7ecd0;
-    font-size: clamp(16px, 2.1vw, 22px);
     line-height: 1.5;
+}
+
+.cake-result-copy p {
+    font-size: clamp(16px, 2.1vw, 22px);
+}
+
+.cake-intro-copy p {
+    font-size: clamp(28.5px, 3.75vw, 39px);
 }
 
 .cake-intro-copy .cake-meaning,
 .cake-result-copy .cake-meaning {
     color: #ffda78;
-    font-size: clamp(22px, 3vw, 32px);
     font-weight: 800;
+}
+
+.cake-result-copy .cake-meaning {
+    font-size: clamp(22px, 3vw, 32px);
+}
+
+.cake-intro-copy .cake-meaning {
+    font-size: clamp(39px, 5.4vw, 57px);
 }
 
 .cake-intro-dots {
@@ -169,6 +202,12 @@ body.cake-station-active #game-wrapper {
     padding-right: 70px;
 }
 
+.cake-heading-row > div:first-child {
+    min-width: max-content;
+    justify-self: start;
+    align-self: start;
+}
+
 .cake-heading-row .station-kicker-line {
     white-space: nowrap;
 }
@@ -186,8 +225,17 @@ body.cake-station-active #game-wrapper {
     background: rgba(28, 22, 16, .5);
     backdrop-filter: blur(6px) saturate(1.1);
     color: #f3e6c8;
-    font-size: clamp(25.5px, 3vw, 33px);
     line-height: 1.4;
+}
+
+.cake-heading-row p {
+    font-size: clamp(25.5px, 3vw, 33px);
+}
+
+/* 選花紋頁的阿嬤提示句，字級縮小、單行不換行。 */
+.cake-select-help {
+    font-size: clamp(16.8px, 1.8vw, 21.6px);
+    white-space: nowrap;
 }
 
 .cake-match-board {
@@ -349,14 +397,8 @@ body.cake-station-active #game-wrapper {
     transform: none;
 }
 
-.cake-select-panel > .station-kicker-line,
-.cake-select-panel > h1,
 .cake-select-help {
     text-align: center;
-}
-
-.cake-select-panel > h1 {
-    margin: 4px auto;
 }
 
 .cake-pattern-options {
@@ -832,6 +874,15 @@ body.cake-station-active #game-wrapper {
     text-align: left;
 }
 
+.cake-intro-copy .station-kicker-line {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin-bottom: 4px;
+    text-align: left;
+    white-space: nowrap;
+}
+
 .cake-result-copy .cake-result-blessing {
     margin: 4px 0 10px;
     color: #f7ecd0;
@@ -950,8 +1001,8 @@ body.cake-station-active #game-wrapper {
 
     .cake-heading-row { grid-template-columns: max-content minmax(0, 1fr); gap: 16px; padding-right: 64px; }
     .cake-heading-row .station-kicker-line { font-size: 24px; }
-    .cake-heading-row p,
-    .cake-select-help { padding: 5px 10px; font-size: 22.5px; line-height: 1.2; }
+    .cake-heading-row p { padding: 5px 10px; font-size: 22.5px; line-height: 1.2; }
+    .cake-select-help { padding: 5px 10px; font-size: 15.6px; line-height: 1.2; }
     .cake-match-board { grid-template-rows: 100px 43px 74px; width: min(82%, 760px); height: 220px; margin-top: 3px; }
     .cake-match-row { gap: 8px; }
     .cake-match-pattern { padding: 4px 6px 12px; }

@@ -31,7 +31,7 @@ const Station34CombinedGame = {
         showScene('game-container');
         if (this.only === 'cake') {
             this.createShell('cake');
-            this.showDialogue('cakeEntry', () => this.startCake());
+            this.showDialogue('cakeEntry', () => this.showDialogue('cakeGuide', () => this.startCake()));
         } else {
             this.createShell('cradle');
             this.showDialogue('cradleEntry', () => this.startCradle());
@@ -207,7 +207,7 @@ const Station34CombinedGame = {
         if (this.only === 'cradle') {
             this.showCradleResult(result);
         } else {
-            this.showDialogue('cradleExit', () => this.showDialogue('cakeEntry', () => this.startCake()));
+            this.showDialogue('cradleExit', () => this.showDialogue('cakeEntry', () => this.showDialogue('cakeGuide', () => this.startCake())));
         }
     },
 
@@ -259,7 +259,11 @@ const Station34CombinedGame = {
         CakeStationGame.stop();
         if (!this.active || !result?.pattern) return;
         const pattern = result.pattern;
-        CakeStationGame.showCompletedResult(pattern, { onExit: () => this.afterCakeResult(pattern) });
+        this.createShell('cake');
+        this.showDialogue('cakeAfterPress', () => {
+            this.removeShell();
+            CakeStationGame.showCompletedResult(pattern, { onExit: () => this.afterCakeResult(pattern) });
+        });
     },
 
     afterCakeResult(pattern) {

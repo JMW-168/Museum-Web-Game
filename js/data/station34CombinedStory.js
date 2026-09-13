@@ -8,16 +8,15 @@ const Station34CombinedStory = {
             theme: 'cradle',
             lines: [
                 {
-                    speakerKey: 'story.speaker.grandma',
-                    cueKey: 'story.combined34.opening.1.cue',
+                    speakerKey: 'story.speaker.narrator',
                     textKey: 'story.combined34.opening.1',
-                    image: 'assets/images/characters/grandma.png',
-                    voice: 'female'
+                    narration: true
                 },
                 {
-                    speakerKey: 'story.speaker.narrator',
+                    speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.opening.2',
-                    narration: true
+                    image: 'assets/images/characters/grandma.png',
+                    voice: 'female'
                 },
                 {
                     speakerKey: 'story.speaker.grandma',
@@ -32,8 +31,19 @@ const Station34CombinedStory = {
             theme: 'cradle',
             lines: [
                 {
+                    speakerKey: 'story.speaker.narrator',
+                    textKey: 'story.combined34.cradleExit.transition',
+                    narration: true
+                },
+                {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.afterCradle.1',
+                    image: 'assets/images/characters/grandma.png',
+                    voice: 'female'
+                },
+                {
+                    speakerKey: 'story.speaker.grandma',
+                    textKey: 'story.combined34.afterCradle.reading',
                     image: 'assets/images/characters/grandma.png',
                     voice: 'female'
                 }
@@ -56,15 +66,43 @@ const Station34CombinedStory = {
                 }
             ]
         },
-        cakeExit: {
+        cakeGuide: {
             theme: 'cake',
             lines: [
                 {
                     speakerKey: 'story.speaker.grandma',
-                    textKey: 'story.combined34.ending.1',
+                    textKey: 'story.combined34.cakeGuide.1',
                     image: 'assets/images/characters/grandma.png',
                     voice: 'female'
                 },
+                {
+                    speakerKey: 'story.speaker.grandma',
+                    textKey: 'story.combined34.cakeGuide.2',
+                    image: 'assets/images/characters/grandma.png',
+                    voice: 'female'
+                }
+            ]
+        },
+        cakeAfterPress: {
+            theme: 'cake',
+            lines: [
+                {
+                    speakerKey: 'story.speaker.grandma',
+                    textKey: 'story.combined34.afterPress.1',
+                    image: 'assets/images/characters/grandma.png',
+                    voice: 'female'
+                },
+                {
+                    speakerKey: 'story.speaker.grandma',
+                    textKey: 'story.combined34.afterPress.2',
+                    image: 'assets/images/characters/grandma.png',
+                    voice: 'female'
+                }
+            ]
+        },
+        cakeExit: {
+            theme: 'cake',
+            lines: [
                 {
                     speakerKey: 'story.speaker.grandma',
                     textKey: 'story.combined34.ending.2',
@@ -74,6 +112,11 @@ const Station34CombinedStory = {
                 {
                     speakerKey: 'story.speaker.narrator',
                     textKey: 'story.combined34.ending.3',
+                    narration: true
+                },
+                {
+                    speakerKey: 'story.speaker.narrator',
+                    textKey: 'story.combined34.ending.4',
                     narration: true,
                     actionLabelKey: 'story.action.viewBlessingCard'
                 }

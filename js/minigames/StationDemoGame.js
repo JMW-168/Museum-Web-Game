@@ -825,9 +825,12 @@ const StationDemoGame = {
     sprayWater() {
         if (!this.state || this.state.finished || this.state.stationId !== 'fire') return;
         const wasTooHot = this.state.fire > this.state.idealMax;
-        const wasSafe = this.isFireInSafeRange();
+        // 畫面上「安全火候」黃框顯示的就是 idealMin~idealMax，扣分／不扣分要跟這個框對齊，而不是另一組沒畫出來的 safeMin~safeMax。
+        const belowSafeZone = this.state.fire < this.state.idealMin;
+        const wasAboveSafeZone = this.state.fire > this.state.safeMax;
         this.state.fire = Math.max(0, this.state.fire - 7);
-        const points = wasTooHot ? (wasSafe ? 12 : 20) : -8;
+        // 大火時維持原本加分（超過 safeMax 更高熱再多給一些）；安全火候框內噴水只降火，不扣分；低於安全火候框才扣分。
+        const points = wasTooHot ? (wasAboveSafeZone ? 20 : 12) : (belowSafeZone ? -8 : 0);
         this.state.score = Math.max(0, this.state.score + points);
         const waterEffect = this.container.querySelector('[data-water-effect]');
         if (waterEffect) {
@@ -838,7 +841,7 @@ const StationDemoGame = {
         this.container.querySelector('.station-feedback').textContent = this.state.fire > this.state.idealMax
             ? this.tr('station.fire.water.more')
             : wasTooHot ? this.tr('station.fire.water.recovered') : this.tr('station.fire.water.notNeeded');
-        this.showFireScorePop(points);
+        if (points !== 0) this.showFireScorePop(points);
         this.renderFireHud();
     },
 
@@ -883,7 +886,8 @@ const StationDemoGame = {
 
     updateFireStability(delta) {
         const inIdeal = this.isFireInIdealRange();
-        const drift = this.state.fire > this.state.idealMax ? -0.0008 : -0.0015;
+        // 火候自然消退比原本稍快，讓玩家不操作時更快回到需要補柴的狀態。
+        const drift = this.state.fire > this.state.idealMax ? -0.005 : -0.006;
         this.state.fire = Math.max(0, Math.min(100, this.state.fire + (drift * delta)));
 
         if (inIdeal) {

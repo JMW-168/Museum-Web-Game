@@ -46,16 +46,16 @@ function loadI18n(extra = {}) {
 {
     const { I18n, t } = loadI18n();
     I18n.init();
-    assert.strictEqual(I18n.getLocale(), 'zh-Hant', '無記憶時預設繁體');
-    assert.strictEqual(t('menu.start'), '搭乘時光機');
-    assert.strictEqual(t('ending.subtitle').includes('客家土樓'), true);
-    assert.strictEqual(t('station.fire.kicker'), '站點一：灶台生火');
-    assert.strictEqual(t('station.fire.result.findGrandma'), '去找阿罵');
-    assert.strictEqual(t('station.fire.summary', { score: 1022 }), '分數 1022');
+    assert.strictEqual(I18n.getLocale(), 'zh-Hans', '無記憶時預設簡體');
+    assert.strictEqual(t('menu.start'), '搭乘时光机');
+    assert.strictEqual(t('ending.subtitle').includes('客家土楼'), true);
+    assert.strictEqual(t('station.fire.kicker'), '站点一：灶台生火');
+    assert.strictEqual(t('station.fire.result.findGrandma'), '去找阿嬷');
+    assert.strictEqual(t('station.fire.summary', { score: 1022 }), '分数 1022');
 
-    I18n.register('zh-Hant', { 'test.token': '選擇「{{name}}」，共 {{count}} 張' });
-    assert.strictEqual(t('test.token', { name: '桃紋', count: 4 }), '選擇「桃紋」，共 4 張');
-    assert.strictEqual(t('test.token', { name: '桃紋' }), '選擇「桃紋」，共 {{count}} 張', '缺 token 保留佔位');
+    I18n.register('zh-Hans', { 'test.token': '选择「{{name}}」，共 {{count}} 张' });
+    assert.strictEqual(t('test.token', { name: '桃纹', count: 4 }), '选择「桃纹」，共 4 张');
+    assert.strictEqual(t('test.token', { name: '桃纹' }), '选择「桃纹」，共 {{count}} 张', '缺 token 保留佔位');
 }
 
 // --- 未命中回傳 key 並 warn ---
@@ -73,30 +73,30 @@ function loadI18n(extra = {}) {
     let changed = null;
     I18n.onChange((loc) => { changed = loc; });
 
-    I18n.setLocale('zh-Hans');
-    assert.strictEqual(I18n.getLocale(), 'zh-Hans');
-    assert.strictEqual(changed, 'zh-Hans', 'onChange 應觸發');
-    assert.strictEqual(ls.getItem('museum-game-lang'), 'zh-Hans', '應寫入 localStorage');
-    assert.strictEqual(t('menu.start'), '搭乘时光机', '切換後取簡體');
+    I18n.setLocale('zh-Hant');
+    assert.strictEqual(I18n.getLocale(), 'zh-Hant');
+    assert.strictEqual(changed, 'zh-Hant', 'onChange 應觸發');
+    assert.strictEqual(ls.getItem('museum-game-lang'), 'zh-Hant', '應寫入 localStorage');
+    assert.strictEqual(t('menu.start'), '搭乘時光機', '切換後取繁體');
 
     I18n.setLocale('fr'); // 非法
-    assert.strictEqual(I18n.getLocale(), 'zh-Hans', '非法語言不生效');
+    assert.strictEqual(I18n.getLocale(), 'zh-Hant', '非法語言不生效');
 }
 
 // --- getStoredLocale：非法值、有效值、localStorage 拋錯 ---
 {
     const badLs = { getItem: () => 'klingon', setItem: () => {} };
     const { I18n } = loadI18n({ localStorage: badLs });
-    assert.strictEqual(I18n.getStoredLocale(), 'zh-Hant', '非法記憶值回退繁體');
+    assert.strictEqual(I18n.getStoredLocale(), 'zh-Hans', '非法記憶值回退簡體');
 
     const goodLs = makeLocalStorage();
-    goodLs.setItem('museum-game-lang', 'zh-Hans');
+    goodLs.setItem('museum-game-lang', 'zh-Hant');
     const b = loadI18n({ localStorage: goodLs });
-    assert.strictEqual(b.I18n.init(), 'zh-Hans', '有效記憶值生效');
+    assert.strictEqual(b.I18n.init(), 'zh-Hant', '有效記憶值生效');
 
     const throwLs = { getItem: () => { throw new Error('blocked'); }, setItem: () => {} };
     const c = loadI18n({ localStorage: throwLs });
-    assert.strictEqual(c.I18n.getStoredLocale(), 'zh-Hant', 'localStorage 拋錯時回退繁體');
+    assert.strictEqual(c.I18n.getStoredLocale(), 'zh-Hans', 'localStorage 拋錯時回退簡體');
 }
 
 // --- applyStatic：data-i18n 與 data-i18n-attr ---
@@ -113,13 +113,13 @@ function loadI18n(extra = {}) {
     const { I18n } = loadI18n({ document: fakeDoc });
     I18n.init();
     I18n.applyStatic();
-    assert.strictEqual(textEl.textContent, '回到現實');
-    assert.strictEqual(attrEl.getAttribute('alt'), '森美蘭客家文化博物館・傳統日常再現');
-
-    I18n.setLocale('zh-Hans');
-    I18n.applyStatic();
-    assert.strictEqual(textEl.textContent, '回到现实', '切換後重掃 data-i18n');
+    assert.strictEqual(textEl.textContent, '回到现实');
     assert.strictEqual(attrEl.getAttribute('alt'), '森美兰客家文化博物馆・传统日常再现');
+
+    I18n.setLocale('zh-Hant');
+    I18n.applyStatic();
+    assert.strictEqual(textEl.textContent, '回到現實', '切換後重掃 data-i18n');
+    assert.strictEqual(attrEl.getAttribute('alt'), '森美蘭客家文化博物館・傳統日常再現');
 }
 
 // --- 字典對照完整性：繁簡 key 必須一一對應 ---
@@ -196,7 +196,12 @@ function loadI18n(extra = {}) {
     }
 
     I18n.init();
-    const opening = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[0]);
+    I18n.setLocale('zh-Hant');
+    const openingNarration = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[0]);
+    assert.strictEqual(openingNarration.speaker, '旁白');
+    assert.ok(openingNarration.text.includes('吱呀'));
+    assert.ok(!openingNarration.text.includes('塵封'));
+    const opening = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[1]);
     assert.strictEqual(opening.speaker, '阿嬤');
     assert.ok(opening.text.includes('廚房'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龜紋');
@@ -204,12 +209,11 @@ function loadI18n(extra = {}) {
 
     I18n.setLocale('zh-Hans');
     const ending = context.Station34CombinedGame.localizeLine(
-        context.Station34CombinedStory.sections.cakeExit.lines[0],
+        context.Station34CombinedStory.sections.cakeAfterPress.lines[0],
         { patternName: '桃纹', meaning: '福寿吉祥' }
     );
     assert.strictEqual(ending.speaker, '阿嬷');
-    assert.ok(ending.text.includes('桃纹'));
-    assert.ok(!ending.text.includes('{{patternName}}'));
+    assert.ok(ending.text.includes('自己做的'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龟纹');
     assert.strictEqual(context.CakeStationGame.patterns[2].meaning, '年年有余');
     assert.ok(context.CakeStationGame.patterns.every((pattern) => pattern.blessing.startsWith('祝你')), '簡體四種祝福應統一使用「祝你」');
