@@ -4,6 +4,9 @@ window.I18n.register('zh-Hant', {
     // 載入 / 安裝
     'loading.text': '資源加載中...',
     'install.label': '安裝',
+    'pwa.update.message': '新版本已準備完成。',
+    'pwa.update.action': '更新並重新載入',
+    'pwa.update.later': '稍後',
 
     // 首頁
     'title.alt': '森美蘭客家文化博物館・傳統日常再現',
