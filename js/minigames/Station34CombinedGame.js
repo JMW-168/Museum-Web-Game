@@ -204,14 +204,10 @@ const Station34CombinedGame = {
         CradleStationGame.stop();
         if (!this.active) return;
         this.createShell('cradle');
-        if (this.only === 'cradle') {
-            this.showCradleResult(result);
-        } else {
-            this.showDialogue('cradleExit', () => this.showDialogue('cakeEntry', () => this.showDialogue('cakeGuide', () => this.startCake())));
-        }
+        this.showCradleResult(result);
     },
 
-    // 搖籃單關版：先看成果頁，再由「去找阿嬤」進入離開引導對話。
+    // 搖籃結果頁在單關版與融合版都會顯示，再由「去找阿嬤」進入離開引導對話。
     showCradleResult(result) {
         if (!this.container) return;
         const assisted = !!(result && result.assisted);
@@ -241,7 +237,11 @@ const Station34CombinedGame = {
             this.startCradle(); // 重玩只回遊戲，不重播對話
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => {
-            this.showDialogue('cradleExit', () => this.close(), {}, { actionLabelKey: 'story.action.returnLobby' });
+            if (this.only === 'cradle') {
+                this.showDialogue('cradleExit', () => this.close(), {}, { actionLabelKey: 'story.action.returnLobby' });
+            } else {
+                this.showDialogue('cradleExit', () => this.showDialogue('cakeEntry', () => this.showDialogue('cakeGuide', () => this.startCake())));
+            }
         });
     },
 

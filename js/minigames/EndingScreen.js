@@ -19,6 +19,8 @@ const EndingScreen = {
         const title = opts.title || this.tr('ending.title', '感謝遊玩');
         const subtitle = opts.subtitle || this.tr('ending.subtitle', '謝謝你來到客家土樓，和我們一起留下這段生活記憶。');
         const buttonLabel = opts.button || this.tr('ending.return', '返回入口');
+        const collectLabel = this.tr('ending.collect', '提供客家老物件');
+        const collectUrl = 'https://docs.google.com/forms/d/1uiZko3EHKSEQrplxtCcj6f6EU4Yiph-wJtnCdEDpwZc/viewform?pli=1&pli=1&edit_requested=true';
         const parent = document.getElementById('game-wrapper') || document.body;
         this.container = document.createElement('div');
         this.container.className = 'station-demo ending-screen';
@@ -29,6 +31,7 @@ const EndingScreen = {
                 <p class="ending-subtitle">${subtitle}</p>
                 <div class="station-actions ending-actions">
                     <button type="button" class="station-primary" data-ending-return>${buttonLabel}</button>
+                    <a class="station-secondary" href="${collectUrl}" target="_blank" rel="noopener noreferrer">${collectLabel}</a>
                 </div>
             </section>`;
         parent.appendChild(this.container);

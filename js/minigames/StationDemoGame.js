@@ -319,19 +319,6 @@ const StationDemoGame = {
             .catch((error) => this.showFireLoadError(error));
     },
 
-    finishCombinedFire() {
-        if (!this.state) return;
-        this.state.finished = true;
-        if (this.animationId) cancelAnimationFrame(this.animationId);
-        this.animationId = null;
-        this.stopFireMusic();
-        this.releaseFireAssets();
-        this.showCombinedDialogue('fireExit', () => {
-            this.station = this.getStation('tea');
-            this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
-        });
-    },
-
     startCombinedTea() {
         this.station = this.getStation('tea');
         this.setShellTheme('tea');
@@ -365,22 +352,6 @@ const StationDemoGame = {
             </section>
         `;
         this.container.querySelector('[data-exit]').addEventListener('click', () => this.close());
-    },
-
-    showCoachMessage(coachingId) {
-        if (this.mode !== 'combined' || !this.container) return;
-        const coaching = window.StationCombinedStory?.coaching?.[coachingId];
-        const play = this.container.querySelector('.station-play');
-        if (!coaching || !play) return;
-        const oldMessage = play.querySelector('.station-coach-line');
-        if (oldMessage) oldMessage.remove();
-        const message = document.createElement('div');
-        message.className = 'station-coach-line';
-        const speaker = document.createElement('strong');
-        speaker.textContent = `${this.tr(coaching.speakerKey)}：`;
-        message.append(speaker, document.createTextNode(this.tr(coaching.textKey)));
-        play.appendChild(message);
-        this.timers.push(setTimeout(() => message.remove(), 6200));
     },
 
     startFireGame() {
@@ -514,10 +485,6 @@ const StationDemoGame = {
                     this.state.startedAt = time;
                     this.state.lastTickAt = time;
                     this.renderFireHud();
-                    if (this.mode === 'combined' && !this.state.coachShown) {
-                        this.state.coachShown = true;
-                        this.timers.push(setTimeout(() => this.showCoachMessage('fire'), 2600));
-                    }
                     this.animationId = requestAnimationFrame((nextTime) => this.tickFire(nextTime));
                 });
             })
@@ -1427,10 +1394,6 @@ const StationDemoGame = {
         this.state.feedback = this.tr('station.tea.started', { item: item.name, verb: config.verb });
         this.playClick();
         this.renderTeaStage();
-        if (this.mode === 'combined' && this.state.phase === 'grind' && this.state.currentIndex === 0 && !this.state.coachShown) {
-            this.state.coachShown = true;
-            this.showCoachMessage('tea');
-        }
     },
 
     flashTeaError(message, itemId) {
@@ -1708,11 +1671,7 @@ const StationDemoGame = {
         this.station.fireSummary = this.tr('station.fire.summary', {
             score: totalScore
         });
-        if (this.mode === 'combined') {
-            this.finishCombinedFire();
-            return;
-        }
-        // 單關版：先看結果，再由「去找阿罵」進入離開引導對話。
+        // 灶台結果頁在單關版與融合版都會顯示，再由「去找阿罵」進入離開引導對話。
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         this.stopFireMusic();
@@ -1749,7 +1708,14 @@ const StationDemoGame = {
             if (this.state.stationId === 'tea') this.startTeaGame();
         });
         this.container.querySelector('[data-back]').addEventListener('click', () => {
-            this.showCombinedDialogue('fireExit', () => this.close(), { actionLabelKey: 'story.action.returnLobby' });
+            if (this.mode === 'combined') {
+                this.showCombinedDialogue('fireExit', () => {
+                    this.station = this.getStation('tea');
+                    this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
+                });
+            } else {
+                this.showCombinedDialogue('fireExit', () => this.close(), { actionLabelKey: 'story.action.returnLobby' });
+            }
         });
     },
 
@@ -1761,14 +1727,9 @@ const StationDemoGame = {
     showCombinedEnding() {
         const continueToSecondHalf = this.fullStory;
         this.stop();
-        if (continueToSecondHalf && window.Station34CombinedGame && window.EndingScreen) {
-            // 「完整劇情體驗」：上半場（灶台＋擂茶）結束後接中場過場，再進三四關。
-            EndingScreen.show(() => Station34CombinedGame.start(), {
-                kicker: this.tr('story.intermission.kicker'),
-                title: this.tr('story.intermission.title'),
-                subtitle: this.tr('story.intermission.subtitle'),
-                button: this.tr('story.intermission.continue')
-            });
+        if (continueToSecondHalf && window.Station34CombinedGame) {
+            // 「完整劇情體驗」：上半場（灶台＋擂茶）結束後直接接三四關，不再顯示中場過場。
+            Station34CombinedGame.start();
             return;
         }
         if (window.EndingScreen) EndingScreen.show(() => showScene('level-select'));

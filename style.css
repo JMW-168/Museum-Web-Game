@@ -457,6 +457,9 @@ button {
     align-items: center;
     column-gap: 16px;
     text-align: left;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
     border: 2px solid rgba(255, 215, 0, 0.45);
     border-radius: 5px;
     background: rgba(23, 38, 45, 0.9);

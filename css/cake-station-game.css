@@ -608,7 +608,7 @@ body.cake-station-active #game-wrapper {
 }
 
 .cake-dough-tray.filling-mode {
-    background-image: url('../assets/images/station-cake/filling-bowl.png');
+    background-image: url('../assets/images/station-cake/filling-bowl.png?v=2');
 }
 
 .station-demo-cake .cake-filling-ball {
@@ -622,7 +622,7 @@ body.cake-station-active #game-wrapper {
     padding: 0;
     transform: translate(-50%, -50%);
     border: 0;
-    background: url('../assets/images/station-cake/filling-ball.png') center / contain no-repeat;
+    background: url('../assets/images/station-cake/filling-ball.png?v=2') center / contain no-repeat;
     filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .32));
     cursor: grab;
 }
@@ -686,7 +686,7 @@ body.cake-station-active #game-wrapper {
 }
 
 .station-demo-cake .cake-dough.wrapping {
-    background-image: url('../assets/images/station-cake/filling-wrapping.png');
+    background-image: url('../assets/images/station-cake/filling-wrapping.png?v=2');
 }
 
 .station-demo-cake .cake-mold-tool {
@@ -1070,5 +1070,9 @@ body.cake-station-active #game-wrapper {
 
 @media (orientation: landscape) and (max-height: 560px) {
     #level-select .station-entry-list.has-cake-station { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    #level-select .station-entry-list.has-cake-station .station-entry-combined { grid-column: 1 / -1; min-height: 54px; }
+    #level-select .station-entry-list.has-cake-station .station-entry-combined,
+    #level-select .station-entry-list.has-cake-station .station-entry-collect {
+        grid-column: span 2;
+        min-height: 54px;
+    }
 }
