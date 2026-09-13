@@ -90,6 +90,9 @@ function showAgeSelect() {
 
 function showScene(sceneId) {
     if (window.Logger) Logger.info('切換場景到:', sceneId);
+    const isGameScene = sceneId === 'game-container';
+    document.documentElement.classList.toggle('game-input-locked', isGameScene);
+    document.body.classList.toggle('game-input-locked', isGameScene);
     if (window.SceneManager?.show) {
         SceneManager.show(sceneId);
     } else {
@@ -100,6 +103,34 @@ function showScene(sceneId) {
         if (target) target.style.display = 'flex';
     }
     updateServiceWorkerUpdateBanner();
+}
+
+function setupGameViewportGestureGuard() {
+    const gameContainer = document.getElementById('game-container');
+    if (!gameContainer) return;
+
+    const isNativeControl = (target) => target instanceof Element
+        && target.closest('button, a, input, select, textarea, [contenteditable="true"]');
+    const preventViewportGesture = (event) => event.preventDefault();
+    let lastTouchEndAt = 0;
+
+    // Safari 的 touch-action 支援不完整；遊戲畫面中補上非被動監聽，
+    // 阻擋雙擊與縮放手勢。原生按鈕維持預設行為，其他遊戲區則不允許捲動。
+    gameContainer.addEventListener('touchmove', (event) => {
+        if (!isNativeControl(event.target)) event.preventDefault();
+    }, { passive: false });
+    gameContainer.addEventListener('touchend', (event) => {
+        if (isNativeControl(event.target)) {
+            lastTouchEndAt = 0;
+            return;
+        }
+        const now = event.timeStamp;
+        if (now - lastTouchEndAt < 350) event.preventDefault();
+        lastTouchEndAt = now;
+    }, { passive: false });
+    ['gesturestart', 'gesturechange', 'gestureend', 'dblclick'].forEach((type) => {
+        gameContainer.addEventListener(type, preventViewportGesture, { passive: false });
+    });
 }
 
 function setupInstallButton() {
@@ -161,7 +192,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=114', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=116', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -213,6 +244,7 @@ function showExitConfirm(callback) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     updateAppViewportHeight();
+    setupGameViewportGestureGuard();
     window.I18n?.init();
     setupLanguageSwitch();
     setupInstallButton();
