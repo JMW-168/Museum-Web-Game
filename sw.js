@@ -5,7 +5,7 @@ const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${RELEASE_VERSION}`;
 
 const SHELL_ASSETS = [
   './', 'index.html', 'manifest.json',
-  'style.css?v=114', 'css/station-demo-game.css?v=90', 'css/cake-station-game.css?v=71',
+  'style.css?v=114', 'css/station-demo-game.css?v=115', 'css/cake-station-game.css?v=71',
   'js/i18n/i18n.js?v=45', 'js/i18n/zh-Hant.js?v=114', 'js/i18n/zh-Hans.js?v=114',
   'js/core/Logger.js?v=114', 'js/core/ErrorReporter.js?v=114',
   'js/core/LoadingManager.js?v=114', 'js/core/AudioManager.js?v=114', 'js/core/SceneManager.js?v=114',
