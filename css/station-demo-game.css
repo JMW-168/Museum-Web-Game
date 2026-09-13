@@ -2461,11 +2461,11 @@
     max-height: none;
     object-fit: contain;
     pointer-events: none;
-    transform: scaleX(-1);
 }
 
 .station-demo-fire .fire-flame-img {
-    left: 55%;
+    /* 灶台原圖的灶口在右側；火焰與柴火判定都讀取這個元素的中心。 */
+    left: 70%;
     bottom: 14%;
     z-index: 3;
     width: 25%;
