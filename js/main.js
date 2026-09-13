@@ -235,11 +235,11 @@ function setupServiceWorkerUpdate() {
 }
 
 function bindStationButtons() {
-    document.querySelectorAll('[data-station-demo]').forEach((button) => {
+    document.querySelectorAll('[data-station]').forEach((button) => {
         button.addEventListener('click', () => {
             window.AudioManager?.playSFX('assets/sounds/click.mp3');
-            if (typeof startStationDemo === 'function') {
-                startStationDemo(button.dataset.stationDemo);
+            if (typeof startStationGame === 'function') {
+                startStationGame(button.dataset.station);
                 return;
             }
             alert(window.t ? t('common.notLoaded') : '遊戲尚未載入，請重新整理頁面。');

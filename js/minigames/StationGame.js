@@ -1,4 +1,4 @@
-const StationDemoGame = {
+const StationGame = {
     container: null,
     station: null,
     state: null,
@@ -149,14 +149,14 @@ const StationDemoGame = {
     createShell(stationId) {
         const parent = document.getElementById('game-wrapper') || document.body;
         this.container = document.createElement('div');
-        this.container.className = `station-demo station-demo-${stationId}`;
+        this.container.className = `station-game station-game-${stationId}`;
         parent.appendChild(this.container);
     },
 
     setShellTheme(stationId) {
         if (!this.container) return;
-        this.container.classList.remove('station-demo-fire', 'station-demo-tea');
-        this.container.classList.add(`station-demo-${stationId}`);
+        this.container.classList.remove('station-game-fire', 'station-game-tea');
+        this.container.classList.add(`station-game-${stationId}`);
     },
 
     // opts.actionLabelKey：覆寫本段最後一句的 CTA 文字／去向（單關版用 story.action.seeResult）。
@@ -1935,7 +1935,7 @@ const StationDemoGame = {
     }
 };
 
-function startStationDemo(stationId) {
+function startStationGame(stationId) {
     if (stationId === 'combined34' && window.Station34CombinedGame) {
         Station34CombinedGame.start();
         return;
@@ -1944,7 +1944,7 @@ function startStationDemo(stationId) {
         if (window.Station34CombinedGame) Station34CombinedGame.stop();
         if (window.CradleStationGame) CradleStationGame.stop();
         if (window.CakeStationGame) CakeStationGame.stop();
-        StationDemoGame.start('story');
+        StationGame.start('story');
         return;
     }
     if (window.Station34CombinedGame) Station34CombinedGame.stop();
@@ -1955,8 +1955,8 @@ function startStationDemo(stationId) {
     }
     if (window.CradleStationGame) CradleStationGame.stop();
     if (window.CakeStationGame) CakeStationGame.stop();
-    StationDemoGame.start(stationId);
+    StationGame.start(stationId);
 }
 
-window.StationDemoGame = StationDemoGame;
-window.startStationDemo = startStationDemo;
+window.StationGame = StationGame;
+window.startStationGame = startStationGame;

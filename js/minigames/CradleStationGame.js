@@ -47,7 +47,7 @@ const CradleStationGame = {
         this.mode = options.mode || 'standalone';
         this.onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
         this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
-        if (window.StationDemoGame) window.StationDemoGame.stop();
+        if (window.StationGame) window.StationGame.stop();
         showScene('game-container');
         if (window.AudioManager) AudioManager.stopBGM();
         this.preloadBabyImages();
@@ -61,7 +61,7 @@ const CradleStationGame = {
     createShell() {
         const parent = document.getElementById('game-wrapper') || document.body;
         this.container = document.createElement('div');
-        this.container.className = 'station-demo station-demo-cradle';
+        this.container.className = 'station-game station-game-cradle';
         parent.appendChild(this.container);
     },
 

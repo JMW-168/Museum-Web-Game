@@ -25,7 +25,7 @@ const Station34CombinedGame = {
 
     start(options = {}) {
         this.stop();
-        if (window.StationDemoGame) StationDemoGame.stop();
+        if (window.StationGame) StationGame.stop();
         this.only = options.only || null;
         this.active = true;
         showScene('game-container');
@@ -42,7 +42,7 @@ const Station34CombinedGame = {
         this.removeShell();
         const parent = document.getElementById('game-wrapper') || document.body;
         this.container = document.createElement('div');
-        this.container.className = `station-demo station-demo-${theme}`;
+        this.container.className = `station-game station-game-${theme}`;
         parent.appendChild(this.container);
     },
 
@@ -55,7 +55,7 @@ const Station34CombinedGame = {
             return;
         }
         this.clearTyping();
-        this.container.className = `station-demo station-demo-${section.theme}`;
+        this.container.className = `station-game station-game-${section.theme}`;
         let lineIndex = 0;
 
         const renderLine = () => {
@@ -211,7 +211,7 @@ const Station34CombinedGame = {
     showCradleResult(result) {
         if (!this.container) return;
         const assisted = !!(result && result.assisted);
-        this.container.className = 'station-demo station-demo-cradle';
+        this.container.className = 'station-game station-game-cradle';
         this.container.innerHTML = `
             <section class="station-panel station-result-panel cradle-result-panel has-guide">
                 <div class="cradle-result-head">

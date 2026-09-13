@@ -430,7 +430,7 @@ button {
     color: #fff;
     background-image:
         linear-gradient(rgba(12, 18, 18, 0.2), rgba(12, 18, 18, 0.42)),
-        url('assets/images/demo/entry-background.webp');
+        url('assets/images/title/entry-background.webp');
 }
 
 #level-select h2 {

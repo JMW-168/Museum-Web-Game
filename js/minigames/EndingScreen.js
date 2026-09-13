@@ -23,7 +23,7 @@ const EndingScreen = {
         const collectUrl = 'https://docs.google.com/forms/d/1uiZko3EHKSEQrplxtCcj6f6EU4Yiph-wJtnCdEDpwZc/viewform?pli=1&pli=1&edit_requested=true';
         const parent = document.getElementById('game-wrapper') || document.body;
         this.container = document.createElement('div');
-        this.container.className = 'station-demo ending-screen';
+        this.container.className = 'station-game ending-screen';
         this.container.innerHTML = `
             <section class="ending-panel" role="group" aria-label="${kicker}">
                 <div class="ending-kicker">${kicker}</div>

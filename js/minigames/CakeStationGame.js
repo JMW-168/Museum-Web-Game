@@ -31,7 +31,7 @@ const CakeStationGame = {
         this.mode = options.mode || 'standalone';
         this.onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
         this.onExit = typeof options.onExit === 'function' ? options.onExit : null;
-        if (window.StationDemoGame) StationDemoGame.stop();
+        if (window.StationGame) StationGame.stop();
         showScene('game-container');
         if (window.AudioManager) AudioManager.stopBGM();
         this.createShell();
@@ -64,7 +64,7 @@ const CakeStationGame = {
         const parent = document.getElementById('game-wrapper') || document.body;
         document.body.classList.add('cake-station-active');
         this.container = document.createElement('div');
-        this.container.className = 'station-demo station-demo-cake';
+        this.container.className = 'station-game station-game-cake';
         parent.appendChild(this.container);
     },
 

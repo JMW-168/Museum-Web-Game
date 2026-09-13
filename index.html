@@ -14,9 +14,9 @@
     <link rel="apple-touch-icon" href="assets/icons/icon-256.png">
     
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=116">
-    <link rel="stylesheet" href="css/station-demo-game.css?v=121">
-    <link rel="stylesheet" href="css/cake-station-game.css?v=71">
+    <link rel="stylesheet" href="style.css?v=117">
+    <link rel="stylesheet" href="css/station-game.css?v=122">
+    <link rel="stylesheet" href="css/cake-station-game.css?v=72">
 </head>
 <body>
     <div id="game-wrapper">
@@ -116,27 +116,27 @@
             <h2 data-i18n="level.title">选择游戏入口</h2>
             <p class="level-subtitle" data-i18n="level.subtitle">请根据您的所在位置挑选您的站点</p>
             <div class="level-buttons station-entry-list has-cake-station">
-                <button id="station-fire-btn" class="station-entry" type="button" data-station-demo="fire">
+                <button id="station-fire-btn" class="station-entry" type="button" data-station="fire">
                     <span class="station-kicker" data-i18n="level.fire.kicker">站点 1</span>
                     <span class="station-title" data-i18n="level.fire.title">灶台生火</span>
                     <span class="station-desc" data-i18n="level.fire.desc">帮客家阿嬷燃起灶台的炉火吧！</span>
                 </button>
-                <button id="station-tea-btn" class="station-entry" type="button" data-station-demo="tea">
+                <button id="station-tea-btn" class="station-entry" type="button" data-station="tea">
                     <span class="station-kicker" data-i18n="level.tea.kicker">站点 2</span>
                     <span class="station-title" data-i18n="level.tea.title">擂茶料理</span>
                     <span class="station-desc" data-i18n="level.tea.desc">端出一碗擂茶，这是客家人最实在的待客之道。</span>
                 </button>
-                <button id="station-cradle-btn" class="station-entry" type="button" data-station-demo="cradle">
+                <button id="station-cradle-btn" class="station-entry" type="button" data-station="cradle">
                     <span class="station-kicker" data-i18n="level.cradle.kicker">站点 3</span>
                     <span class="station-title" data-i18n="level.cradle.title">摇篮哄睡</span>
                     <span class="station-desc" data-i18n="level.cradle.desc">接过阿嬷手里的摇篮，把孩子轻轻哄进梦里。</span>
                 </button>
-                <button id="station-cake-btn" class="station-entry" type="button" data-station-demo="cake">
+                <button id="station-cake-btn" class="station-entry" type="button" data-station="cake">
                     <span class="station-kicker" data-i18n="level.cake.kicker">站点 4</span>
                     <span class="station-title" data-i18n="level.cake.title">粄印制作</span>
                     <span class="station-desc" data-i18n="level.cake.desc">印一个红粄，把衷心的祝福压进米团里。</span>
                 </button>
-                <button id="station-story-btn" class="station-entry station-entry-combined" type="button" data-station-demo="story">
+                <button id="station-story-btn" class="station-entry station-entry-combined" type="button" data-station="story">
                     <span class="station-kicker" data-i18n="level.story.kicker">约 10 分钟</span>
                     <span class="station-title" data-i18n="level.story.title">完整剧情体验</span>
                     <span class="station-desc" data-i18n="level.story.desc">跟着阿嬷阿公，完整体验上述四项客家故事。</span>
@@ -186,17 +186,17 @@
     <script src="js/data/stationCombinedStory.js?v=54"></script>
     <script src="js/data/station34CombinedStory.js?v=55"></script>
     <script src="js/data/cakePatterns.js?v=47"></script>
-    <script src="js/data/combinedStoryPacing.js?v=43"></script>
+    <script src="js/data/combinedStoryPacing.js?v=44"></script>
 
     <!-- ========== 現行站點玩法 ========== -->
     <script src="js/minigames/StationIntroGuide.js?v=49"></script>
-    <script src="js/minigames/EndingScreen.js?v=52"></script>
-    <script src="js/minigames/CradleStationGame.js?v=55"></script>
-    <script src="js/minigames/CakeStationGame.js?v=59"></script>
-    <script src="js/minigames/Station34CombinedGame.js?v=61"></script>
-    <script src="js/minigames/StationDemoGame.js?v=82"></script>
-    
+    <script src="js/minigames/EndingScreen.js?v=53"></script>
+    <script src="js/minigames/CradleStationGame.js?v=56"></script>
+    <script src="js/minigames/CakeStationGame.js?v=60"></script>
+    <script src="js/minigames/Station34CombinedGame.js?v=62"></script>
+    <script src="js/minigames/StationGame.js?v=83"></script>
+
     <!-- ========== 主入口（最後載入） ========== -->
-    <script src="js/main.js?v=119"></script>
+    <script src="js/main.js?v=120"></script>
 </body>
 </html>
