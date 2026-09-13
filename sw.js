@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'museum-web-game';
-const RELEASE_VERSION = 'v124';
+const RELEASE_VERSION = 'v125';
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${RELEASE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${RELEASE_VERSION}`;
 
@@ -13,7 +13,8 @@ const SHELL_ASSETS = [
   'js/data/cakePatterns.js?v=47', 'js/data/combinedStoryPacing.js?v=44',
   'js/minigames/StationIntroGuide.js?v=49', 'js/minigames/EndingScreen.js?v=53',
   'js/minigames/CradleStationGame.js?v=56', 'js/minigames/CakeStationGame.js?v=60',
-  'js/minigames/Station34CombinedGame.js?v=62', 'js/minigames/StationGame.js?v=83', 'js/main.js?v=120',
+  'js/minigames/Station34CombinedGame.js?v=62', 'js/minigames/FireStationGame.js?v=1',
+  'js/minigames/TeaStationGame.js?v=1', 'js/minigames/StationGame.js?v=84', 'js/main.js?v=120',
   'assets/icons/icon-16.png', 'assets/icons/icon-32.png', 'assets/icons/icon-64.png',
   'assets/icons/icon-128.png', 'assets/icons/icon-256.png', 'assets/images/title/cover-20260909.webp',
   'assets/images/title/title-20260904.png', 'assets/images/title/title-20260904-simplified.png',
