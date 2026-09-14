@@ -246,6 +246,7 @@ const TeaStationGame = {
         const play = game.container?.querySelector('.tea-play');
         const begin = () => {
             if (!game.state || game.state.stationId !== 'tea' || game.state.finished) return;
+            window.GameAnalytics?.start('tea', game.fullStory ? 'full_story' : game.mode || 'standalone');
             TeaStationGame.startTeaTrack(game);
             TeaStationGame.startTeaTimer(game);
             // 先讓研磨的第一輪互動穩定，再在空檔載入下一階段，避免低速網路搶走石臼換圖資源。
@@ -816,6 +817,7 @@ const TeaStationGame = {
         if (!game.state || !game.container) return;
         TeaStationGame.clearTeaTimer(game);
         game.state.finished = true;
+        window.GameAnalytics?.complete('tea');
         // 兩種入口都先看成果頁，再由成果頁進入阿公的結尾對話。
         TeaStationGame.renderTeaResult(game);
     },

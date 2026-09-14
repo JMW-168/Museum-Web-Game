@@ -142,6 +142,7 @@ const CakeStationGame = {
 
     startMatching() {
         if (!this.state) return;
+        window.GameAnalytics?.start('cake', this.mode);
         const ids = this.patterns.map((pattern) => pattern.id);
         this.state.topOrder = this.shuffle(ids);
         this.state.bottomOrder = this.shuffle(ids);
@@ -712,6 +713,7 @@ const CakeStationGame = {
         this.lastResult = { selectedPatternId: pattern.id, pattern: { ...pattern } };
         window.selectedPatternId = pattern.id;
         window.dispatchEvent(new CustomEvent('cake-station-complete', { detail: this.lastResult }));
+        window.GameAnalytics?.complete('cake');
         if (this.onComplete) {
             this.onComplete(this.getResult());
             return;
@@ -917,6 +919,7 @@ const CakeStationGame = {
 
     close() {
         const onExit = this.onExit;
+        window.GameAnalytics?.abandon('leave_button', 'cake');
         this.stop();
         if (onExit) onExit();
         else showScene('level-select');

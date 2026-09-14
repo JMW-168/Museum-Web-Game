@@ -316,6 +316,7 @@ const StationGame = {
     },
 
     close() {
+        window.GameAnalytics?.abandon('leave_button');
         this.stop();
         showScene('level-select');
     },

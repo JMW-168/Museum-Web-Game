@@ -151,6 +151,7 @@ const CradleStationGame = {
         const play = this.container?.querySelector('.cradle-play');
         const begin = () => {
             if (!this.state || this.state.finished) return;
+            window.GameAnalytics?.start('cradle', this.mode);
             const now = performance.now();
             this.state.startedAt = now;
             this.state.lastFrameAt = now;
@@ -328,6 +329,7 @@ const CradleStationGame = {
         if (!this.state || !this.container) return;
         const result = { assisted };
         window.dispatchEvent(new CustomEvent('cradle-station-complete', { detail: result }));
+        window.GameAnalytics?.complete('cradle');
         if (this.onComplete) {
             this.onComplete(result);
             return;
@@ -413,6 +415,7 @@ const CradleStationGame = {
 
     close() {
         const onExit = this.onExit;
+        window.GameAnalytics?.abandon('leave_button', 'cradle');
         this.stop();
         if (onExit) onExit();
         else showScene('level-select');

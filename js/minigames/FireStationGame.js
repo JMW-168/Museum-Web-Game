@@ -153,6 +153,7 @@ const FireStationGame = {
 
     beginFireLoop(game) {
         if (!game.state || game.state.finished || game.state.stationId !== 'fire') return;
+        window.GameAnalytics?.start('fire', game.fullStory ? 'full_story' : game.mode || 'standalone');
         const play = game.container.querySelector('.station-play');
         if (play) play.classList.remove('is-preparing');
         if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
@@ -642,6 +643,7 @@ const FireStationGame = {
         if (game.animationId) cancelAnimationFrame(game.animationId);
         game.animationId = null;
         FireStationGame.stopFireMusic(game);
+        window.GameAnalytics?.complete('fire');
         game.showResult(success);
     },
 
