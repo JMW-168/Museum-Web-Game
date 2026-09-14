@@ -10,24 +10,28 @@ const TeaStationGame = {
         'assets/images/station-tea/peanut.webp',
         'assets/images/station-tea/sesame.webp',
         'assets/images/station-tea/pestle.webp',
-        'assets/images/station-tea/mortar-1.webp',
-        'assets/images/station-tea/mortar-2.webp',
-        'assets/images/station-tea/mortar-3.webp',
-        'assets/images/station-tea/mortar-4.webp',
         'assets/images/station-fire/wood-small.webp',
         'assets/images/station-fire/wood-large.webp',
         'assets/images/station-tea/stone.webp'
     ],
-    teaDeferredImageUrls: [
+    teaMortarImageUrls: [
+        'assets/images/station-tea/mortar-1.webp',
+        'assets/images/station-tea/mortar-2.webp',
+        'assets/images/station-tea/mortar-3.webp',
+        'assets/images/station-tea/mortar-4.webp'
+    ],
+    teaChopImageUrls: [
         'assets/images/station-tea/chop-tool-sprites-v2.webp',
         'assets/images/station-tea/long-bean.webp',
         'assets/images/station-tea/radish.webp',
         'assets/images/station-tea/tree-veg.webp',
         'assets/images/station-tea/tofu.webp',
         'assets/images/station-tea/knife.webp',
-        'assets/images/station-tea/chopped-bowls-strip.webp',
-        'assets/images/station-tea/tea-result-v2.webp'
+        'assets/images/station-tea/chopped-bowls-strip.webp'
     ],
+    teaResultImageUrls: ['assets/images/station-tea/tea-result-v2.webp'],
+    teaMortarFrames: new Map(),
+    teaMortarFramesRequest: null,
     teaAssetTimeoutMs: 12000,
 
     startCombinedTea(game) {
@@ -42,7 +46,6 @@ const TeaStationGame = {
         return TeaStationGame.prepareTeaAssets()
             .then(() => {
                 if (!loadHost || game.container !== loadHost) return;
-                TeaStationGame.preloadDeferredTeaAssets();
                 TeaStationGame.startTeaGame(game);
             })
             .catch((error) => {
@@ -134,7 +137,10 @@ const TeaStationGame = {
     },
 
     prepareTeaAssets() {
-        return TeaStationGame.loadTeaImages(TeaStationGame.teaEssentialImageUrls, TeaStationGame.teaAssetTimeoutMs);
+        return Promise.all([
+            TeaStationGame.loadTeaImages(TeaStationGame.teaEssentialImageUrls, TeaStationGame.teaAssetTimeoutMs),
+            TeaStationGame.prepareTeaMortarFrames()
+        ]);
     },
 
     warmTeaAssets() {
@@ -143,9 +149,38 @@ const TeaStationGame = {
         });
     },
 
-    preloadDeferredTeaAssets() {
-        TeaStationGame.loadTeaImages(TeaStationGame.teaDeferredImageUrls).catch((error) => {
-            if (window.Logger) window.Logger.warn('關卡二後續素材背景載入失敗，進入階段時會再次請求:', error);
+    prepareTeaMortarFrames() {
+        if (TeaStationGame.teaMortarFramesRequest) return TeaStationGame.teaMortarFramesRequest;
+        const missingUrls = TeaStationGame.teaMortarImageUrls.filter((src) => !TeaStationGame.teaMortarFrames.has(src));
+        if (!missingUrls.length) return Promise.resolve();
+        const request = Promise.all(missingUrls.map((src) => new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => {
+                const decoded = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
+                decoded.then(() => {
+                    TeaStationGame.teaMortarFrames.set(src, image);
+                    resolve(src);
+                }).catch(() => reject(new Error(`石臼圖片解碼失敗：${src}`)));
+            };
+            image.onerror = () => reject(new Error(`無法載入石臼圖片：${src}`));
+            image.src = src;
+        })));
+        TeaStationGame.teaMortarFramesRequest = request;
+        request.catch(() => {
+            if (TeaStationGame.teaMortarFramesRequest === request) TeaStationGame.teaMortarFramesRequest = null;
+        });
+        return request;
+    },
+
+    preloadTeaChopAssets() {
+        TeaStationGame.loadTeaImages(TeaStationGame.teaChopImageUrls).catch((error) => {
+            if (window.Logger) window.Logger.warn('關卡二切料素材背景載入失敗，進入切料時會再次請求:', error);
+        });
+    },
+
+    preloadTeaResultAssets() {
+        TeaStationGame.loadTeaImages(TeaStationGame.teaResultImageUrls).catch((error) => {
+            if (window.Logger) window.Logger.warn('關卡二成果素材背景載入失敗，顯示成果時會再次請求:', error);
         });
     },
 
@@ -213,6 +248,8 @@ const TeaStationGame = {
             if (!game.state || game.state.stationId !== 'tea' || game.state.finished) return;
             TeaStationGame.startTeaTrack(game);
             TeaStationGame.startTeaTimer(game);
+            // 先讓研磨的第一輪互動穩定，再在空檔載入下一階段，避免低速網路搶走石臼換圖資源。
+            game.timers.push(setTimeout(() => TeaStationGame.preloadTeaChopAssets(), 4000));
         };
         if (game.teaGuideShown || !play || typeof StationIntroGuide === 'undefined') {
             begin();
@@ -757,6 +794,7 @@ const TeaStationGame = {
         if (!game.state || game.state.stationId !== 'tea') return;
         TeaStationGame.clearTeaTimer(game);
         if (game.state.phase === 'grind') {
+            TeaStationGame.preloadTeaResultAssets();
             game.state.phase = 'chop';
             game.state.currentIndex = 0;
             game.state.processing = false;
