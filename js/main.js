@@ -4,6 +4,35 @@ let deferredInstallPrompt = null;
 let waitingServiceWorker = null;
 let isApplyingServiceWorkerUpdate = false;
 let hasDismissedServiceWorkerUpdate = false;
+
+// 僅在業主交付站送出 GA4，開發與測試 Pages 不會污染正式使用數據。
+const GA4_MEASUREMENT_ID = 'G-PKVJPFCPDZ';
+const GA4_ALLOWED_HOST = 'persatuankebudayaanhakkagame-gif.github.io';
+
+function isGa4Enabled() {
+    return window.location.hostname === GA4_ALLOWED_HOST;
+}
+
+function initGa4() {
+    if (!isGa4Enabled()) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA4_MEASUREMENT_ID);
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+}
+
+function trackGa4Event(eventName, parameters = {}) {
+    if (!isGa4Enabled() || typeof window.gtag !== 'function') return;
+    window.gtag('event', eventName, {
+        language: window.I18n?.getLocale?.() || document.documentElement.lang,
+        ...parameters
+    });
+}
 let stationBackgroundPrefetchStarted = false;
 
 const STATION_BACKGROUND_URLS = [
@@ -238,7 +267,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=127', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=130', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -259,6 +288,7 @@ function setupServiceWorkerUpdate() {
 function bindStationButtons() {
     document.querySelectorAll('[data-station]').forEach((button) => {
         button.addEventListener('click', () => {
+            trackGa4Event('experience_entry_click', { entry_id: button.dataset.station, entry_type: 'game' });
             window.AudioManager?.playSFX('assets/sounds/click.mp3');
             if (typeof startStationGame === 'function') {
                 startStationGame(button.dataset.station);
@@ -290,6 +320,7 @@ function showExitConfirm(callback) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     updateAppViewportHeight();
+    initGa4();
     setupGameViewportGestureGuard();
     window.I18n?.init();
     setupLanguageSwitch();
@@ -306,8 +337,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 首頁 → 引導說明頁（土樓旁白 → 爺爺奶奶歡迎）→ 選擇遊戲頁
     document.getElementById('startBtn')?.addEventListener('click', () => {
+        trackGa4Event('home_start_click');
         window.AudioManager?.playSFX('assets/sounds/click.mp3');
         showScene('intro');
+    });
+
+    document.getElementById('station-collect-btn')?.addEventListener('click', () => {
+        trackGa4Event('experience_entry_click', { entry_id: 'collection', entry_type: 'collection' });
     });
 
     document.getElementById('introNextBtn')?.addEventListener('click', () => {
