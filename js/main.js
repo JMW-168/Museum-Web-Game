@@ -33,6 +33,61 @@ function trackGa4Event(eventName, parameters = {}) {
         ...parameters
     });
 }
+
+// 一次實際遊玩只會有一筆結束事件：完成、主動離開與離開頁面都會收尾。
+// 重玩次數維持在目前分頁，避免把不同造訪日的同一位玩家誤判為連續重玩。
+const GameAnalytics = {
+    activeRun: null,
+    attemptCounts: new Map(),
+
+    start(stationId, playMode = 'standalone') {
+        if (!isGa4Enabled()) return;
+        if (this.activeRun) this.end('abandoned', 'station_switch');
+
+        const key = `${stationId}:${playMode}`;
+        const attemptNumber = (this.attemptCounts.get(key) || 0) + 1;
+        this.attemptCounts.set(key, attemptNumber);
+        this.activeRun = { stationId, playMode, attemptNumber, startedAt: performance.now() };
+        trackGa4Event('station_started', {
+            station_id: stationId,
+            play_mode: playMode,
+            attempt_number: attemptNumber
+        });
+        if (attemptNumber > 1) {
+            trackGa4Event('station_retry', {
+                station_id: stationId,
+                play_mode: playMode,
+                attempt_number: attemptNumber
+            });
+        }
+    },
+
+    complete(stationId) {
+        this.end('completed', 'completed', stationId);
+    },
+
+    abandon(exitMethod = 'leave_button', stationId) {
+        this.end('abandoned', exitMethod, stationId);
+    },
+
+    end(status, exitMethod, stationId) {
+        const run = this.activeRun;
+        if (!run || (stationId && run.stationId !== stationId)) return;
+        const durationSeconds = Math.max(0, Math.round((performance.now() - run.startedAt) / 1000));
+        trackGa4Event(status === 'completed' ? 'station_completed' : 'station_abandoned', {
+            station_id: run.stationId,
+            play_mode: run.playMode,
+            attempt_number: run.attemptNumber,
+            duration_seconds: durationSeconds,
+            exit_method: exitMethod
+        });
+        this.activeRun = null;
+    }
+};
+
+window.GameAnalytics = GameAnalytics;
+// 關閉分頁、重新整理或切到別處時，以 pagehide 做最佳努力的中途離開紀錄。
+window.addEventListener('pagehide', () => GameAnalytics.abandon('page_hidden'));
 let stationBackgroundPrefetchStarted = false;
 
 const STATION_BACKGROUND_URLS = [
@@ -267,7 +322,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=130', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=131', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
