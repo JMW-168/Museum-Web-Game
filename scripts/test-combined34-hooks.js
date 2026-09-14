@@ -5,7 +5,7 @@ const vm = require('vm');
 
 const root = path.resolve(__dirname, '..');
 
-function loadGame(relativePath, exportExpression, extras = {}) {
+function loadGame(relativePath, exportExpression, extras = {}, extraSourcePaths = []) {
     const context = {
         console,
         setTimeout,
@@ -26,16 +26,17 @@ function loadGame(relativePath, exportExpression, extras = {}) {
     context.window = context;
     context.dispatchEvent = () => {};
     vm.createContext(context);
+    const extraSource = extraSourcePaths.map((p) => fs.readFileSync(path.join(root, p), 'utf8')).join('\n');
     const source = fs.readFileSync(path.join(root, relativePath), 'utf8');
-    vm.runInContext(`${source}\nwindow.__testedGame = ${exportExpression};`, context);
+    vm.runInContext(`${extraSource}\n${source}\nwindow.__testedGame = ${exportExpression};`, context);
     return { game: context.__testedGame, context };
 }
 
 {
     const { game } = loadGame('js/minigames/CradleStationGame.js', 'CradleStationGame');
-    assert.strictEqual(game.getBabyImage('crying'), 'assets/images/station-cradle/baby-crying.png');
-    assert.strictEqual(game.getBabyImage('calming'), 'assets/images/station-cradle/baby-calm.png');
-    assert.strictEqual(game.getBabyImage('asleep'), 'assets/images/station-cradle/baby-asleep.png');
+    assert.strictEqual(game.getBabyImage('crying'), 'assets/images/station-cradle/baby-crying.webp');
+    assert.strictEqual(game.getBabyImage('calming'), 'assets/images/station-cradle/baby-calm.webp');
+    assert.strictEqual(game.getBabyImage('asleep'), 'assets/images/station-cradle/baby-asleep.webp');
     assert.strictEqual(game.getBabyStage(34), 'crying');
     assert.strictEqual(game.getBabyStage(35), 'calming');
     assert.strictEqual(game.getBabyStage(66), 'calming');
@@ -67,7 +68,7 @@ function loadGame(relativePath, exportExpression, extras = {}) {
         name: '吉紋',
         meaning: '大吉大利',
         blessing: '祝你諸事大吉，平安順遂。',
-        cakeImage: 'assets/images/station-cake/cake-luck.png'
+        cakeImage: 'assets/images/station-cake/cake-luck.webp'
     };
     const controls = new Map();
     const container = {
@@ -206,7 +207,7 @@ function makeFakeBox() {
 
 {
     // 第一關單玩結束：先顯示結果頁，按「去找阿罵」後才播離開對話。
-    const { game } = loadGame('js/minigames/StationDemoGame.js', 'StationDemoGame');
+    const { game, context } = loadGame('js/minigames/StationGame.js', 'StationGame', {}, ['js/minigames/FireStationGame.js']);
     const events = [];
     game.mode = 'single';
     game.state = {
@@ -218,12 +219,10 @@ function makeFakeBox() {
     };
     game.station = {};
     game.tr = (key) => key;
-    game.isFireInSafeRange = () => true;
-    game.stopFireMusic = () => {};
     const originalShowResult = game.showResult;
     game.showResult = () => events.push('result');
     game.showCombinedDialogue = () => events.push('dialogue');
-    game.showFireResult();
+    context.FireStationGame.showFireResult(game);
     assert.deepStrictEqual(events, ['result'], '第一關單玩結束應先顯示結果頁');
     game.showResult = originalShowResult;
 
@@ -301,7 +300,7 @@ function makeFakeBox() {
     assert.ok(game.container.innerHTML.includes('data-retry'), '第三關結果頁應顯示再玩一次按鈕');
     assert.ok(game.container.innerHTML.includes('data-back'), '第三關結果頁應顯示去找阿嬤按鈕');
     assert.ok(game.container.innerHTML.includes('去找阿嬤'), '第三關離開按鈕應比照前兩關改為角色引導');
-    assert.ok(game.container.innerHTML.includes('assets/images/station-cradle/cradle-result.png'), '第三關結果頁應顯示嬰兒與吊床合併圖');
+    assert.ok(game.container.innerHTML.includes('assets/images/station-cradle/cradle-result.webp'), '第三關結果頁應顯示嬰兒與吊床合併圖');
     assert.ok(game.container.innerHTML.includes('cradle-result-body'), '第三關結果頁應使用與前兩關一致的圖文分欄');
     assert.strictEqual(typeof retryHandler, 'function', '第三關結果頁應綁定再玩一次');
     assert.strictEqual(typeof backHandler, 'function', '第三關結果頁應綁定去找阿嬤');
@@ -329,7 +328,7 @@ function makeFakeBox() {
 
     for (const spec of [
         { file: 'js/minigames/Station34CombinedGame.js', name: 'Station34CombinedGame', finish: 'finishTyping', end: 'endDwell' },
-        { file: 'js/minigames/StationDemoGame.js', name: 'StationDemoGame', finish: 'finishCombinedTyping', end: 'endCombinedDwell' }
+        { file: 'js/minigames/StationGame.js', name: 'StationGame', finish: 'finishCombinedTyping', end: 'endCombinedDwell' }
     ]) {
         const { game } = loadGame(spec.file, spec.name, { CombinedStoryPacing: pacing });
         const box = makeFakeBox();
@@ -382,7 +381,7 @@ function makeFakeBox() {
     s34exit.game.active = false;
     s34exit.game.showEnding(); // 不應丟出錯誤
 
-    const demo = loadGame('js/minigames/StationDemoGame.js', 'StationDemoGame', {
+    const demo = loadGame('js/minigames/StationGame.js', 'StationGame', {
         showScene: () => {},
         EndingScreen: { show: (cb) => { demo.shown = cb; } }
     });

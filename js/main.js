@@ -4,6 +4,27 @@ let deferredInstallPrompt = null;
 let waitingServiceWorker = null;
 let isApplyingServiceWorkerUpdate = false;
 let hasDismissedServiceWorkerUpdate = false;
+let stationBackgroundPrefetchStarted = false;
+
+const STATION_BACKGROUND_URLS = [
+    'assets/images/station-fire/background.webp',
+    'assets/images/station-tea/background.webp',
+    'assets/images/station-cradle/background.webp',
+    'assets/images/station-cake/background.webp'
+];
+
+function prefetchStationBackgrounds() {
+    if (stationBackgroundPrefetchStarted || !window.LoadingManager?.prefetchImages) return;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection?.saveData || /(^|-)2g/.test(connection?.effectiveType || '')) return;
+
+    stationBackgroundPrefetchStarted = true;
+    const warmCache = () => LoadingManager.prefetchImages(STATION_BACKGROUND_URLS, { timeoutMs: 12000 })
+        .catch((error) => window.Logger?.warn('關卡背景暖機失敗，進入關卡時仍會正常載入:', error));
+
+    if ('requestIdleCallback' in window) window.requestIdleCallback(warmCache, { timeout: 800 });
+    else setTimeout(warmCache, 200);
+}
 
 // ========== 多語系 ==========
 // 繁體字型只在首次切到繁體時載入，避免簡體使用者（預設）付出多餘請求。
@@ -110,6 +131,7 @@ function showScene(sceneId) {
         const target = document.getElementById(sceneId);
         if (target) target.style.display = 'flex';
     }
+    if (sceneId === 'level-select') prefetchStationBackgrounds();
     updateServiceWorkerUpdateBanner();
 }
 
@@ -216,7 +238,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=122', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=127', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -235,11 +257,11 @@ function setupServiceWorkerUpdate() {
 }
 
 function bindStationButtons() {
-    document.querySelectorAll('[data-station-demo]').forEach((button) => {
+    document.querySelectorAll('[data-station]').forEach((button) => {
         button.addEventListener('click', () => {
             window.AudioManager?.playSFX('assets/sounds/click.mp3');
-            if (typeof startStationDemo === 'function') {
-                startStationDemo(button.dataset.stationDemo);
+            if (typeof startStationGame === 'function') {
+                startStationGame(button.dataset.station);
                 return;
             }
             alert(window.t ? t('common.notLoaded') : '遊戲尚未載入，請重新整理頁面。');

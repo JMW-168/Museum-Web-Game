@@ -2,6 +2,7 @@
 const LoadingManager = {
     loadingScreen: null,
     progressText: null,
+    imageRequests: new Map(),
     
     init: function() {
         if (window.Logger) window.Logger.info('🔧 LoadingManager 初始化');
@@ -155,6 +156,78 @@ const LoadingManager = {
             finish(); // 即使失敗也繼續
         };
         img.src = src;
+    },
+
+    // 預載關卡素材時共用同一個請求；成功後只保留 URL 狀態，不常駐解碼後的像素記憶體。
+    preloadImage: function(src, options = {}) {
+        const timeoutMs = options.timeoutMs ?? 12000;
+        const decode = options.decode !== false;
+        if (this.imageRequests.has(src)) return this.imageRequests.get(src);
+
+        const request = new Promise((resolve, reject) => {
+            const image = new Image();
+            let done = false;
+            const finish = (error) => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                image.onload = null;
+                image.onerror = null;
+                if (error) reject(error);
+                else resolve(src);
+            };
+            const verify = () => {
+                if (!decode || typeof image.decode !== 'function') {
+                    finish();
+                    return;
+                }
+                image.decode().then(() => finish()).catch(() => finish(new Error(`圖片解碼失敗：${src}`)));
+            };
+            const timeoutId = setTimeout(() => finish(new Error(`圖片載入超過 ${timeoutMs}ms：${src}`)), timeoutMs);
+            image.onload = verify;
+            image.onerror = () => finish(new Error(`無法載入 ${src}`));
+            image.src = src;
+        });
+
+        this.imageRequests.set(src, request);
+        request.catch(() => {
+            if (this.imageRequests.get(src) === request) this.imageRequests.delete(src);
+        });
+        return request;
+    },
+
+    preloadImages: function(urls, options = {}) {
+        const uniqueUrls = [...new Set(urls || [])];
+        let completed = 0;
+        return Promise.all(uniqueUrls.map((src) => this.preloadImage(src, options).then((result) => {
+            completed++;
+            options.onProgress?.(completed, uniqueUrls.length, src);
+            return result;
+        })));
+    },
+
+    // 僅暖機網路快取：不呼叫 decode()，避免選關頁一次佔用四關背景的解碼記憶體。
+    prefetchImages: function(urls, options = {}) {
+        const timeoutMs = options.timeoutMs ?? 12000;
+        const uniqueUrls = [...new Set(urls || [])];
+        return Promise.all(uniqueUrls.map((src) => new Promise((resolve) => {
+            const image = new Image();
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                image.onload = null;
+                image.onerror = null;
+                resolve(src);
+            };
+            const timeoutId = setTimeout(finish, timeoutMs);
+            if ('decoding' in image) image.decoding = 'async';
+            if ('fetchPriority' in image) image.fetchPriority = 'low';
+            image.onload = finish;
+            image.onerror = finish;
+            image.src = src;
+        })));
     },
     
     loadVideo: function(src, callback) {

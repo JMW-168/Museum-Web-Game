@@ -1,0 +1,1157 @@
+/* 共用關卡介面：面板、HUD、按鈕、合併劇情、進入引導、結果頁（Issue #90 從 station-game.css 拆出） */
+
+.station-game {
+    /* 各站共用面板的可調尺寸，響應式斷點只改這幾個值（Issue #90 收斂重複尺寸）。 */
+    --panel-w: min(82%, 860px);
+    --panel-min-h: min(74%, 520px);
+    --panel-max-h: none;
+    --panel-pad: clamp(18px, 4vh, 34px);
+    --result-w: min(88%, 1040px);
+    --result-min-h: min(94%, 560px);
+    --result-max-h: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    color: #fff;
+    background:
+        linear-gradient(rgba(7, 14, 16, 0.84), rgba(7, 14, 16, 0.92)),
+        url('../assets/images/title/entry-background.webp') center / cover no-repeat;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+.combined-story {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: default;
+}
+
+.combined-story-character-stage {
+    position: absolute;
+    inset: 2% 0 27%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.combined-story-character {
+    height: 128%;
+    width: auto;
+    max-width: 78%;
+    object-fit: contain;
+    object-position: center top;
+    filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
+}
+
+.combined-dialogue-box {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(10px, 3vh, 28px);
+    z-index: 4;
+    width: min(92%, 1040px);
+    min-height: 124px;
+    max-height: 38%;
+    padding: 22px 28px 18px;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    overflow: auto;
+    color: #fff;
+    background: rgba(12, 15, 15, 0.91);
+    border: 3px solid #b38b3d;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.62);
+    cursor: pointer;
+}
+
+.combined-dialogue-box:focus-visible {
+    outline: 3px solid #ffd700;
+    outline-offset: 3px;
+}
+
+.combined-dialogue-box.has-action {
+    padding-right: clamp(150px, 22vw, 230px);
+}
+
+.combined-dialogue-speaker {
+    position: absolute;
+    top: 8px;
+    left: 22px;
+    min-width: 104px;
+    padding: 7px 18px;
+    border: 2px solid #d5b257;
+    border-radius: 10px;
+    background: #4b3020;
+    color: #ffd76a;
+    font-size: clamp(17px, 2vw, 23px);
+    line-height: 1.2;
+    text-align: center;
+}
+
+.combined-dialogue-cue {
+    display: inline-block;
+    margin-left: 8px;
+    color: #f3dfae;
+    font-size: 0.72em;
+    font-weight: 400;
+}
+
+.combined-dialogue-text {
+    min-height: 2.8em;
+    padding-top: 34px;
+    color: #fff9e9;
+    font-size: clamp(18px, 2.35vw, 26px);
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+}
+
+.combined-dialogue-indicator {
+    display: none;
+    position: absolute;
+    right: 22px;
+    bottom: 14px;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 13px solid #ffd700;
+    animation: combined-dialogue-pulse 0.9s ease-in-out infinite;
+}
+
+.combined-dialogue-box.is-complete:not(.has-action) .combined-dialogue-indicator {
+    display: block;
+}
+
+.combined-story-action {
+    position: absolute;
+    right: 20px;
+    bottom: 16px;
+    min-width: 126px;
+    margin: 0;
+    padding: 10px 20px;
+    border: 3px solid rgba(237, 197, 113, 0.98);
+    border-radius: 14px;
+    color: #fff1cf;
+    background:
+        linear-gradient(115deg, rgba(255, 248, 211, 0.24), transparent 42%),
+        linear-gradient(165deg, #b78345, #825833 68%, #583824);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 235, 192, 0.18),
+        0 4px 0 #2c1d18,
+        0 8px 14px rgba(0, 0, 0, 0.32);
+    font-size: clamp(16px, 1.8vw, 20px);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.48);
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.combined-story-action:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.combined-story-action:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2c1d18, 0 4px 8px rgba(0, 0, 0, 0.28);
+}
+
+.combined-story-action:focus-visible {
+    outline: 3px solid rgba(255, 226, 137, 0.96);
+    outline-offset: 3px;
+}
+
+.combined-story-action[hidden] {
+    display: none;
+}
+
+.combined-story.is-narration .combined-dialogue-speaker {
+    background: #30373a;
+}
+
+.combined-story.is-narration .combined-dialogue-text {
+    font-style: italic;
+    color: #f4ead2;
+}
+
+@keyframes combined-dialogue-pulse {
+    0%, 100% { opacity: 0.45; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(4px); }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .combined-story-character-stage {
+        inset: 1% 0 31%;
+    }
+
+    .combined-story-character {
+        height: 135%;
+    }
+
+    .combined-dialogue-box {
+        bottom: 7px;
+        min-height: 106px;
+        max-height: 42%;
+        padding: 17px 18px 12px;
+        border-width: 3px;
+        border-radius: 12px;
+    }
+
+    .combined-dialogue-box.has-action {
+        padding-right: 160px;
+    }
+
+    .combined-dialogue-speaker {
+        top: 6px;
+        left: 14px;
+        min-width: 82px;
+        padding: 5px 12px;
+        font-size: clamp(16px, 2.2vw, 20px);
+    }
+
+    .combined-dialogue-text {
+        min-height: 2.6em;
+        padding-top: 27px;
+        font-size: clamp(19px, 2.8vw, 24px);
+        line-height: 1.4;
+    }
+
+    .combined-story-action {
+        right: 12px;
+        bottom: 10px;
+        min-width: 128px;
+        padding: 9px 16px;
+        border-radius: 13px;
+        font-size: 16px;
+        box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.14), 0 3px 0 #2c1d18, 0 6px 10px rgba(0, 0, 0, 0.28);
+    }
+
+}
+
+@media (orientation: landscape) and (max-height: 410px) {
+    .combined-story-character-stage {
+        inset: 0 0 35%;
+    }
+
+    .combined-story-character {
+        height: 142%;
+    }
+
+    .combined-dialogue-box {
+        min-height: 96px;
+        max-height: 46%;
+        padding: 14px 14px 9px;
+    }
+
+    .combined-dialogue-box.has-action {
+        padding-right: 142px;
+    }
+
+    .combined-dialogue-text {
+        padding-top: 25px;
+        font-size: clamp(16px, 2.3vw, 19px);
+        line-height: 1.32;
+    }
+
+    .combined-story-action {
+        min-width: 116px;
+        padding: 6px 11px;
+        border-radius: 11px;
+        font-size: 14px;
+    }
+}
+
+
+.station-panel,
+.station-play {
+    width: var(--panel-w);
+    min-height: var(--panel-min-h);
+    max-height: var(--panel-max-h);
+    padding: var(--panel-pad);
+    border: 2px solid rgba(255, 215, 0, 0.44);
+    background: rgba(20, 36, 39, 0.92);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+}
+
+.station-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.station-panel.has-guide {
+    position: relative;
+    padding-right: clamp(150px, 25vw, 250px);
+    overflow: hidden;
+}
+
+.station-guide {
+    position: absolute;
+    right: clamp(8px, 2vw, 22px);
+    bottom: 0;
+    z-index: 0;
+    width: clamp(125px, 23%, 220px);
+    max-height: 92%;
+    object-fit: contain;
+    object-position: bottom right;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.38));
+}
+
+.station-panel.has-guide > :not(.station-guide) {
+    position: relative;
+    z-index: 1;
+}
+
+.station-kicker-line {
+    color: #ffd700;
+    font-size: clamp(14px, 2vw, 18px);
+    margin-bottom: 8px;
+}
+
+.station-panel h1 {
+    margin: 0 0 10px;
+    text-align: left;
+    color: #fff;
+    font-size: clamp(34px, 6vw, 58px);
+}
+
+.station-subtitle {
+    color: #f5d58e;
+    font-size: clamp(18px, 2.6vw, 24px);
+    line-height: 1.45;
+    margin: 0 0 16px;
+}
+
+.station-copy {
+    color: #f4ead2;
+    font-size: clamp(16px, 2.2vw, 20px);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.station-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.station-actions.compact {
+    justify-content: center;
+    margin-top: 12px;
+}
+
+/* 各關結果頁的行為按鈕統一置於文字區右下角。 */
+.station-result-panel .station-actions {
+    justify-content: flex-end;
+}
+
+.station-primary,
+.station-water,
+.station-secondary,
+.tea-buttons button {
+    white-space: normal;
+    border: 2px solid rgba(255, 215, 0, 0.35);
+}
+
+.station-water {
+    background: linear-gradient(145deg, #1f8ecf, #176496);
+}
+
+.station-water.needs-water {
+    border-color: #c9f3ff;
+    box-shadow: 0 0 0 3px rgba(77, 191, 240, 0.24), 0 0 18px rgba(77, 191, 240, 0.48);
+}
+
+.station-secondary {
+    background: rgba(85, 99, 104, 0.9);
+}
+
+.station-play {
+    display: grid;
+    grid-template-rows: auto minmax(112px, 0.8fr) auto 1fr auto auto;
+    gap: 10px;
+}
+
+.station-hud {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #ffd700;
+    font-size: clamp(12px, 1.65vw, 16px);
+    flex-wrap: wrap;
+}
+
+.station-feedback {
+    min-height: 34px;
+    text-align: center;
+    color: #fff;
+    font-size: clamp(20px, 3.4vw, 30px);
+}
+
+@media (max-width: 920px) and (orientation: landscape) {
+    .station-game {
+        --panel-w: 90%;
+        --panel-min-h: auto;
+        --panel-max-h: calc(100% - 18px);
+        --panel-pad: 10px 14px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 70px auto 76px 16px auto;
+        gap: 6px;
+    }
+
+    .station-panel h1 {
+        font-size: clamp(26px, 5vw, 38px);
+    }
+
+    .station-copy,
+    .station-subtitle {
+        font-size: clamp(13px, 2.2vw, 16px);
+    }
+
+    .station-hud {
+        gap: 8px;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    .station-feedback {
+        min-height: 26px;
+        font-size: clamp(17px, 3vw, 22px);
+        line-height: 1.2;
+    }
+
+    .station-actions.compact {
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .station-actions.compact button {
+        margin: 0 auto;
+        padding: 6px 14px;
+        min-width: 92px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+    .station-game {
+        --panel-w: 94%;
+        --panel-max-h: calc(100% - 12px);
+        --panel-pad: 8px 10px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 54px auto 62px 14px auto;
+        gap: 5px;
+    }
+
+    .station-hud {
+        gap: 6px;
+        font-size: 11px;
+    }
+    .station-feedback {
+        min-height: 22px;
+        font-size: 17px;
+    }
+
+    .station-actions.compact button {
+        padding: 5px 12px;
+        min-width: 82px;
+        font-size: 12px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .station-game {
+        --panel-w: min(94%, 860px);
+        --panel-min-h: auto;
+        --panel-max-h: calc(100% - 12px);
+        --panel-pad: 8px 12px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 58px auto 64px 14px auto;
+        gap: 5px;
+    }
+
+    .station-hud {
+        gap: 6px;
+        font-size: 11px;
+        line-height: 1.1;
+    }
+
+    .station-hud span {
+        padding: 3px 6px;
+    }
+    .station-feedback {
+        min-height: 21px;
+        font-size: 16px;
+        line-height: 1.15;
+    }
+
+    .station-actions.compact {
+        gap: 8px;
+        margin-top: 3px;
+    }
+
+    .station-actions.compact button {
+        margin: 0 auto;
+        padding: 5px 10px;
+        min-width: 76px;
+        font-size: 11px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+    .station-game {
+        --panel-max-h: calc(100% - 8px);
+        --panel-pad: 6px 10px;
+    }
+
+    .station-play {
+        grid-template-rows: auto 44px auto 52px 12px auto;
+        gap: 4px;
+    }
+    .station-feedback {
+        min-height: 18px;
+        font-size: 14px;
+    }
+
+    .station-actions.compact button {
+        padding: 4px 9px;
+        min-width: 70px;
+        font-size: 10px;
+    }
+}
+
+@media (max-height: 480px), (max-width: 720px) {
+    .station-panel.has-guide {
+        padding-right: clamp(112px, 22vw, 170px);
+    }
+
+    .station-guide {
+        width: clamp(96px, 20%, 145px);
+        max-height: 86%;
+    }
+}
+
+/* 結果頁：成果圖在左、文字在右、角色置右放大、按鈕右下。
+   面板填滿遊戲區高度，標題／圖文／按鈕三段平均分布，避免上下大片空白。 */
+.tea-result-panel,
+.cradle-result-panel {
+    width: var(--result-w);
+    min-height: var(--result-min-h);
+    max-height: var(--result-max-h);
+    justify-content: space-between;
+}
+
+.tea-result-panel.has-guide,
+.cradle-result-panel.has-guide {
+    padding-right: clamp(172px, 28vw, 340px);
+}
+
+.tea-result-head,
+.cradle-result-head {
+    flex: 0 0 auto;
+}
+
+.tea-result-panel h1,
+.cradle-result-panel h1 {
+    margin-bottom: 4px;
+}
+
+.tea-result-body,
+.cradle-result-body {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 34px);
+    flex: 0 1 auto;
+    min-height: 0;
+}
+
+.tea-result-panel .station-actions,
+.cradle-result-panel .station-actions {
+    flex: 0 0 auto;
+    margin-top: 0;
+}
+
+.tea-result-art {
+    flex: 0 0 auto;
+    width: min(38%, 320px);
+    aspect-ratio: 1.12;
+    background: url('../assets/images/station-tea/tea-result-v2.webp') center / contain no-repeat;
+    filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.4));
+}
+
+.tea-result-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cradle-result-baby {
+    flex: 0 0 auto;
+    display: block;
+    width: min(38%, 320px);
+    max-height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 9px rgba(0, 0, 0, 0.34));
+}
+
+.cradle-result-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cradle-result-head .station-kicker-line {
+    margin-bottom: clamp(8px, 1.5vh, 14px);
+}
+
+.cradle-result-panel .station-copy {
+    font-size: clamp(19px, 2.35vw, 24px);
+    line-height: 1.55;
+}
+
+.cradle-result-panel .cradle-assisted-note,
+.cradle-result-panel .cradle-perfect-note {
+    font-size: clamp(16px, 1.9vw, 20px);
+    line-height: 1.4;
+}
+
+.station-game-fire .station-result-panel .station-actions button,
+.tea-result-panel .station-actions button,
+.cradle-result-panel .station-actions button,
+.ending-actions button,
+.ending-actions a {
+    min-width: clamp(112px, 14vw, 154px);
+    padding: 10px 20px;
+    border: 2px solid rgba(210, 168, 99, 0.9);
+    border-radius: 14px;
+    color: #fff0cf;
+    background:
+        linear-gradient(115deg, rgba(255, 231, 181, 0.14), transparent 42%),
+        linear-gradient(165deg, #805a3c, #553829 68%, #3d2921);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 235, 192, 0.16),
+        0 4px 0 #2d1e19,
+        0 8px 14px rgba(0, 0, 0, 0.3);
+    font-size: clamp(16px, 1.8vw, 20px);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.46);
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.station-game-fire .station-result-panel .station-actions .station-primary,
+.tea-result-panel .station-actions .station-primary,
+.cradle-result-panel .station-actions .station-primary,
+.ending-actions .station-primary {
+    border-color: rgba(232, 192, 111, 0.96);
+    background:
+        linear-gradient(115deg, rgba(255, 244, 205, 0.2), transparent 42%),
+        linear-gradient(165deg, #a77942, #765033 68%, #523526);
+}
+
+.station-game-fire .station-result-panel .station-actions button:hover,
+.tea-result-panel .station-actions button:hover,
+.cradle-result-panel .station-actions button:hover,
+.ending-actions button:hover,
+.ending-actions a:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.station-game-fire .station-result-panel .station-actions button:active,
+.tea-result-panel .station-actions button:active,
+.cradle-result-panel .station-actions button:active,
+.ending-actions button:active,
+.ending-actions a:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2d1e19, 0 4px 8px rgba(0, 0, 0, 0.26);
+}
+
+.tea-result-ingredients {
+    margin-bottom: 10px;
+    font-size: clamp(16px, 2.1vw, 21px);
+    line-height: 1.5;
+}
+
+.tea-result-panel .station-guide-result {
+    width: clamp(190px, 30%, 320px);
+    max-height: 98%;
+}
+
+.tea-assisted-note,
+.tea-perfect-note {
+    margin: 10px 0 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: clamp(15px, 1.95vw, 19px);
+}
+
+.tea-assisted-note {
+    color: #ffe9a9;
+    background: rgba(147, 92, 20, 0.34);
+}
+
+.tea-perfect-note {
+    color: #c8ffd1;
+    background: rgba(47, 125, 65, 0.34);
+}
+
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .station-game {
+        --result-w: min(96%, 980px);
+        --result-min-h: min(92%, 300px);
+    }
+
+    .tea-result-panel,
+    .cradle-result-panel {
+        padding: 12px 16px 12px;
+        justify-content: space-between;
+        gap: 3px;
+    }
+
+    .tea-result-panel.has-guide,
+    .cradle-result-panel.has-guide {
+        padding-right: clamp(120px, 24vw, 190px);
+    }
+
+    .tea-result-panel .station-kicker-line,
+    .cradle-result-panel .station-kicker-line {
+        margin-bottom: 2px;
+        font-size: clamp(14px, 2vw, 18px);
+    }
+
+    .tea-result-panel h1,
+    .cradle-result-panel h1 {
+        margin-bottom: 3px;
+        font-size: clamp(26px, 5vw, 38px);
+        line-height: 1.05;
+    }
+
+    .tea-result-body,
+    .cradle-result-body {
+        gap: clamp(20px, 4vw, 34px);
+        flex: 0 1 auto;
+    }
+
+    .tea-result-art {
+        width: min(34%, 180px);
+    }
+
+    .tea-result-ingredients {
+        margin-bottom: 3px;
+        font-size: 14px;
+        line-height: 1.25;
+    }
+
+    .tea-result-panel .station-copy,
+    .cradle-result-panel .station-copy {
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    .tea-result-panel .tea-assisted-note,
+    .tea-result-panel .tea-perfect-note,
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
+        margin-top: 4px;
+        padding: 3px 6px;
+        font-size: 13px;
+        line-height: 1.2;
+    }
+
+    .tea-result-panel .station-actions,
+    .cradle-result-panel .station-actions {
+        gap: 7px;
+        margin-top: 2px;
+    }
+
+    .tea-result-panel .station-actions button,
+    .cradle-result-panel .station-actions button {
+        margin: 0;
+        min-width: 82px;
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .tea-result-panel .station-guide-result,
+    .cradle-result-panel .station-guide-result {
+        width: clamp(128px, 26vw, 196px);
+        max-height: 94%;
+    }
+
+    .cradle-result-baby {
+        width: min(34%, 180px);
+        max-height: 132px;
+    }
+
+    .cradle-result-panel .station-kicker-line {
+        margin-bottom: 7px;
+    }
+
+    .cradle-result-panel .station-copy {
+        font-size: 16px;
+    }
+
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
+        padding: 5px 8px;
+        font-size: 15px;
+        line-height: 1.3;
+    }
+
+    .cradle-result-panel .station-actions button {
+        min-width: 104px;
+        padding: 7px 14px;
+        font-size: 14px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 400px) {
+    .station-game {
+        --result-min-h: min(98%, 340px);
+    }
+
+    .tea-result-panel,
+    .cradle-result-panel {
+        padding: 6px 10px 6px;
+        gap: 1px;
+    }
+
+    .tea-result-panel.has-guide,
+    .cradle-result-panel.has-guide {
+        padding-right: clamp(104px, 22vw, 160px);
+    }
+
+    .tea-result-panel h1,
+    .cradle-result-panel h1 {
+        margin-bottom: 0;
+        font-size: 20px;
+    }
+
+    .tea-result-body,
+    .cradle-result-body {
+        gap: 14px;
+    }
+
+    .tea-result-art {
+        width: min(29%, 136px);
+    }
+
+    .tea-result-panel .station-copy,
+    .cradle-result-panel .station-copy {
+        font-size: 11px;
+        line-height: 1.25;
+    }
+
+    .tea-result-ingredients {
+        margin-bottom: 1px;
+        font-size: 12px;
+    }
+
+    .tea-result-panel .tea-assisted-note,
+    .tea-result-panel .tea-perfect-note,
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
+        margin-top: 2px;
+        font-size: 11px;
+    }
+
+    .tea-result-panel .station-actions,
+    .cradle-result-panel .station-actions {
+        margin-top: 1px;
+    }
+
+    .tea-result-panel .station-actions button,
+    .cradle-result-panel .station-actions button {
+        font-size: 11.5px;
+    }
+
+    .tea-result-panel .station-guide-result,
+    .cradle-result-panel .station-guide-result {
+        width: clamp(108px, 22vw, 168px);
+        max-height: 92%;
+    }
+
+    .cradle-result-baby {
+        width: min(29%, 136px);
+        max-height: 88px;
+    }
+
+    .cradle-result-panel .station-kicker-line {
+        margin-bottom: 4px;
+    }
+
+    .cradle-result-panel h1 {
+        font-size: clamp(34px, 6vw, 58px);
+    }
+
+    .cradle-result-panel .station-copy {
+        font-size: 13px;
+    }
+
+    .cradle-result-panel .cradle-assisted-note,
+    .cradle-result-panel .cradle-perfect-note {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+
+    .station-game-fire .station-result-panel .station-actions button,
+    .tea-result-panel .station-actions button,
+    .cradle-result-panel .station-actions button {
+        min-width: 92px;
+        padding: 5px 10px;
+        font-size: 12.5px;
+    }
+}
+
+.station-corner-exit {
+    position: absolute;
+    top: clamp(8px, 2vh, 18px);
+    right: clamp(10px, 2.5vw, 24px);
+    z-index: 8;
+    min-width: 68px;
+    padding: 7px 12px;
+    font-size: 13px;
+    background: rgba(70, 82, 86, 0.86);
+    border: 2px solid rgba(255, 255, 255, 0.28);
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+    .station-corner-exit {
+        min-width: 58px;
+        padding: 5px 9px;
+        font-size: 11px;
+    }
+}
+
+.station-game-fire .station-actions.compact button,
+.station-game-fire .station-water-fixed,
+.station-game-fire .station-corner-exit,
+.station-game-tea .station-corner-exit,
+.station-game-cradle .station-corner-exit,
+.station-game-cake .station-corner-exit,
+.station-game-cake .station-primary,
+.station-game-cake .station-secondary {
+    color: #f4e4bd;
+    border: 2px solid rgba(197, 155, 91, 0.86);
+    border-radius: 8px 11px 7px 10px;
+    background:
+        linear-gradient(115deg, rgba(255, 228, 169, 0.12), transparent 40%),
+        linear-gradient(160deg, #765239, #4b3225 72%, #38251e);
+    font-size: clamp(16px, 1.5vw, 22px);
+    box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.16), 0 4px 0 #291b17, 0 8px 14px rgba(0, 0, 0, 0.28);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.52);
+}
+
+.station-game-fire .station-guide-tip-text {
+    font-size: clamp(16px, 1.5vw, 21px);
+}
+
+.station-game-fire .station-guide-step,
+.station-game-fire .station-guide-tip .station-guide-next,
+.station-game-fire .station-guide-skip {
+    font-size: clamp(14px, 1.3vw, 18px);
+}
+
+.station-game-fire .station-actions.compact button:hover,
+.station-game-fire .station-water-fixed:hover,
+.station-game-fire .station-corner-exit:hover,
+.station-game-tea .station-corner-exit:hover,
+.station-game-cradle .station-corner-exit:hover,
+.station-game-cake .station-corner-exit:hover,
+.station-game-cake .station-primary:hover,
+.station-game-cake .station-secondary:hover {
+    filter: brightness(1.08);
+}
+
+.station-game-fire .station-actions.compact button:active,
+.station-game-fire .station-water-fixed:active,
+.station-game-fire .station-corner-exit:active,
+.station-game-tea .station-corner-exit:active,
+.station-game-cradle .station-corner-exit:active,
+.station-game-cake .station-corner-exit:active,
+.station-game-cake .station-primary:active,
+.station-game-cake .station-secondary:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.16), 0 1px 0 #291b17, 0 4px 8px rgba(0, 0, 0, 0.24);
+}
+
+/* ========== 合併劇情：逐字完成後的看不見短暫停（Issue #32） ========== */
+
+/* 文字完整出現、但仍在防連點的短暫停內：先不顯示「可繼續」箭頭，也不加任何提示文字 */
+.combined-dialogue-box.is-reading {
+    cursor: default;
+}
+
+/* ========== 進入引導：聚光燈式操作提示（StationIntroGuide，各關共用） ========== */
+.station-guide-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    overflow: hidden;
+    animation: station-guide-in 0.2s ease-out;
+    cursor: pointer;
+}
+
+@keyframes station-guide-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 光圈：用超大 box-shadow 造出「其他地方變暗、只留這一塊」的聚光效果 */
+.station-guide-spot {
+    position: absolute;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(9, 15, 16, 0.78);
+    outline: 3px solid rgba(255, 215, 0, 0.9);
+    outline-offset: 0;
+    pointer-events: none;
+    transition: left 0.25s ease, top 0.25s ease, width 0.25s ease, height 0.25s ease;
+    animation: station-guide-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes station-guide-pulse {
+    0%, 100% { outline-color: rgba(255, 215, 0, 0.35); }
+    50% { outline-color: rgba(255, 215, 0, 1); }
+}
+
+.station-guide-hand {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.6));
+    animation: station-guide-hand-tap 1s ease-in-out infinite;
+}
+
+@keyframes station-guide-hand-tap {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, 6px); }
+}
+
+.station-guide-tip {
+    position: absolute;
+    width: min(78%, 300px);
+    padding: 12px 16px;
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    border-radius: 12px;
+    background: rgba(20, 36, 39, 0.98);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+    color: #f4ead2;
+    transition: left 0.25s ease, top 0.25s ease;
+}
+
+.station-guide-tip-text {
+    margin: 0 0 10px;
+    font-size: clamp(14px, 1.9vw, 17px);
+    line-height: 1.5;
+}
+
+.station-guide-tip-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.station-guide-step {
+    color: #ffd76a;
+    font-size: clamp(12px, 1.6vw, 14px);
+}
+
+.station-guide-tip .station-guide-next {
+    margin: 0;
+    padding: 7px 16px;
+    min-width: 96px;
+    font-size: clamp(13px, 1.7vw, 15px);
+}
+
+.station-guide-skip {
+    position: absolute;
+    top: clamp(8px, 2vh, 16px);
+    left: clamp(10px, 2.5vw, 22px);
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    background: rgba(40, 48, 50, 0.8);
+    color: #e9e2cf;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* 四關共用的提示動畫按鈕：以暖木色取代生硬的系統灰色。 */
+.station-game .station-guide-tip .station-guide-next,
+.station-game .station-guide-skip {
+    border: 2px solid rgba(211, 170, 101, 0.92);
+    border-radius: 14px;
+    color: #fff1d0;
+    background:
+        linear-gradient(115deg, rgba(255, 239, 196, 0.18), transparent 42%),
+        linear-gradient(165deg, #8a603f, #5b3c2b 68%, #3f2a21);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 235, 192, 0.18),
+        0 4px 0 #2c1d18,
+        0 8px 14px rgba(0, 0, 0, 0.32);
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.48);
+    transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+
+.station-game .station-guide-tip .station-guide-next {
+    border-color: rgba(237, 197, 113, 0.98);
+    background:
+        linear-gradient(115deg, rgba(255, 248, 211, 0.24), transparent 42%),
+        linear-gradient(165deg, #b78345, #825833 68%, #583824);
+}
+
+.station-game .station-guide-tip .station-guide-next:hover,
+.station-game .station-guide-skip:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.station-game .station-guide-tip .station-guide-next:active,
+.station-game .station-guide-skip:active {
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.16), 0 1px 0 #2c1d18, 0 4px 8px rgba(0, 0, 0, 0.28);
+}
+
+.station-game .station-guide-tip .station-guide-next:focus-visible,
+.station-game .station-guide-skip:focus-visible {
+    outline: 3px solid rgba(255, 226, 137, 0.96);
+    outline-offset: 3px;
+}
+
+@media (orientation: landscape) and (max-height: 460px) {
+    .station-guide-tip {
+        width: min(70%, 280px);
+        padding: 9px 12px;
+    }
+
+    .station-guide-tip-text {
+        margin-bottom: 7px;
+        font-size: clamp(12px, 1.7vw, 15px);
+        line-height: 1.4;
+    }
+    .station-guide-tip .station-guide-next {
+        padding: 5px 12px;
+        min-width: 84px;
+    }
+
+    .station-game .station-guide-tip .station-guide-next,
+    .station-game .station-guide-skip {
+        border-radius: 11px;
+        box-shadow: inset 0 0 0 1px rgba(255, 235, 192, 0.14), 0 3px 0 #2c1d18, 0 6px 10px rgba(0, 0, 0, 0.28);
+    }
+}

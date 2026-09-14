@@ -5,7 +5,7 @@ const vm = require('vm');
 
 const root = path.resolve(__dirname, '..');
 
-function loadGame(ImageClass) {
+function loadTeaGame(ImageClass) {
     const context = {
         console,
         setTimeout,
@@ -19,9 +19,9 @@ function loadGame(ImageClass) {
     };
     context.window = context;
     vm.createContext(context);
-    const source = fs.readFileSync(path.join(root, 'js/minigames/StationDemoGame.js'), 'utf8');
+    const source = fs.readFileSync(path.join(root, 'js/minigames/TeaStationGame.js'), 'utf8');
     vm.runInContext(source, context);
-    return context.StationDemoGame;
+    return context.TeaStationGame;
 }
 
 class SuccessfulImage {
@@ -38,44 +38,50 @@ class StalledImage {
 }
 
 (async () => {
-    const game = loadGame(SuccessfulImage);
-    assert.ok(game.teaEssentialImageUrls.length > 0, '應定義研磨階段必要素材');
-    assert.ok(game.teaDeferredImageUrls.length > 0, '應定義後續背景載入素材');
+    const TeaStationGame = loadTeaGame(SuccessfulImage);
+    assert.ok(TeaStationGame.teaEssentialImageUrls.length > 0, '應定義研磨階段必要素材');
+    assert.strictEqual(TeaStationGame.teaMortarImageUrls.length, 4, '四段石臼圖應獨立保留 decode 結果');
+    assert.ok(TeaStationGame.teaChopImageUrls.length > 0, '應定義切料階段背景載入素材');
     assert.strictEqual(
-        game.teaEssentialImageUrls.filter((src) => game.teaDeferredImageUrls.includes(src)).length,
+        TeaStationGame.teaEssentialImageUrls.filter((src) => TeaStationGame.teaChopImageUrls.includes(src)).length,
         0,
         '必要與延後素材不應重複'
     );
-    assert.strictEqual(game.teaAssetTimeoutMs, 12000, '必要素材逾時應為 12 秒');
+    assert.strictEqual(TeaStationGame.teaAssetTimeoutMs, 12000, '必要素材逾時應為 12 秒');
 
-    await game.loadTeaImages(['one.png', 'two.png'], 50);
+    await TeaStationGame.loadTeaImages(['one.png', 'two.png'], 50);
 
-    game.container = {
-        innerHTML: '',
-        querySelector: () => ({ addEventListener() {} })
+    const game = {
+        container: {
+            innerHTML: '',
+            querySelector: () => ({ addEventListener() {} })
+        },
+        station: { kicker: '站點二：擂茶料理' },
+        tr: (key) => ({
+            'station.tea.loading.title': '擂茶素材載入中',
+            'station.tea.loading.copy': '正在準備研磨需要的圖片，馬上就能開始。'
+        }[key] || key),
+        getStation: () => ({ kicker: '站點二：擂茶料理' }),
+        setShellTheme: () => {},
+        close: () => {}
     };
-    game.station = { kicker: '站點二：擂茶料理' };
-    game.tr = (key) => ({
-        'station.tea.loading.title': '擂茶素材載入中',
-        'station.tea.loading.copy': '正在準備研磨需要的圖片，馬上就能開始。'
-    }[key] || key);
-    game.setShellTheme = () => {};
-    game.prepareTeaAssets = () => Promise.resolve();
+
+    TeaStationGame.prepareTeaAssets = () => Promise.resolve();
     let deferredStarted = false;
     let gameStarted = false;
-    game.preloadDeferredTeaAssets = () => { deferredStarted = true; };
-    game.startTeaGame = () => { gameStarted = true; };
+    TeaStationGame.preloadTeaChopAssets = () => { deferredStarted = true; };
+    TeaStationGame.startTeaGame = () => { gameStarted = true; };
 
-    const startPromise = game.startCombinedTea();
+    const startPromise = TeaStationGame.startCombinedTea(game);
     assert.ok(game.container.innerHTML.includes('擂茶素材載入中'), '點擊後應立即顯示載入畫面');
     assert.strictEqual(gameStarted, false, '必要素材完成前不應開始遊戲');
     await startPromise;
-    assert.strictEqual(deferredStarted, true, '必要素材完成後應開始背景載入後續素材');
+    assert.strictEqual(deferredStarted, false, '必要素材完成後不應立刻和研磨互動搶資源');
     assert.strictEqual(gameStarted, true, '必要素材完成後應開始遊戲');
 
-    const stalledGame = loadGame(StalledImage);
+    const StalledTeaStationGame = loadTeaGame(StalledImage);
     await assert.rejects(
-        stalledGame.loadTeaImages(['stalled.png'], 5),
+        StalledTeaStationGame.loadTeaImages(['stalled.png'], 5),
         /素材載入超過 5ms/,
         '載入卡住時應在期限後失敗，而不是永久等待'
     );

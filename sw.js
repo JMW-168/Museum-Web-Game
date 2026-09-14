@@ -1,25 +1,27 @@
 const CACHE_PREFIX = 'museum-web-game';
-const RELEASE_VERSION = 'v122';
+const RELEASE_VERSION = 'v129';
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${RELEASE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${RELEASE_VERSION}`;
 
 const SHELL_ASSETS = [
   './', 'index.html', 'manifest.json',
-  'style.css?v=116', 'css/station-demo-game.css?v=121', 'css/cake-station-game.css?v=71',
-  'js/i18n/i18n.js?v=45', 'js/i18n/zh-Hant.js?v=116', 'js/i18n/zh-Hans.js?v=116',
+  'style.css?v=119', 'css/station-shared.css?v=2', 'css/station-fire.css?v=1',
+  'css/station-tea.css?v=2', 'css/station-cradle.css?v=2', 'css/cake-station-game.css?v=74',
+  'js/i18n/i18n.js?v=45', 'js/i18n/zh-Hant.js?v=117', 'js/i18n/zh-Hans.js?v=117',
   'js/core/Logger.js?v=114', 'js/core/ErrorReporter.js?v=114',
-  'js/core/LoadingManager.js?v=114', 'js/core/AudioManager.js?v=114', 'js/core/SceneManager.js?v=114',
-  'js/data/stationCombinedStory.js?v=54', 'js/data/station34CombinedStory.js?v=55',
-  'js/data/cakePatterns.js?v=47', 'js/data/combinedStoryPacing.js?v=43',
-  'js/minigames/StationIntroGuide.js?v=49', 'js/minigames/EndingScreen.js?v=52',
-  'js/minigames/CradleStationGame.js?v=55', 'js/minigames/CakeStationGame.js?v=59',
-  'js/minigames/Station34CombinedGame.js?v=61', 'js/minigames/StationDemoGame.js?v=82', 'js/main.js?v=119',
+  'js/core/LoadingManager.js?v=116', 'js/core/AudioManager.js?v=114', 'js/core/SceneManager.js?v=114',
+  'js/data/stationCombinedStory.js?v=55', 'js/data/station34CombinedStory.js?v=56',
+  'js/data/cakePatterns.js?v=48', 'js/data/combinedStoryPacing.js?v=44',
+  'js/minigames/StationIntroGuide.js?v=49', 'js/minigames/EndingScreen.js?v=53',
+  'js/minigames/CradleStationGame.js?v=57', 'js/minigames/CakeStationGame.js?v=61',
+  'js/minigames/Station34CombinedGame.js?v=63', 'js/minigames/FireStationGame.js?v=2',
+  'js/minigames/TeaStationGame.js?v=3', 'js/minigames/StationGame.js?v=85', 'js/main.js?v=121',
   'assets/icons/icon-16.png', 'assets/icons/icon-32.png', 'assets/icons/icon-64.png',
   'assets/icons/icon-128.png', 'assets/icons/icon-256.png', 'assets/images/title/cover-20260909.webp',
-  'assets/images/title/title-20260904.png', 'assets/images/title/title-20260904-simplified.png',
+  'assets/images/title/title-20260904.webp', 'assets/images/title/title-20260904-simplified.webp',
   'assets/images/intro/tulou-20260907.webp', 'assets/images/intro/courtyard-welcome-20260907.webp',
-  'assets/images/demo/entry-background.webp', 'assets/images/characters/grandma.png',
-  'assets/images/characters/grandpa.png', 'assets/sounds/click.mp3', 'assets/sounds/wrong.mp3',
+  'assets/images/title/entry-background.webp', 'assets/images/characters/grandma.webp',
+  'assets/images/characters/grandpa.webp', 'assets/sounds/click.mp3', 'assets/sounds/wrong.mp3',
   'assets/sounds/sfx-blipmale.wav', 'assets/sounds/sfx-blipfemale.wav'
 ];
 

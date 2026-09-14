@@ -143,7 +143,7 @@ python -m http.server 8765
 
 ```powershell
 node --check js/minigames/StationIntroGuide.js
-node --check js/minigames/StationDemoGame.js
+node --check js/minigames/StationGame.js
 node --check js/minigames/CradleStationGame.js
 node --check js/minigames/CakeStationGame.js
 node --check js/minigames/Station34CombinedGame.js

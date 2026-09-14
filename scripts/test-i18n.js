@@ -150,7 +150,9 @@ function loadI18n(extra = {}) {
         'js/data/stationCombinedStory.js',
         'js/data/station34CombinedStory.js',
         'js/data/cakePatterns.js',
-        'js/minigames/StationDemoGame.js',
+        'js/minigames/StationGame.js',
+        'js/minigames/FireStationGame.js',
+        'js/minigames/TeaStationGame.js',
         'js/minigames/CradleStationGame.js',
         'js/minigames/CakeStationGame.js',
         'js/minigames/Station34CombinedGame.js'
@@ -188,7 +190,7 @@ function loadI18n(extra = {}) {
         'js/data/stationCombinedStory.js',
         'js/data/station34CombinedStory.js',
         'js/data/cakePatterns.js',
-        'js/minigames/StationDemoGame.js',
+        'js/minigames/StationGame.js',
         'js/minigames/CakeStationGame.js',
         'js/minigames/Station34CombinedGame.js'
     ]) {
@@ -197,11 +199,11 @@ function loadI18n(extra = {}) {
 
     I18n.init();
     I18n.setLocale('zh-Hant');
-    const openingNarration = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[0]);
+    const openingNarration = context.StationGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[0]);
     assert.strictEqual(openingNarration.speaker, '旁白');
     assert.ok(openingNarration.text.includes('吱呀'));
     assert.ok(!openingNarration.text.includes('塵封'));
-    const opening = context.StationDemoGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[1]);
+    const opening = context.StationGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[1]);
     assert.strictEqual(opening.speaker, '阿嬤');
     assert.ok(opening.text.includes('廚房'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龜紋');
