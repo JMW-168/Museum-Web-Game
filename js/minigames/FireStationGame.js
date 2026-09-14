@@ -3,13 +3,20 @@ const FireStationGame = {
     fireDurationMs: 60000,
     fireImageUrls: [
         'assets/images/station-fire/background.webp',
-        'assets/images/characters/grandma.png',
-        'assets/images/station-fire/stove.png',
-        'assets/images/station-fire/flame-1.png',
-        'assets/images/station-fire/flame-2.png',
-        'assets/images/station-fire/wood-small.png',
-        'assets/images/station-fire/wood-large.png'
+        'assets/images/characters/grandma.webp',
+        'assets/images/station-fire/stove.webp',
+        'assets/images/station-fire/flame-1.webp',
+        'assets/images/station-fire/flame-2.webp',
+        'assets/images/station-fire/wood-small.webp',
+        'assets/images/station-fire/wood-large.webp'
     ],
+
+    warmFireAssets() {
+        if (typeof LoadingManager === 'undefined' || !LoadingManager.preloadImages) return Promise.resolve();
+        return LoadingManager.preloadImages(FireStationGame.fireImageUrls, { timeoutMs: 12000 }).catch((error) => {
+            if (window.Logger) window.Logger.warn('關卡一進場前預載失敗，正式進入時會重試:', error);
+        });
+    },
     // 由甲方影片音軌的 onset 分析產生；前 12 秒取主拍，之後加入半拍增加密度。
     fireBeatTimes: [
         2.694, 4.226, 5.747, 7.291, 8.824, 10.344, 11.889,
@@ -53,8 +60,8 @@ const FireStationGame = {
             lastResult: game.tr('station.fire.wait'),
         };
 
-        const stoveImage = FireStationGame.getFireAsset(game, 'assets/images/station-fire/stove.png');
-        const smallFlameImage = FireStationGame.getFireAsset(game, 'assets/images/station-fire/flame-1.png');
+        const stoveImage = FireStationGame.getFireAsset(game, 'assets/images/station-fire/stove.webp');
+        const smallFlameImage = FireStationGame.getFireAsset(game, 'assets/images/station-fire/flame-1.webp');
 
         game.container.innerHTML = `
             <div class="station-play is-preparing">
@@ -383,8 +390,8 @@ const FireStationGame = {
         const beat = document.createElement('div');
         beat.className = `fire-beat ${type === 'big' ? 'big' : 'small'}`;
         const woodImage = type === 'big'
-            ? FireStationGame.getFireAsset(game, 'assets/images/station-fire/wood-large.png')
-            : FireStationGame.getFireAsset(game, 'assets/images/station-fire/wood-small.png');
+            ? FireStationGame.getFireAsset(game, 'assets/images/station-fire/wood-large.webp')
+            : FireStationGame.getFireAsset(game, 'assets/images/station-fire/wood-small.webp');
         beat.innerHTML = `
             <img src="${woodImage}" alt="${game.tr(type === 'big' ? 'station.fire.wood.big' : 'station.fire.wood.small')}">
             <span>${game.tr(type === 'big' ? 'station.fire.wood.big' : 'station.fire.wood.small')}</span>
@@ -594,8 +601,8 @@ const FireStationGame = {
         if (dangerAlert) dangerAlert.classList.toggle('active', game.state.fire > game.state.safeMax);
         if (flame) {
             const flameSrc = game.state.fire > game.state.idealMax
-                ? FireStationGame.getFireAsset(game, 'assets/images/station-fire/flame-2.png')
-                : FireStationGame.getFireAsset(game, 'assets/images/station-fire/flame-1.png');
+                ? FireStationGame.getFireAsset(game, 'assets/images/station-fire/flame-2.webp')
+                : FireStationGame.getFireAsset(game, 'assets/images/station-fire/flame-1.webp');
             if (flame.src !== flameSrc) flame.src = flameSrc;
             // 火焰隨火候長大，但幅度收斂，避免超出灶門。
             const flameScale = 0.78 + (game.state.fire / 150);

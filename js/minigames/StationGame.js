@@ -26,12 +26,12 @@ const StationGame = {
     stations: {
         fire: {
             id: 'fire',
-            guideImage: 'assets/images/characters/grandma.png',
+            guideImage: 'assets/images/characters/grandma.webp',
             guideAltKey: 'story.speaker.grandma'
         },
         tea: {
             id: 'tea',
-            guideImage: 'assets/images/characters/grandpa.png',
+            guideImage: 'assets/images/characters/grandpa.webp',
             guideAltKey: 'story.speaker.grandpa'
         }
     },
@@ -70,6 +70,7 @@ const StationGame = {
             this.mode = 'combined';
             this.fullStory = stationId === 'story';
             this.station = this.getStation('fire');
+            FireStationGame.warmFireAssets();
             showScene('game-container');
             if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
             this.createShell('fire');
@@ -86,9 +87,11 @@ const StationGame = {
         this.createShell(stationId);
         // 單關版：進入引導對話 → 遊戲（聚光燈操作提示在遊戲啟動路徑內）。
         if (stationId === 'fire') {
+            FireStationGame.warmFireAssets();
             this.showCombinedDialogue('fireEntry', () => this.startCombinedFire());
         } else if (stationId === 'tea') {
             this.station = this.getStation('tea');
+            TeaStationGame.warmTeaAssets();
             this.showCombinedDialogue('teaEntry', () => this.startCombinedTea());
         }
     },
@@ -276,6 +279,7 @@ const StationGame = {
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animationId = null;
         FireStationGame.stopFireMusic(this);
+        if (this.state.stationId === 'fire' && this.mode === 'combined') TeaStationGame.warmTeaAssets();
 
         const summary = this.state.stationId === 'fire' && this.station.fireSummary
             ? this.station.fireSummary

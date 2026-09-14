@@ -604,11 +604,11 @@ body.cake-station-active #game-wrapper {
     width: clamp(92px, 14vw, 150px);
     aspect-ratio: 1;
     border: 0;
-    background: url('../assets/images/station-cake/dough-bowl-empty.png') center / contain no-repeat;
+    background: url('../assets/images/station-cake/dough-bowl-empty.webp') center / contain no-repeat;
 }
 
 .cake-dough-tray.filling-mode {
-    background-image: url('../assets/images/station-cake/filling-bowl.png?v=2');
+    background-image: url('../assets/images/station-cake/filling-bowl.webp?v=2');
 }
 
 .station-game-cake .cake-filling-ball {
@@ -622,7 +622,7 @@ body.cake-station-active #game-wrapper {
     padding: 0;
     transform: translate(-50%, -50%);
     border: 0;
-    background: url('../assets/images/station-cake/filling-ball.png?v=2') center / contain no-repeat;
+    background: url('../assets/images/station-cake/filling-ball.webp?v=2') center / contain no-repeat;
     filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .32));
     cursor: grab;
 }
@@ -668,7 +668,7 @@ body.cake-station-active #game-wrapper {
     padding: 0;
     transform: translate(-50%, -50%);
     border: 0;
-    background: url('../assets/images/station-cake/dough-pressed.png') center / contain no-repeat;
+    background: url('../assets/images/station-cake/dough-pressed.webp') center / contain no-repeat;
     filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .32));
     cursor: grab;
     transition: width .35s ease;
@@ -686,7 +686,7 @@ body.cake-station-active #game-wrapper {
 }
 
 .station-game-cake .cake-dough.wrapping {
-    background-image: url('../assets/images/station-cake/filling-wrapping.png?v=2');
+    background-image: url('../assets/images/station-cake/filling-wrapping.webp?v=2');
 }
 
 .station-game-cake .cake-mold-tool {

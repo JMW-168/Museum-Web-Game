@@ -12,6 +12,30 @@ const CakeStationGame = {
     guideShown: false,
     onComplete: null,
     onExit: null,
+    essentialImageUrls: [
+        'assets/images/station-cake/background.webp',
+        'assets/images/station-cake/icon-turtle.webp',
+        'assets/images/station-cake/icon-luck.webp',
+        'assets/images/station-cake/icon-fish.webp',
+        'assets/images/station-cake/icon-coins.webp',
+        'assets/images/station-cake/dough-in-bowl.webp',
+        'assets/images/station-cake/filling-bowl.webp',
+        'assets/images/station-cake/mold-blank.webp'
+    ],
+    deferredImageUrls: [
+        'assets/images/station-cake/dough-bowl-empty.webp',
+        'assets/images/station-cake/dough-pressed.webp',
+        'assets/images/station-cake/filling-ball.webp',
+        'assets/images/station-cake/filling-wrapping.webp',
+        'assets/images/station-cake/mold-turtle.webp',
+        'assets/images/station-cake/mold-luck.webp',
+        'assets/images/station-cake/mold-fish.webp',
+        'assets/images/station-cake/mold-coins.webp',
+        'assets/images/station-cake/cake-turtle.webp',
+        'assets/images/station-cake/cake-luck.webp',
+        'assets/images/station-cake/cake-fish.webp',
+        'assets/images/station-cake/cake-coins.webp'
+    ],
 
     tr(key, tokens) {
         return typeof window.t === 'function' ? window.t(key, tokens) : key;
@@ -24,6 +48,15 @@ const CakeStationGame = {
             meaning: pattern.meaningKey ? this.tr(pattern.meaningKey) : pattern.meaning,
             blessing: pattern.blessingKey ? this.tr(pattern.blessingKey) : pattern.blessing
         };
+    },
+
+    warmCakeAssets() {
+        if (typeof LoadingManager === 'undefined' || !LoadingManager.preloadImages) return Promise.resolve();
+        return LoadingManager.preloadImages(this.essentialImageUrls, { timeoutMs: 12000 })
+            .then(() => LoadingManager.preloadImages(this.deferredImageUrls, { timeoutMs: 12000 }))
+            .catch((error) => {
+                if (window.Logger) window.Logger.warn('關卡四進場前預載失敗，進入後仍會由瀏覽器重試:', error);
+            });
     },
 
     start(options = {}) {

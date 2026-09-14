@@ -17,7 +17,7 @@ window.I18n.register('zh-Hans', {
 
     // 首页
     'title.alt': '森美兰客家文化博物馆・传统日常再现',
-    'title.image': 'assets/images/title/title-20260904-simplified.png',
+    'title.image': 'assets/images/title/title-20260904-simplified.webp',
     'menu.start': '搭乘时光机',
     'menu.exit': '回到现实',
 

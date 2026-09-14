@@ -18,7 +18,7 @@ window.I18n.register('zh-Hant', {
 
     // 首頁
     'title.alt': '森美蘭客家文化博物館・傳統日常再現',
-    'title.image': 'assets/images/title/title-20260904.png',
+    'title.image': 'assets/images/title/title-20260904.webp',
     'menu.start': '搭乘時光機',
     'menu.exit': '回到現實',
 
