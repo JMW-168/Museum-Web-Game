@@ -40,9 +40,10 @@ class StalledImage {
 (async () => {
     const TeaStationGame = loadTeaGame(SuccessfulImage);
     assert.ok(TeaStationGame.teaEssentialImageUrls.length > 0, '應定義研磨階段必要素材');
-    assert.ok(TeaStationGame.teaDeferredImageUrls.length > 0, '應定義後續背景載入素材');
+    assert.strictEqual(TeaStationGame.teaMortarImageUrls.length, 4, '四段石臼圖應獨立保留 decode 結果');
+    assert.ok(TeaStationGame.teaChopImageUrls.length > 0, '應定義切料階段背景載入素材');
     assert.strictEqual(
-        TeaStationGame.teaEssentialImageUrls.filter((src) => TeaStationGame.teaDeferredImageUrls.includes(src)).length,
+        TeaStationGame.teaEssentialImageUrls.filter((src) => TeaStationGame.teaChopImageUrls.includes(src)).length,
         0,
         '必要與延後素材不應重複'
     );
@@ -68,14 +69,14 @@ class StalledImage {
     TeaStationGame.prepareTeaAssets = () => Promise.resolve();
     let deferredStarted = false;
     let gameStarted = false;
-    TeaStationGame.preloadDeferredTeaAssets = () => { deferredStarted = true; };
+    TeaStationGame.preloadTeaChopAssets = () => { deferredStarted = true; };
     TeaStationGame.startTeaGame = () => { gameStarted = true; };
 
     const startPromise = TeaStationGame.startCombinedTea(game);
     assert.ok(game.container.innerHTML.includes('擂茶素材載入中'), '點擊後應立即顯示載入畫面');
     assert.strictEqual(gameStarted, false, '必要素材完成前不應開始遊戲');
     await startPromise;
-    assert.strictEqual(deferredStarted, true, '必要素材完成後應開始背景載入後續素材');
+    assert.strictEqual(deferredStarted, false, '必要素材完成後不應立刻和研磨互動搶資源');
     assert.strictEqual(gameStarted, true, '必要素材完成後應開始遊戲');
 
     const StalledTeaStationGame = loadTeaGame(StalledImage);

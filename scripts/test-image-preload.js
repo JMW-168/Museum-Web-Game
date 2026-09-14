@@ -44,6 +44,10 @@ vm.runInContext(source, context);
     await loader.preloadImage('assets/images/retry.webp');
     assert.strictEqual(imageRequests, 3, '失敗 URL 應從快取移除，讓下一次能重試');
 
+    await loader.prefetchImages(['assets/images/background.webp', 'assets/images/background.webp']);
+    assert.strictEqual(imageRequests, 4, '背景暖機應去重，且建立一次低優先圖片請求');
+    assert.strictEqual(decodedImages, 2, '背景暖機不應先 decode，避免選關頁佔用大量記憶體');
+
     console.log('image preload ok');
 })().catch((error) => {
     console.error(error);
