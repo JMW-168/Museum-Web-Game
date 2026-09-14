@@ -205,6 +205,30 @@ const LoadingManager = {
             return result;
         })));
     },
+
+    // 僅暖機網路快取：不呼叫 decode()，避免選關頁一次佔用四關背景的解碼記憶體。
+    prefetchImages: function(urls, options = {}) {
+        const timeoutMs = options.timeoutMs ?? 12000;
+        const uniqueUrls = [...new Set(urls || [])];
+        return Promise.all(uniqueUrls.map((src) => new Promise((resolve) => {
+            const image = new Image();
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeoutId);
+                image.onload = null;
+                image.onerror = null;
+                resolve(src);
+            };
+            const timeoutId = setTimeout(finish, timeoutMs);
+            if ('decoding' in image) image.decoding = 'async';
+            if ('fetchPriority' in image) image.fetchPriority = 'low';
+            image.onload = finish;
+            image.onerror = finish;
+            image.src = src;
+        })));
+    },
     
     loadVideo: function(src, callback) {
         const video = document.createElement('video');
