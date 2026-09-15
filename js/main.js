@@ -8,6 +8,57 @@ let hasDismissedServiceWorkerUpdate = false;
 // 僅在業主交付站送出 GA4，開發與測試 Pages 不會污染正式使用數據。
 const GA4_MEASUREMENT_ID = 'G-PKVJPFCPDZ';
 const GA4_ALLOWED_HOST = 'persatuankebudayaanhakkagame-gif.github.io';
+const GA4_LABELS = {
+    event: {
+        home_start_click: '首頁：開始體驗',
+        experience_entry_click: '入口點擊',
+        station_started: '關卡開始',
+        station_completed: '關卡完成',
+        station_abandoned: '中途離開',
+        station_retry: '再次遊玩'
+    },
+    station: {
+        fire: '第一關：灶台生火',
+        tea: '第二關：擂茶料理',
+        cradle: '第三關：搖籃哄睡',
+        cake: '第四關：紅粄製作'
+    },
+    entry: {
+        fire: '第一關：灶台生火',
+        tea: '第二關：擂茶料理',
+        cradle: '第三關：搖籃哄睡',
+        cake: '第四關：紅粄製作',
+        story: '完整劇情體驗',
+        collection: '客家老物件徵集'
+    },
+    entryType: {
+        game: '遊戲入口',
+        collection: '徵集活動'
+    },
+    playMode: {
+        standalone: '單關體驗',
+        full_story: '完整劇情體驗',
+        combined: '第一二關串連',
+        combined34: '第三四關串連'
+    },
+    exitMethod: {
+        completed: '完成關卡',
+        leave_button: '主動離開',
+        page_hidden: '離開頁面／關閉或重整',
+        station_switch: '切換關卡'
+    },
+    language: {
+        'zh-Hant': '繁體中文',
+        'zh-Hans': '簡體中文'
+    }
+};
+
+function ga4Label(group, rawValue) {
+    const labels = GA4_LABELS[group];
+    return labels && Object.prototype.hasOwnProperty.call(labels, rawValue)
+        ? labels[rawValue]
+        : rawValue;
+}
 
 function isGa4Enabled() {
     return window.location.hostname === GA4_ALLOWED_HOST;
@@ -28,9 +79,30 @@ function initGa4() {
 
 function trackGa4Event(eventName, parameters = {}) {
     if (!isGa4Enabled() || typeof window.gtag !== 'function') return;
+    const language = window.I18n?.getLocale?.() || document.documentElement.lang;
+    const labels = {
+        event_label: ga4Label('event', eventName),
+        language_label: ga4Label('language', language)
+    };
+    if (Object.prototype.hasOwnProperty.call(parameters, 'station_id')) {
+        labels.station_label = ga4Label('station', parameters.station_id);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'entry_id')) {
+        labels.entry_label = ga4Label('entry', parameters.entry_id);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'entry_type')) {
+        labels.entry_type_label = ga4Label('entryType', parameters.entry_type);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'play_mode')) {
+        labels.play_mode_label = ga4Label('playMode', parameters.play_mode);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'exit_method')) {
+        labels.exit_method_label = ga4Label('exitMethod', parameters.exit_method);
+    }
     window.gtag('event', eventName, {
-        language: window.I18n?.getLocale?.() || document.documentElement.lang,
-        ...parameters
+        language,
+        ...parameters,
+        ...labels
     });
 }
 
