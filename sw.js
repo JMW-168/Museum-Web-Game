@@ -1,21 +1,21 @@
 const CACHE_PREFIX = 'museum-web-game';
-const RELEASE_VERSION = 'v131';
+const RELEASE_VERSION = 'v135';
 const SHELL_CACHE = `${CACHE_PREFIX}-shell-${RELEASE_VERSION}`;
 const RUNTIME_CACHE = `${CACHE_PREFIX}-runtime-${RELEASE_VERSION}`;
 
 const SHELL_ASSETS = [
   './', 'index.html', 'manifest.json',
-  'style.css?v=119', 'css/station-shared.css?v=2', 'css/station-fire.css?v=1',
+  'style.css?v=121', 'css/station-shared.css?v=2', 'css/station-fire.css?v=1',
   'css/station-tea.css?v=2', 'css/station-cradle.css?v=2', 'css/cake-station-game.css?v=74',
-  'js/i18n/i18n.js?v=45', 'js/i18n/zh-Hant.js?v=117', 'js/i18n/zh-Hans.js?v=117',
+  'js/i18n/i18n.js?v=45', 'js/i18n/zh-Hant.js?v=120', 'js/i18n/zh-Hans.js?v=120',
   'js/core/Logger.js?v=114', 'js/core/ErrorReporter.js?v=114',
   'js/core/LoadingManager.js?v=116', 'js/core/AudioManager.js?v=114', 'js/core/SceneManager.js?v=114',
   'js/data/stationCombinedStory.js?v=55', 'js/data/station34CombinedStory.js?v=56',
   'js/data/cakePatterns.js?v=48', 'js/data/combinedStoryPacing.js?v=44',
   'js/minigames/StationIntroGuide.js?v=49', 'js/minigames/EndingScreen.js?v=53',
   'js/minigames/CradleStationGame.js?v=58', 'js/minigames/CakeStationGame.js?v=62',
-  'js/minigames/Station34CombinedGame.js?v=63', 'js/minigames/FireStationGame.js?v=3',
-  'js/minigames/TeaStationGame.js?v=4', 'js/minigames/StationGame.js?v=86', 'js/main.js?v=123',
+  'js/minigames/Station34CombinedGame.js?v=63', 'js/minigames/FireStationGame.js?v=4',
+  'js/minigames/TeaStationGame.js?v=4', 'js/minigames/StationGame.js?v=87', 'js/main.js?v=127',
   'assets/icons/icon-16.png', 'assets/icons/icon-32.png', 'assets/icons/icon-64.png',
   'assets/icons/icon-128.png', 'assets/icons/icon-256.png', 'assets/images/title/cover-20260909.webp',
   'assets/images/title/title-20260904.webp', 'assets/images/title/title-20260904-simplified.webp',

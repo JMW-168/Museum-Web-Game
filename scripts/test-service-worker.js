@@ -33,4 +33,22 @@ assert(sw.includes("['image', 'font', 'audio', 'video']"), 'Runtime cache must c
 assert(sw.includes("request.mode === 'navigate'"), 'Offline navigation must have an app-shell response');
 assert(sw.includes('startsWith(`${CACHE_PREFIX}-`)'), 'Activation must only delete this app\'s old caches');
 
+const releaseVersion = sw.match(/const RELEASE_VERSION = 'v(\d+)'/);
+const registrationVersion = mainVersion(html, /<script src="js\/main\.js\?v=(\d+)"><\/script>/, 'HTML main script');
+const cachedMainVersion = mainVersion(sw, /'js\/main\.js\?v=(\d+)'/, 'cached main script');
+const registeredSwVersion = mainVersion(
+    fs.readFileSync(path.join(root, 'js', 'main.js'), 'utf8'),
+    /register\('sw\.js\?v=(\d+)'/,
+    'registered service worker'
+);
+assert(releaseVersion, 'Service worker release version must be declared');
+assert.strictEqual(registrationVersion, cachedMainVersion, 'HTML and service worker must use the same main.js query version');
+assert.strictEqual(registeredSwVersion, releaseVersion[1], 'Registered service worker query must match RELEASE_VERSION');
+
 console.log(`Service worker checks passed (${shellAssets.length} app-shell assets).`);
+
+function mainVersion(source, pattern, description) {
+    const match = source.match(pattern);
+    assert(match, `${description} version must be declared`);
+    return match[1];
+}

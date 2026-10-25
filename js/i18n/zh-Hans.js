@@ -25,12 +25,18 @@ window.I18n.register('zh-Hans', {
     'common.back': '返回首页',
 
     // 引导说明页（1／2 土楼旁白）
-    'intro.narration': '您即将降落于 50 年前的客家土楼，阿公阿嬷家里～请准备好愉悦的心情，体验即将开始～',
+    'intro.narration': '您即将降落于50年前的客家土楼，体验当时客家人的日常生活~',
     'intro.next': '继续',
 
     // 引导说明页（2／2 爷爷奶奶欢迎）
-    'welcome.text': '欢迎你呀～来里面坐～',
-    'welcome.start': '开始体验',
+    'welcome.arrival': '时光机已抵达50年前的客家土楼。你是一位到土楼做客的旅人，敲敲门看看谁在家吧！',
+    'welcome.knock': '敲敲门',
+    'welcome.question': '你好～请问你是谁？',
+    'welcome.reply.identity': '你好，我是旅行经过这里的人，请问这里是哪里呢？',
+    'welcome.response.identity': '你好呀！这里是客家土楼，是我们一家人生活的地方。',
+    'welcome.reply.interest': '原来如此，这里看起来好特别！',
+    'welcome.response.invite': '是呀，这里有好多客家人的生活故事。欢迎你呀～来里面坐～',
+    'welcome.enter': '跟着爷爷奶奶看看土楼日常',
 
     // 模式选择
     'age.title': '选择游戏模式',
@@ -207,7 +213,7 @@ window.I18n.register('zh-Hans', {
     'station.tea.chop.title': '站点2-2 : 切配菜',
     'station.tea.chop.verb': '切料',
     'station.tea.chop.unit': '刀',
-    'ingredient.basil': '九层塔',
+    'ingredient.basil': '金不换',
     'ingredient.mint': '薄荷',
     'ingredient.kuding': '苦刺心',
     'ingredient.peanut': '花生',
@@ -248,7 +254,7 @@ window.I18n.register('zh-Hans', {
     'station.tea.choppedBowls': '已切好的配菜',
     'station.tea.result.title': '擂茶组合完成',
     'station.tea.result.art': '擂茶与配菜组合',
-    'station.tea.result.grindIngredients': '苦刺心・薄荷・九层塔・芝麻・花生',
+    'station.tea.result.grindIngredients': '苦刺心・薄荷・金不换・芝麻・花生',
     'station.tea.result.chopIngredients': '长豆・菜脯・树仔菜・豆腐',
     'station.tea.result.assisted': '这次有阿公协助完成，下一次试着在倒数内完成吧！',
     'station.tea.result.perfect': '两段都在时间内完成，手脚真利落！',

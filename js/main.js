@@ -8,6 +8,57 @@ let hasDismissedServiceWorkerUpdate = false;
 // 僅在業主交付站送出 GA4，開發與測試 Pages 不會污染正式使用數據。
 const GA4_MEASUREMENT_ID = 'G-PKVJPFCPDZ';
 const GA4_ALLOWED_HOST = 'persatuankebudayaanhakkagame-gif.github.io';
+const GA4_LABELS = {
+    event: {
+        home_start_click: '首頁：開始體驗',
+        experience_entry_click: '入口點擊',
+        station_started: '關卡開始',
+        station_completed: '關卡完成',
+        station_abandoned: '中途離開',
+        station_retry: '再次遊玩'
+    },
+    station: {
+        fire: '第一關：灶台生火',
+        tea: '第二關：擂茶料理',
+        cradle: '第三關：搖籃哄睡',
+        cake: '第四關：紅粄製作'
+    },
+    entry: {
+        fire: '第一關：灶台生火',
+        tea: '第二關：擂茶料理',
+        cradle: '第三關：搖籃哄睡',
+        cake: '第四關：紅粄製作',
+        story: '完整劇情體驗',
+        collection: '客家老物件徵集'
+    },
+    entryType: {
+        game: '遊戲入口',
+        collection: '徵集活動'
+    },
+    playMode: {
+        standalone: '單關體驗',
+        full_story: '完整劇情體驗',
+        combined: '第一二關串連',
+        combined34: '第三四關串連'
+    },
+    exitMethod: {
+        completed: '完成關卡',
+        leave_button: '主動離開',
+        page_hidden: '離開頁面／關閉或重整',
+        station_switch: '切換關卡'
+    },
+    language: {
+        'zh-Hant': '繁體中文',
+        'zh-Hans': '簡體中文'
+    }
+};
+
+function ga4Label(group, rawValue) {
+    const labels = GA4_LABELS[group];
+    return labels && Object.prototype.hasOwnProperty.call(labels, rawValue)
+        ? labels[rawValue]
+        : rawValue;
+}
 
 function isGa4Enabled() {
     return window.location.hostname === GA4_ALLOWED_HOST;
@@ -28,9 +79,30 @@ function initGa4() {
 
 function trackGa4Event(eventName, parameters = {}) {
     if (!isGa4Enabled() || typeof window.gtag !== 'function') return;
+    const language = window.I18n?.getLocale?.() || document.documentElement.lang;
+    const labels = {
+        event_label: ga4Label('event', eventName),
+        language_label: ga4Label('language', language)
+    };
+    if (Object.prototype.hasOwnProperty.call(parameters, 'station_id')) {
+        labels.station_label = ga4Label('station', parameters.station_id);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'entry_id')) {
+        labels.entry_label = ga4Label('entry', parameters.entry_id);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'entry_type')) {
+        labels.entry_type_label = ga4Label('entryType', parameters.entry_type);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'play_mode')) {
+        labels.play_mode_label = ga4Label('playMode', parameters.play_mode);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'exit_method')) {
+        labels.exit_method_label = ga4Label('exitMethod', parameters.exit_method);
+    }
     window.gtag('event', eventName, {
-        language: window.I18n?.getLocale?.() || document.documentElement.lang,
-        ...parameters
+        language,
+        ...parameters,
+        ...labels
     });
 }
 
@@ -201,6 +273,82 @@ function showAgeSelect() {
     });
 }
 
+function resetWelcomeIntro() {
+    const welcome = document.getElementById('intro-welcome');
+    const hosts = welcome?.querySelector('.intro-hosts');
+    const line = welcome?.querySelector('[data-welcome-line]');
+    const knock = document.getElementById('welcomeKnockBtn');
+    const replies = welcome?.querySelector('[data-welcome-replies]');
+    const reply = welcome?.querySelector('[data-welcome-reply]');
+    const enterWrap = welcome?.querySelector('[data-welcome-enter-wrap]');
+    const enter = document.getElementById('welcomeStartBtn');
+    if (!welcome || !line || !knock || !replies || !reply || !enterWrap || !enter) return;
+
+    welcome.classList.remove('is-entering');
+    hosts?.classList.add('is-hidden');
+    welcome.dataset.conversationStep = '0';
+    line.dataset.i18n = 'welcome.arrival';
+    line.textContent = window.t ? t('welcome.arrival') : '時光機已抵達50年前的客家土樓。你是一位來土樓作客的旅人，敲敲門看看誰在家吧！';
+    reply.dataset.i18n = 'welcome.reply.identity';
+    reply.textContent = window.t ? t('welcome.reply.identity') : '你好，我是旅行經過這裡的人，請問這裡是哪裡呢？';
+    knock.hidden = false;
+    knock.disabled = false;
+    replies.hidden = true;
+    enterWrap.hidden = true;
+    enter.disabled = false;
+}
+
+function setupWelcomeIntro() {
+    const welcome = document.getElementById('intro-welcome');
+    const hosts = welcome?.querySelector('.intro-hosts');
+    const line = welcome?.querySelector('[data-welcome-line]');
+    const knock = document.getElementById('welcomeKnockBtn');
+    const replies = welcome?.querySelector('[data-welcome-replies]');
+    const reply = welcome?.querySelector('[data-welcome-reply]');
+    const enterWrap = welcome?.querySelector('[data-welcome-enter-wrap]');
+    const enter = document.getElementById('welcomeStartBtn');
+    if (!welcome || !line || !knock || !replies || !reply || !enterWrap || !enter) return;
+
+    knock.addEventListener('click', () => {
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        knock.hidden = true;
+        hosts?.classList.remove('is-hidden');
+        welcome.dataset.conversationStep = '1';
+        line.dataset.i18n = 'welcome.question';
+        line.textContent = window.t ? t('welcome.question') : '你好～請問你是誰？';
+        replies.hidden = false;
+    });
+
+    reply.addEventListener('click', () => {
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        const step = welcome.dataset.conversationStep;
+        if (step === '1') {
+            line.dataset.i18n = 'welcome.response.identity';
+            line.textContent = window.t ? t('welcome.response.identity') : '你好呀！這裡是客家土樓，是我們一家人生活的地方。';
+            reply.dataset.i18n = 'welcome.reply.interest';
+            reply.textContent = window.t ? t('welcome.reply.interest') : '原來如此，這裡看起來好特別！';
+            welcome.dataset.conversationStep = '2';
+            return;
+        }
+        if (step === '2') {
+            line.dataset.i18n = 'welcome.response.invite';
+            line.textContent = window.t ? t('welcome.response.invite') : '是呀，這裡有好多客家人的生活故事。歡迎你呀～來裡面坐～';
+            replies.hidden = true;
+            enterWrap.hidden = false;
+            welcome.dataset.conversationStep = '3';
+        }
+    });
+
+    enter.addEventListener('click', () => {
+        if (enter.disabled) return;
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        enter.disabled = true;
+        welcome.classList.add('is-entering');
+        window.setTimeout(() => showScene('level-select'), 520);
+    });
+    resetWelcomeIntro();
+}
+
 function showScene(sceneId) {
     if (window.Logger) Logger.info('切換場景到:', sceneId);
     const isGameScene = sceneId === 'game-container';
@@ -322,7 +470,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=131', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=135', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -403,13 +551,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('introNextBtn')?.addEventListener('click', () => {
         window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        resetWelcomeIntro();
         showScene('intro-welcome');
     });
 
-    document.getElementById('welcomeStartBtn')?.addEventListener('click', () => {
-        window.AudioManager?.playSFX('assets/sounds/click.mp3');
-        showScene('level-select');
-    });
+    setupWelcomeIntro();
 
     document.getElementById('exitBtn')?.addEventListener('click', () => {
         showExitConfirm((confirmed) => {

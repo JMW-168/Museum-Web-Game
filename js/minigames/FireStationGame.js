@@ -17,6 +17,47 @@ const FireStationGame = {
             if (window.Logger) window.Logger.warn('關卡一進場前預載失敗，正式進入時會重試:', error);
         });
     },
+    warmFireMusic(game) {
+        if (!game.fireMusic) {
+            game.fireMusic = new Audio(FireStationGame.fireMusicSrc);
+            game.fireMusic.loop = true;
+            game.fireMusic.volume = 0.20;
+            game.fireMusic.preload = 'auto';
+        }
+
+        const audio = game.fireMusic;
+        if (audio.readyState >= 3) return Promise.resolve(audio);
+        if (game.fireMusicLoadPromise) return game.fireMusicLoadPromise;
+
+        const loading = new Promise((resolve, reject) => {
+            let settled = false;
+            const finish = (error) => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timeoutId);
+                audio.removeEventListener('canplay', onReady);
+                audio.removeEventListener('error', onError);
+                if (error) reject(error);
+                else resolve(audio);
+            };
+            const onReady = () => finish();
+            const onError = () => finish(new Error('關卡一音樂載入失敗'));
+            const timeoutId = setTimeout(() => finish(new Error('關卡一音樂載入逾時')), 20000);
+
+            audio.addEventListener('canplay', onReady, { once: true });
+            audio.addEventListener('error', onError, { once: true });
+            if (audio.readyState >= 3) {
+                finish();
+                return;
+            }
+            audio.load();
+        });
+
+        game.fireMusicLoadPromise = loading.finally(() => {
+            game.fireMusicLoadPromise = null;
+        });
+        return game.fireMusicLoadPromise;
+    },
     // 由甲方影片音軌的 onset 分析產生；前 12 秒取主拍，之後加入半拍增加密度。
     fireBeatTimes: [
         2.694, 4.226, 5.747, 7.291, 8.824, 10.344, 11.889,
@@ -118,7 +159,10 @@ const FireStationGame = {
         window.addEventListener('keydown', game.keyHandler);
 
         FireStationGame.renderFireHud(game);
-        FireStationGame.waitForFireGameReady(game)
+        Promise.all([
+            FireStationGame.waitForFireGameReady(game),
+            FireStationGame.warmFireMusic(game)
+        ])
             .then(() => FireStationGame.showFireGuide(game))
             .catch((error) => FireStationGame.showFireLoadError(game, error));
     },
@@ -126,9 +170,8 @@ const FireStationGame = {
     showFireGuide(game) {
         if (!game.state || game.state.finished || game.state.stationId !== 'fire') return;
         const play = game.container?.querySelector('.station-play');
-        // 在使用者手勢內起 BGM（startFireMusic 會吞掉被瀏覽器阻擋的例外）。
+        // 教學結束的按鈕操作是使用者手勢；只在此時啟動已預載的音樂。
         const begin = () => {
-            FireStationGame.startFireMusic(game);
             FireStationGame.beginFireLoop(game);
         };
         if (game.fireGuideShown || !play || typeof StationIntroGuide === 'undefined') {
@@ -153,13 +196,15 @@ const FireStationGame = {
 
     beginFireLoop(game) {
         if (!game.state || game.state.finished || game.state.stationId !== 'fire') return;
-        window.GameAnalytics?.start('fire', game.fullStory ? 'full_story' : game.mode || 'standalone');
         const play = game.container.querySelector('.station-play');
-        if (play) play.classList.remove('is-preparing');
-        if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
+        if (play) play.classList.add('is-preparing');
 
         FireStationGame.syncFireMusicToGameStart(game)
             .then(() => {
+                if (!game.state || game.state.finished || game.state.stationId !== 'fire') return;
+                window.GameAnalytics?.start('fire', game.fullStory ? 'full_story' : game.mode || 'standalone');
+                if (play) play.classList.remove('is-preparing');
+                if (typeof LoadingManager !== 'undefined') LoadingManager.finish();
                 game.animationId = requestAnimationFrame((time) => {
                     if (!game.state || game.state.finished) return;
                     game.state.startedAt = time;
@@ -510,7 +555,7 @@ const FireStationGame = {
 
     getFireElapsedMs(game, time) {
         if (!game.state.startedAt) return 0;
-        if (game.fireMusicStarted && game.fireMusic && !game.fireMusic.paused) {
+        if (game.fireMusicStarted && game.fireMusic) {
             return game.fireMusic.currentTime * 1000;
         }
         return time - game.state.startedAt;
@@ -678,39 +723,22 @@ const FireStationGame = {
         texture.stop(startAt + duration * 0.75);
     },
 
-    startFireMusic(game) {
-        if (!game.fireMusic) {
-            game.fireMusic = new Audio(FireStationGame.fireMusicSrc);
-            game.fireMusic.loop = true;
-            game.fireMusic.volume = 0.20;
-            game.fireMusic.preload = 'auto';
-        }
-
-        game.fireMusic.currentTime = 0;
-        return game.fireMusic.play().then(() => {
-            game.fireMusicStarted = true;
-        }).catch((error) => {
-            game.fireMusicStarted = false;
-            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
-        });
-    },
-
     syncFireMusicToGameStart(game) {
-        if (!game.fireMusic) {
-            return FireStationGame.startFireMusic(game);
-        }
-
-        try {
-            game.fireMusic.currentTime = 0;
-        } catch (error) {
-            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂重設失敗:', error);
-        }
-
-        return game.fireMusic.play().then(() => {
+        return FireStationGame.warmFireMusic(game).then(() => {
+            game.fireMusicStarted = false;
+            try {
+                game.fireMusic.currentTime = 0;
+            } catch (error) {
+                if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂重設失敗:', error);
+                throw error;
+            }
+            // 只呼叫一次 play；遊戲迴圈等播放 Promise 成功後才啟動。
+            return game.fireMusic.play();
+        }).then(() => {
             game.fireMusicStarted = true;
         }).catch((error) => {
             game.fireMusicStarted = false;
-            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂播放被瀏覽器阻擋:', error);
+            if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂尚未就緒或播放被瀏覽器阻擋:', error);
             throw error;
         });
     },
@@ -718,7 +746,13 @@ const FireStationGame = {
     stopFireMusic(game) {
         if (!game.fireMusic) return;
         game.fireMusic.pause();
-        game.fireMusic.currentTime = 0;
+        if (game.fireMusic.readyState > 0) {
+            try {
+                game.fireMusic.currentTime = 0;
+            } catch (error) {
+                if (window.Logger) window.Logger.warn('⚠️ 關卡一音樂停止時無法重設進度:', error);
+            }
+        }
         game.fireMusicStarted = false;
     }
 };
