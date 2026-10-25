@@ -273,6 +273,82 @@ function showAgeSelect() {
     });
 }
 
+function resetWelcomeIntro() {
+    const welcome = document.getElementById('intro-welcome');
+    const hosts = welcome?.querySelector('.intro-hosts');
+    const line = welcome?.querySelector('[data-welcome-line]');
+    const knock = document.getElementById('welcomeKnockBtn');
+    const replies = welcome?.querySelector('[data-welcome-replies]');
+    const reply = welcome?.querySelector('[data-welcome-reply]');
+    const enterWrap = welcome?.querySelector('[data-welcome-enter-wrap]');
+    const enter = document.getElementById('welcomeStartBtn');
+    if (!welcome || !line || !knock || !replies || !reply || !enterWrap || !enter) return;
+
+    welcome.classList.remove('is-entering');
+    hosts?.classList.add('is-hidden');
+    welcome.dataset.conversationStep = '0';
+    line.dataset.i18n = 'welcome.arrival';
+    line.textContent = window.t ? t('welcome.arrival') : '時光機已抵達50年前的客家土樓。你是一位來土樓作客的旅人，敲敲門看看誰在家吧！';
+    reply.dataset.i18n = 'welcome.reply.identity';
+    reply.textContent = window.t ? t('welcome.reply.identity') : '你好，我是旅行經過這裡的人，請問這裡是哪裡呢？';
+    knock.hidden = false;
+    knock.disabled = false;
+    replies.hidden = true;
+    enterWrap.hidden = true;
+    enter.disabled = false;
+}
+
+function setupWelcomeIntro() {
+    const welcome = document.getElementById('intro-welcome');
+    const hosts = welcome?.querySelector('.intro-hosts');
+    const line = welcome?.querySelector('[data-welcome-line]');
+    const knock = document.getElementById('welcomeKnockBtn');
+    const replies = welcome?.querySelector('[data-welcome-replies]');
+    const reply = welcome?.querySelector('[data-welcome-reply]');
+    const enterWrap = welcome?.querySelector('[data-welcome-enter-wrap]');
+    const enter = document.getElementById('welcomeStartBtn');
+    if (!welcome || !line || !knock || !replies || !reply || !enterWrap || !enter) return;
+
+    knock.addEventListener('click', () => {
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        knock.hidden = true;
+        hosts?.classList.remove('is-hidden');
+        welcome.dataset.conversationStep = '1';
+        line.dataset.i18n = 'welcome.question';
+        line.textContent = window.t ? t('welcome.question') : '你好～請問你是誰？';
+        replies.hidden = false;
+    });
+
+    reply.addEventListener('click', () => {
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        const step = welcome.dataset.conversationStep;
+        if (step === '1') {
+            line.dataset.i18n = 'welcome.response.identity';
+            line.textContent = window.t ? t('welcome.response.identity') : '你好呀！這裡是客家土樓，是我們一家人生活的地方。';
+            reply.dataset.i18n = 'welcome.reply.interest';
+            reply.textContent = window.t ? t('welcome.reply.interest') : '原來如此，這裡看起來好特別！';
+            welcome.dataset.conversationStep = '2';
+            return;
+        }
+        if (step === '2') {
+            line.dataset.i18n = 'welcome.response.invite';
+            line.textContent = window.t ? t('welcome.response.invite') : '是呀，這裡有好多客家人的生活故事。歡迎你呀～來裡面坐～';
+            replies.hidden = true;
+            enterWrap.hidden = false;
+            welcome.dataset.conversationStep = '3';
+        }
+    });
+
+    enter.addEventListener('click', () => {
+        if (enter.disabled) return;
+        window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        enter.disabled = true;
+        welcome.classList.add('is-entering');
+        window.setTimeout(() => showScene('level-select'), 520);
+    });
+    resetWelcomeIntro();
+}
+
 function showScene(sceneId) {
     if (window.Logger) Logger.info('切換場景到:', sceneId);
     const isGameScene = sceneId === 'game-container';
@@ -394,7 +470,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=132', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=135', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -475,13 +551,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('introNextBtn')?.addEventListener('click', () => {
         window.AudioManager?.playSFX('assets/sounds/click.mp3');
+        resetWelcomeIntro();
         showScene('intro-welcome');
     });
 
-    document.getElementById('welcomeStartBtn')?.addEventListener('click', () => {
-        window.AudioManager?.playSFX('assets/sounds/click.mp3');
-        showScene('level-select');
-    });
+    setupWelcomeIntro();
 
     document.getElementById('exitBtn')?.addEventListener('click', () => {
         showExitConfirm((confirmed) => {

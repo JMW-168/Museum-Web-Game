@@ -71,6 +71,9 @@ const StationGame = {
             this.fullStory = stationId === 'story';
             this.station = this.getStation('fire');
             FireStationGame.warmFireAssets();
+            FireStationGame.warmFireMusic(this).catch((error) => {
+                if (window.Logger) window.Logger.warn('關卡一音樂預載失敗，進入時會重試:', error);
+            });
             showScene('game-container');
             if (typeof AudioManager !== 'undefined') AudioManager.stopBGM();
             this.createShell('fire');
@@ -88,6 +91,9 @@ const StationGame = {
         // 單關版：進入引導對話 → 遊戲（聚光燈操作提示在遊戲啟動路徑內）。
         if (stationId === 'fire') {
             FireStationGame.warmFireAssets();
+            FireStationGame.warmFireMusic(this).catch((error) => {
+                if (window.Logger) window.Logger.warn('關卡一音樂預載失敗，進入時會重試:', error);
+            });
             this.showCombinedDialogue('fireEntry', () => this.startCombinedFire());
         } else if (stationId === 'tea') {
             this.station = this.getStation('tea');
