@@ -26,12 +26,18 @@ window.I18n.register('zh-Hant', {
     'common.back': '返回首頁',
 
     // 引導說明頁（1／2 土樓旁白）
-    'intro.narration': '您即將降落於 50 年前的客家土樓，阿公阿嬤家裡～請準備好愉悅的心情，體驗即將開始～',
+    'intro.narration': '您即將降落於50年前的客家土樓，體驗當時客家人的日常生活~',
     'intro.next': '繼續',
 
     // 引導說明頁（2／2 爺爺奶奶歡迎）
-    'welcome.text': '歡迎你呀～來裡面坐～',
-    'welcome.start': '開始體驗',
+    'welcome.arrival': '時光機已抵達50年前的客家土樓。你是一位來土樓作客的旅人，敲敲門看看誰在家吧！',
+    'welcome.knock': '敲敲門',
+    'welcome.question': '你好～請問你是誰？',
+    'welcome.reply.identity': '你好，我是旅行經過這裡的人，請問這裡是哪裡呢？',
+    'welcome.response.identity': '你好呀！這裡是客家土樓，是我們一家人生活的地方。',
+    'welcome.reply.interest': '原來如此，這裡看起來好特別！',
+    'welcome.response.invite': '是呀，這裡有好多客家人的生活故事。歡迎你呀～來裡面坐～',
+    'welcome.enter': '跟著阿公阿嬤看看土樓日常',
 
     // 模式選擇
     'age.title': '選擇遊戲模式',
@@ -207,7 +213,7 @@ window.I18n.register('zh-Hant', {
     'station.tea.chop.title': '站點2-2 : 切配菜',
     'station.tea.chop.verb': '切料',
     'station.tea.chop.unit': '刀',
-    'ingredient.basil': '九層塔',
+    'ingredient.basil': '金不換',
     'ingredient.mint': '薄荷',
     'ingredient.kuding': '苦刺心',
     'ingredient.peanut': '花生',
@@ -248,7 +254,7 @@ window.I18n.register('zh-Hant', {
     'station.tea.choppedBowls': '已切好的配菜',
     'station.tea.result.title': '擂茶組合完成',
     'station.tea.result.art': '擂茶與配菜組合',
-    'station.tea.result.grindIngredients': '苦刺心・薄荷・九層塔・芝麻・花生',
+    'station.tea.result.grindIngredients': '苦刺心・薄荷・金不換・芝麻・花生',
     'station.tea.result.chopIngredients': '長豆・菜脯・樹仔菜・豆腐',
     'station.tea.result.assisted': '這次有阿公協助完成，下一次試著在倒數內完成吧！',
     'station.tea.result.perfect': '兩段都在時間內完成，手腳真俐落！',
