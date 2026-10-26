@@ -393,17 +393,25 @@ function makeFakeBox() {
 {
     // EndingScreen 本體：顯示時切到 game-container，返回按鈕觸發 onReturn。
     let clickHandler = null;
+    let collectHandler = null;
     const button = { addEventListener: (t, h) => { if (t === 'click') clickHandler = h; }, focus() {} };
+    const collectButton = { addEventListener: (t, h) => { if (t === 'click') collectHandler = h; } };
     const fakeDoc = {
         getElementById: () => null,
-        createElement: () => ({ className: '', innerHTML: '', querySelector: () => button }),
+        createElement: () => ({
+            className: '',
+            innerHTML: '',
+            querySelector: (selector) => selector === '[data-ending-collect]' ? collectButton : button
+        }),
         body: { appendChild() {} }
     };
     const scenes = [];
+    const tracked = [];
     const { game } = loadGame('js/minigames/EndingScreen.js', 'EndingScreen', {
         document: fakeDoc,
         showScene: (s) => scenes.push(s),
-        AudioManager: { stopBGM() {}, playSFX() {} }
+        AudioManager: { stopBGM() {}, playSFX() {} },
+        trackGa4Event: (...args) => tracked.push(args)
     });
     let returned = false;
     game.show(() => { returned = true; });
@@ -412,6 +420,11 @@ function makeFakeBox() {
     clickHandler();
     assert.strictEqual(returned, true, '按返回入口觸發 onReturn');
     assert.strictEqual(game.container, null, '返回後畫面已清除');
+    assert.strictEqual(typeof collectHandler, 'function', '通關徵集按鈕已綁定追蹤');
+    collectHandler();
+    assert.deepStrictEqual(JSON.parse(JSON.stringify(tracked)), [['experience_entry_click', {
+        entry_id: 'collection', entry_type: 'collection', entry_source: 'ending'
+    }]], '通關徵集按鈕送出入口與來源');
 }
 
 {

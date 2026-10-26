@@ -323,6 +323,7 @@ const StationGame = {
 
     close() {
         window.GameAnalytics?.abandon('leave_button');
+        window.FullStoryAnalytics?.abandon('leave_button');
         this.stop();
         showScene('level-select');
     },
@@ -332,7 +333,7 @@ const StationGame = {
         this.stop();
         if (continueToSecondHalf && window.Station34CombinedGame) {
             // 「完整劇情體驗」：上半場（灶台＋擂茶）結束後直接接三四關，不再顯示中場過場。
-            Station34CombinedGame.start();
+            Station34CombinedGame.start({ playMode: 'full_story' });
             return;
         }
         if (window.EndingScreen) EndingScreen.show(() => showScene('level-select'));

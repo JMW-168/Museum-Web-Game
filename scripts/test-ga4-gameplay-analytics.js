@@ -9,6 +9,9 @@ const fire = read('js', 'minigames', 'FireStationGame.js');
 const tea = read('js', 'minigames', 'TeaStationGame.js');
 const cradle = read('js', 'minigames', 'CradleStationGame.js');
 const cake = read('js', 'minigames', 'CakeStationGame.js');
+const stationGame = read('js', 'minigames', 'StationGame.js');
+const station34 = read('js', 'minigames', 'Station34CombinedGame.js');
+const ending = read('js', 'minigames', 'EndingScreen.js');
 
 for (const eventName of ['station_started', 'station_completed', 'station_abandoned', 'station_retry']) {
     assert(main.includes(`'${eventName}'`), `${eventName} must be sent to GA4`);
@@ -25,5 +28,9 @@ assert(cradle.includes("GameAnalytics?.start('cradle'"), 'Cradle timing must sta
 assert(cradle.includes("GameAnalytics?.complete('cradle')"), 'Cradle completion must be tracked');
 assert(cake.includes("GameAnalytics?.start('cake'"), 'Cake timing must start when matching begins');
 assert(cake.includes("GameAnalytics?.complete('cake')"), 'Cake completion must be tracked');
+assert(stationGame.includes("Station34CombinedGame.start({ playMode: 'full_story' })"), 'The second half of full story must keep full_story mode');
+assert(station34.includes('mode: this.playMode'), 'Cradle and cake must receive the journey play mode');
+assert(station34.includes('FullStoryAnalytics?.complete()'), 'The full-story ending must complete journey tracking');
+assert(ending.includes("entry_source: 'ending'"), 'The ending collection link must identify its source');
 
 console.log('ga4 gameplay analytics ok');

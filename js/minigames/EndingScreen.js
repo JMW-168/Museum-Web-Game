@@ -31,7 +31,7 @@ const EndingScreen = {
                 <p class="ending-subtitle">${subtitle}</p>
                 <div class="station-actions ending-actions">
                     <button type="button" class="station-primary" data-ending-return>${buttonLabel}</button>
-                    <a class="station-secondary" href="${collectUrl}" target="_blank" rel="noopener noreferrer">${collectLabel}</a>
+                    <a class="station-secondary" data-ending-collect href="${collectUrl}" target="_blank" rel="noopener noreferrer">${collectLabel}</a>
                 </div>
             </section>`;
         parent.appendChild(this.container);
@@ -42,6 +42,13 @@ const EndingScreen = {
             this.dismiss();
             if (typeof onReturn === 'function') onReturn();
             else if (typeof showScene === 'function') showScene('level-select');
+        });
+        this.container.querySelector('[data-ending-collect]')?.addEventListener('click', () => {
+            window.trackGa4Event?.('experience_entry_click', {
+                entry_id: 'collection',
+                entry_type: 'collection',
+                entry_source: 'ending'
+            });
         });
         returnButton.focus({ preventScroll: true });
     },
