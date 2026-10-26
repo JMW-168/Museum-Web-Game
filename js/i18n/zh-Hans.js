@@ -18,18 +18,14 @@ window.I18n.register('zh-Hans', {
     // 首页
     'title.alt': '森美兰客家文化博物馆・传统日常再现',
     'title.image': 'assets/images/title/title-20260904-simplified.webp',
-    'menu.start': '搭乘时光机',
-    'menu.exit': '回到现实',
+    'menu.start': '出发',
+    'menu.exit': '返回现在',
 
     // 共用
     'common.back': '返回首页',
 
-    // 引导说明页（1／2 土楼旁白）
-    'intro.narration': '您即将降落于50年前的客家土楼，体验当时客家人的日常生活~',
-    'intro.next': '继续',
-
-    // 引导说明页（2／2 爷爷奶奶欢迎）
-    'welcome.arrival': '时光机已抵达50年前的客家土楼。你是一位到土楼做客的旅人，敲敲门看看谁在家吧！',
+    // 引导说明页（抵达土楼并敲门）
+    'welcome.arrival': '时光机到站了，这里是50年前的客家土楼。\n你是来做客的旅人，先敲敲门，看看谁在家吧！',
     'welcome.knock': '敲敲门',
     'welcome.question': '你好～请问你是谁？',
     'welcome.reply.identity': '你好，我是旅行经过这里的人，请问这里是哪里呢？',
@@ -40,7 +36,7 @@ window.I18n.register('zh-Hans', {
 
     // 模式选择
     'age.title': '选择游戏模式',
-    'age.subtitle': '请选择适合您的版本',
+    'age.subtitle': '请选择适合你的版本',
     'age.child.text': '小朋友版',
     'age.child.desc': '附注音・简单引导',
     'age.adult.text': '一般版',
@@ -48,7 +44,7 @@ window.I18n.register('zh-Hans', {
 
     // 入口选择
     'level.title': '选择游戏入口',
-    'level.subtitle': '请根据您的所在位置挑选您的站点',
+    'level.subtitle': '你现在在哪一站？选一个开始吧',
     'level.back': '返回首页',
     'level.fire.kicker': '站点 1',
     'level.fire.title': '灶台生火',
@@ -63,15 +59,15 @@ window.I18n.register('zh-Hans', {
     'level.cake.title': '粄印制作',
     'level.cake.desc': '印一个红粄，把衷心的祝福压进米团里。',
     'level.story.kicker': '约 10 分钟',
-    'level.story.title': '完整剧情体验',
-    'level.story.desc': '跟着阿嬷阿公，完整体验上述四项客家故事。',
+    'level.story.title': '完整剧情',
+    'level.story.desc': '跟着阿嬷和阿公，把四个客家故事一次走完。',
     'level.collect.kicker': '征集活动',
     'level.collect.title': '客家老物件征集',
     'level.collect.desc': '家里有阿公阿婆留下来的旧东西吗？粄模、揹带、花布、油灯、算盘、老照片……只要和客家生活有关，我们都想听听它的故事',
 
     // 退出确认
     'exit.title': '你确定要退出吗？',
-    'exit.warning': '任何未保存的进度都会丢失',
+    'exit.warning': '目前的进度不会保留',
     'exit.yes': '确认退出',
     'exit.no': '继续游戏',
 

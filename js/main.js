@@ -288,7 +288,7 @@ function resetWelcomeIntro() {
     hosts?.classList.add('is-hidden');
     welcome.dataset.conversationStep = '0';
     line.dataset.i18n = 'welcome.arrival';
-    line.textContent = window.t ? t('welcome.arrival') : '時光機已抵達50年前的客家土樓。你是一位來土樓作客的旅人，敲敲門看看誰在家吧！';
+    line.textContent = window.t ? t('welcome.arrival') : '時光機到站了，這裡是50年前的客家土樓。\n你是來做客的旅人，先敲敲門，看看誰在家吧！';
     reply.dataset.i18n = 'welcome.reply.identity';
     reply.textContent = window.t ? t('welcome.reply.identity') : '你好，我是旅行經過這裡的人，請問這裡是哪裡呢？';
     knock.hidden = false;
@@ -470,7 +470,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=135', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=141', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -538,21 +538,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const ageSelectDialog = document.getElementById('age-select-dialog');
     if (ageSelectDialog) ageSelectDialog.style.display = 'none';
 
-    // 首頁 → 引導說明頁（土樓旁白 → 爺爺奶奶歡迎）→ 選擇遊戲頁
+    // 首頁 → 抵達土樓並敲門 → 選擇遊戲頁
     document.getElementById('startBtn')?.addEventListener('click', () => {
         trackGa4Event('home_start_click');
         window.AudioManager?.playSFX('assets/sounds/click.mp3');
-        showScene('intro');
+        resetWelcomeIntro();
+        showScene('intro-welcome');
     });
 
     document.getElementById('station-collect-btn')?.addEventListener('click', () => {
         trackGa4Event('experience_entry_click', { entry_id: 'collection', entry_type: 'collection' });
-    });
-
-    document.getElementById('introNextBtn')?.addEventListener('click', () => {
-        window.AudioManager?.playSFX('assets/sounds/click.mp3');
-        resetWelcomeIntro();
-        showScene('intro-welcome');
     });
 
     setupWelcomeIntro();

@@ -261,7 +261,7 @@ button {
 #start-menu .time-machine-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
 #start-menu .time-machine-btn:active { transform: scale(0.95); }
 
-/* 語言切換（首頁，置於「搭乘時光機／回到現實」下方，沿用按鈕的設計語彙） */
+/* 語言切換（首頁，置於「出發／返回現在」下方，沿用按鈕的設計語彙） */
 .lang-switch {
     display: flex;
     gap: 8px;
@@ -413,9 +413,10 @@ button {
     margin: 0 auto clamp(22px, 5vh, 40px);
     max-width: 28em;
     color: #fff4e6;
-    font-size: clamp(18px, 2.6vw, 28px);
-    line-height: 1.9;
+    font-size: clamp(20px, 2.8vw, 31px);
+    line-height: 2;
     letter-spacing: 0.03em;
+    white-space: pre-line;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
 }
 
@@ -454,8 +455,8 @@ button {
 
     .intro-narration {
         margin-bottom: 14px;
-        font-size: clamp(14px, 2.1vw, 19px);
-        line-height: 1.6;
+        font-size: clamp(15px, 2.2vw, 21px);
+        line-height: 1.75;
     }
 
     .intro-host { height: 78%; }
@@ -478,7 +479,7 @@ button {
 #level-select {
     color: #fff;
     background-image:
-        linear-gradient(rgba(12, 18, 18, 0.2), rgba(12, 18, 18, 0.42)),
+        linear-gradient(rgba(12, 18, 18, 0.38), rgba(12, 18, 18, 0.5)),
         url('assets/images/title/entry-background.webp');
 }
 
@@ -501,23 +502,23 @@ button {
 }
 
 .level-buttons {
-    width: min(76%, 720px);
-    margin: 16px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    width: min(82%, 900px);
+    margin: 12px auto 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .station-entry {
     width: 100%;
-    min-height: 92px;
+    min-height: 106px;
     margin: 0;
-    padding: 12px 18px;
+    padding: 14px 16px;
     display: grid;
-    grid-template-columns: minmax(108px, 0.32fr) 1fr;
-    grid-template-areas: 'kicker title' 'kicker desc';
+    grid-template-columns: 1fr;
+    grid-template-areas: 'heading' 'desc';
     align-items: center;
-    column-gap: 16px;
+    column-gap: 14px;
     text-align: left;
     text-decoration: none;
     color: inherit;
@@ -530,12 +531,47 @@ button {
 }
 
 .station-entry:hover { transform: scale(1.02); background: rgba(58, 85, 83, 0.95); }
-.station-entry-combined { border-color: rgba(255, 215, 0, 0.9); background: linear-gradient(135deg, rgba(73, 50, 29, 0.94), rgba(31, 62, 58, 0.94)); }
-.station-kicker { grid-area: kicker; color: #ffd700; font-size: clamp(13px, 1.7vw, 16px); text-align: center; }
-.station-title { grid-area: title; color: #fff; font-size: clamp(20px, 3vw, 28px); font-weight: 700; }
+.station-heading { grid-area: heading; display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 10px; }
+.station-kicker { color: #ffd700; font-size: clamp(13px, 1.7vw, 16px); font-weight: 700; }
+.station-title { color: #fff; font-size: clamp(20px, 3vw, 28px); font-weight: 700; }
 .station-desc { grid-area: desc; margin-top: 4px; color: #f4ead2; font-size: clamp(13px, 1.8vw, 16px); line-height: 1.45; }
+.station-entry-combined {
+    grid-column: 1 / -1;
+    min-height: 96px;
+    padding: 16px 22px;
+    border-color: rgba(255, 215, 0, 0.9);
+    background: linear-gradient(135deg, rgba(92, 55, 25, 0.97), rgba(31, 62, 58, 0.97));
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
 
-/* 返回首頁鈕：沿用首頁「搭乘時光機」按鈕的設計語彙 */
+.station-entry-combined .station-title { font-size: clamp(24px, 3.4vw, 34px); }
+.station-entry-combined .station-kicker {
+    padding: 3px 9px;
+    border: 1px solid rgba(255, 215, 0, 0.7);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.station-collection-section {
+    width: min(82%, 900px);
+    margin: 0 auto 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 231, 166, 0.62);
+}
+
+.station-entry-collect {
+    min-height: 76px;
+    border-width: 2px;
+    border-color: rgba(239, 207, 150, 0.88);
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(83, 59, 39, 0.97), rgba(55, 42, 31, 0.97));
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.38);
+}
+
+.station-entry-collect:hover { background: rgba(91, 68, 48, 0.97); }
+.station-entry-collect .station-kicker { font-size: clamp(20px, 3vw, 28px); }
+
+/* 返回首頁鈕：沿用首頁主要按鈕的設計語彙 */
 .back-btn {
     position: absolute;
     top: clamp(12px, 3vh, 20px);
@@ -799,31 +835,83 @@ button {
     .age-text { font-size: clamp(14px, 3vw, 20px); }
     .age-desc { font-size: clamp(10px, 1.5vw, 12px); }
 
-    #level-select h2 { margin: 4px 0; font-size: 18px; }
+    #level-select {
+        justify-content: flex-start;
+        padding: 10px 0 5px;
+        overflow-y: auto;
+    }
+    #level-select h2 {
+        flex: 0 0 auto;
+        margin: 0;
+        font-size: clamp(15px, 2.4vw, 18px);
+        line-height: 1.15;
+    }
+    #level-select .level-subtitle {
+        flex: 0 0 auto;
+        margin: 0 0 3px;
+        font-size: clamp(11px, 1.7vw, 14px);
+        line-height: 1.2;
+    }
     #level-select .station-entry-list {
+        flex: 0 0 auto;
         width: min(94%, 1080px);
-        margin: 6px auto;
+        margin: 3px auto 5px;
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
+        gap: 6px;
     }
     #level-select .station-entry {
-        min-height: 150px;
-        padding: 10px 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
+        position: relative;
+        min-height: 106px;
+        padding: 7px 9px;
+        grid-template-columns: 1fr;
+        grid-template-areas: 'heading' 'desc';
+        align-content: start;
     }
-    #level-select .station-kicker { width: 100%; text-align: left; font-size: clamp(11px, 1.5vw, 14px); }
-    #level-select .station-title { margin-top: 5px; font-size: clamp(19px, 2.8vw, 25px); }
-    #level-select .station-desc { font-size: clamp(11px, 1.5vw, 14px); line-height: 1.35; }
-    /* 粄印站啟用時選單多一欄；原放在 cake-station-game.css，邏輯上是全域選單規則（Issue #90 歸位） */
-    #level-select .station-entry-list.has-cake-station { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    #level-select .station-entry-list.has-cake-station .station-entry-combined,
-    #level-select .station-entry-list.has-cake-station .station-entry-collect {
-        grid-column: span 2;
-        min-height: 54px;
+    #level-select .station-heading { display: block; padding-right: 0; }
+    #level-select .station-kicker { display: block; font-size: clamp(10px, 1.35vw, 13px); line-height: 1.1; }
+    #level-select .station-title {
+        display: block;
+        margin-top: 3px;
+        font-size: clamp(17px, 2.45vw, 22px);
+        line-height: 1.18;
+        white-space: nowrap;
+    }
+    #level-select .station-desc {
+        margin-top: 4px;
+        font-size: clamp(10px, 1.35vw, 13px);
+        line-height: 1.28;
+    }
+    #level-select .station-entry-combined {
+        grid-column: 1 / -1;
+        min-height: 56px;
+        grid-template-areas: 'heading' 'desc';
+        align-content: center;
+        padding: 7px 12px;
+    }
+    #level-select .station-entry-combined .station-heading { display: flex; }
+    #level-select .station-entry-combined .station-title { margin-top: 0; font-size: clamp(19px, 2.7vw, 25px); }
+    #level-select .station-entry-combined .station-kicker { display: inline-block; }
+    #level-select .station-collection-section {
+        flex: 0 0 auto;
+        width: min(94%, 1080px);
+        margin-bottom: 0;
+        padding-top: 6px;
+    }
+    #level-select .station-entry-collect {
+        min-height: 58px;
+        grid-template-areas: 'heading' 'desc';
+        align-content: center;
+        padding: 8px 14px;
+        border-radius: 22px;
+    }
+    #level-select .station-entry-collect .station-heading {
+        display: flex;
+    }
+    #level-select .station-entry-collect .station-title { margin-top: 0; }
+    #level-select .station-entry-collect .station-kicker {
+        font-size: clamp(17px, 2.45vw, 22px);
+        line-height: 1.18;
     }
     .back-btn { top: 5px; left: 5px; padding: 4px 8px; font-size: 11px; }
     .install-app-btn { right: 6px; bottom: 6px; min-width: 64px; padding: 5px 10px; font-size: 11px; }
