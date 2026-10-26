@@ -27,9 +27,11 @@ const cases = [
     ['experience_entry_click', { entry_id: 'tea', entry_type: 'game' }, { entry_label: '第二關：擂茶料理' }],
     ['experience_entry_click', { entry_id: 'cradle', entry_type: 'game' }, { entry_label: '第三關：搖籃哄睡' }],
     ['experience_entry_click', { entry_id: 'cake', entry_type: 'game' }, { entry_label: '第四關：紅粄製作' }],
-    ['experience_entry_click', { entry_id: 'story', entry_type: 'game' }, { entry_label: '完整劇情體驗' }],
-    ['experience_entry_click', { entry_id: 'collection', entry_type: 'collection' }, {
-        entry_label: '客家老物件徵集', entry_type_label: '徵集活動'
+    ['experience_entry_click', { entry_id: 'story', entry_type: 'game', entry_source: 'level_select' }, {
+        entry_label: '完整劇情體驗', entry_source_label: '選擇遊戲頁'
+    }],
+    ['experience_entry_click', { entry_id: 'collection', entry_type: 'collection', entry_source: 'ending' }, {
+        entry_label: '客家老物件徵集', entry_type_label: '徵集活動', entry_source_label: '通關畫面'
     }],
     ['station_started', { station_id: 'fire', play_mode: 'standalone', attempt_number: 1 }, {
         event_label: '關卡開始', station_label: '第一關：灶台生火', play_mode_label: '單關體驗'
@@ -57,6 +59,15 @@ const cases = [
     }],
     ['station_retry', { station_id: 'fire', play_mode: 'standalone', attempt_number: 2 }, {
         event_label: '再次遊玩'
+    }],
+    ['story_started', { play_mode: 'full_story', journey_stage: 'story_intro', completed_station_count: 0, journey_duration_seconds: 0 }, {
+        event_label: '完整劇情開始', journey_stage_label: '開場對話'
+    }],
+    ['story_completed', { play_mode: 'full_story', journey_stage: 'after_cake', completed_station_count: 4, journey_duration_seconds: 300 }, {
+        event_label: '完整劇情完成', journey_stage_label: '第四關成果／旅程收尾'
+    }],
+    ['story_abandoned', { play_mode: 'full_story', journey_stage: 'after_tea', completed_station_count: 2, journey_duration_seconds: 180, exit_method: 'leave_button' }, {
+        event_label: '完整劇情中途離開', journey_stage_label: '第二關成果／前往第三關'
     }]
 ];
 
@@ -75,12 +86,16 @@ for (const [eventName, parameters, expected] of cases) {
         ...(Object.hasOwn(parameters, 'station_id') ? { station_label: context.ga4Label('station', parameters.station_id) } : {}),
         ...(Object.hasOwn(parameters, 'entry_id') ? { entry_label: context.ga4Label('entry', parameters.entry_id) } : {}),
         ...(Object.hasOwn(parameters, 'entry_type') ? { entry_type_label: context.ga4Label('entryType', parameters.entry_type) } : {}),
+        ...(Object.hasOwn(parameters, 'entry_source') ? { entry_source_label: context.ga4Label('entrySource', parameters.entry_source) } : {}),
         ...(Object.hasOwn(parameters, 'play_mode') ? { play_mode_label: context.ga4Label('playMode', parameters.play_mode) } : {}),
         ...(Object.hasOwn(parameters, 'exit_method') ? { exit_method_label: context.ga4Label('exitMethod', parameters.exit_method) } : {}),
+        ...(Object.hasOwn(parameters, 'journey_stage') ? { journey_stage_label: context.ga4Label('journeyStage', parameters.journey_stage) } : {}),
         ...expected
     });
     assert(!Object.hasOwn(payload, 'attempt_number_label'), 'attempt_number must remain a numeric field without a label');
     assert(!Object.hasOwn(payload, 'duration_seconds_label'), 'duration_seconds must remain a numeric field without a label');
+    assert(!Object.hasOwn(payload, 'completed_station_count_label'), 'completed_station_count must remain numeric without a label');
+    assert(!Object.hasOwn(payload, 'journey_duration_seconds_label'), 'journey_duration_seconds must remain numeric without a label');
 }
 
 locale = 'zh-Hans';
@@ -94,23 +109,29 @@ context.trackGa4Event('unknown_event', {
     station_id: 'unknown_station',
     entry_id: 'unknown_entry',
     entry_type: 'unknown_entry_type',
+    entry_source: 'unknown_entry_source',
     play_mode: 'unknown_play_mode',
-    exit_method: 'unknown_exit_method'
+    exit_method: 'unknown_exit_method',
+    journey_stage: 'unknown_journey_stage'
 });
 assert.deepStrictEqual(JSON.parse(JSON.stringify(calls[0][2])), {
     language: 'ms',
     station_id: 'unknown_station',
     entry_id: 'unknown_entry',
     entry_type: 'unknown_entry_type',
+    entry_source: 'unknown_entry_source',
     play_mode: 'unknown_play_mode',
     exit_method: 'unknown_exit_method',
+    journey_stage: 'unknown_journey_stage',
     event_label: 'unknown_event',
     language_label: 'ms',
     station_label: 'unknown_station',
     entry_label: 'unknown_entry',
     entry_type_label: 'unknown_entry_type',
+    entry_source_label: 'unknown_entry_source',
     play_mode_label: 'unknown_play_mode',
-    exit_method_label: 'unknown_exit_method'
+    exit_method_label: 'unknown_exit_method',
+    journey_stage_label: 'unknown_journey_stage'
 }, 'Unknown raw values must be preserved as label fallbacks');
 
 context.window.location.hostname = 'jmw-168.github.io';

@@ -15,7 +15,10 @@ const GA4_LABELS = {
         station_started: '關卡開始',
         station_completed: '關卡完成',
         station_abandoned: '中途離開',
-        station_retry: '再次遊玩'
+        station_retry: '再次遊玩',
+        story_started: '完整劇情開始',
+        story_completed: '完整劇情完成',
+        story_abandoned: '完整劇情中途離開'
     },
     station: {
         fire: '第一關：灶台生火',
@@ -35,6 +38,10 @@ const GA4_LABELS = {
         game: '遊戲入口',
         collection: '徵集活動'
     },
+    entrySource: {
+        level_select: '選擇遊戲頁',
+        ending: '通關畫面'
+    },
     playMode: {
         standalone: '單關體驗',
         full_story: '完整劇情體驗',
@@ -46,6 +53,17 @@ const GA4_LABELS = {
         leave_button: '主動離開',
         page_hidden: '離開頁面／關閉或重整',
         station_switch: '切換關卡'
+    },
+    journeyStage: {
+        story_intro: '開場對話',
+        fire: '第一關：灶台生火',
+        after_fire: '第一關成果／前往第二關',
+        tea: '第二關：擂茶料理',
+        after_tea: '第二關成果／前往第三關',
+        cradle: '第三關：搖籃哄睡',
+        after_cradle: '第三關成果／前往第四關',
+        cake: '第四關：紅粄製作',
+        after_cake: '第四關成果／旅程收尾'
     },
     language: {
         'zh-Hant': '繁體中文',
@@ -93,11 +111,17 @@ function trackGa4Event(eventName, parameters = {}) {
     if (Object.prototype.hasOwnProperty.call(parameters, 'entry_type')) {
         labels.entry_type_label = ga4Label('entryType', parameters.entry_type);
     }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'entry_source')) {
+        labels.entry_source_label = ga4Label('entrySource', parameters.entry_source);
+    }
     if (Object.prototype.hasOwnProperty.call(parameters, 'play_mode')) {
         labels.play_mode_label = ga4Label('playMode', parameters.play_mode);
     }
     if (Object.prototype.hasOwnProperty.call(parameters, 'exit_method')) {
         labels.exit_method_label = ga4Label('exitMethod', parameters.exit_method);
+    }
+    if (Object.prototype.hasOwnProperty.call(parameters, 'journey_stage')) {
+        labels.journey_stage_label = ga4Label('journeyStage', parameters.journey_stage);
     }
     window.gtag('event', eventName, {
         language,
@@ -105,6 +129,64 @@ function trackGa4Event(eventName, parameters = {}) {
         ...labels
     });
 }
+
+window.trackGa4Event = trackGa4Event;
+
+// 完整劇情的生命週期獨立於單關計時，才能涵蓋對話、成果頁與關卡之間的離開。
+const FullStoryAnalytics = {
+    activeJourney: null,
+
+    start() {
+        if (!isGa4Enabled()) return;
+        if (this.activeJourney) this.abandon('station_switch');
+        this.activeJourney = {
+            startedAt: performance.now(),
+            stage: 'story_intro',
+            completedStations: new Set()
+        };
+        trackGa4Event('story_started', this.payload());
+    },
+
+    enterStation(stationId) {
+        if (!this.activeJourney) return;
+        this.activeJourney.stage = stationId;
+    },
+
+    completeStation(stationId) {
+        if (!this.activeJourney) return;
+        this.activeJourney.completedStations.add(stationId);
+        this.activeJourney.stage = `after_${stationId}`;
+    },
+
+    complete() {
+        if (!this.activeJourney) return;
+        trackGa4Event('story_completed', this.payload());
+        this.activeJourney = null;
+    },
+
+    abandon(exitMethod = 'leave_button') {
+        if (!this.activeJourney) return;
+        trackGa4Event('story_abandoned', {
+            ...this.payload(),
+            exit_method: exitMethod
+        });
+        this.activeJourney = null;
+    },
+
+    payload() {
+        const journey = this.activeJourney;
+        return {
+            play_mode: 'full_story',
+            journey_stage: journey?.stage || 'story_intro',
+            completed_station_count: journey?.completedStations.size || 0,
+            journey_duration_seconds: journey
+                ? Math.max(0, Math.round((performance.now() - journey.startedAt) / 1000))
+                : 0
+        };
+    }
+};
+
+window.FullStoryAnalytics = FullStoryAnalytics;
 
 // 一次實際遊玩只會有一筆結束事件：完成、主動離開與離開頁面都會收尾。
 // 重玩次數維持在目前分頁，避免把不同造訪日的同一位玩家誤判為連續重玩。
@@ -120,6 +202,7 @@ const GameAnalytics = {
         const attemptNumber = (this.attemptCounts.get(key) || 0) + 1;
         this.attemptCounts.set(key, attemptNumber);
         this.activeRun = { stationId, playMode, attemptNumber, startedAt: performance.now() };
+        if (playMode === 'full_story') FullStoryAnalytics.enterStation(stationId);
         trackGa4Event('station_started', {
             station_id: stationId,
             play_mode: playMode,
@@ -135,7 +218,11 @@ const GameAnalytics = {
     },
 
     complete(stationId) {
+        const run = this.activeRun;
         this.end('completed', 'completed', stationId);
+        if (run && (!stationId || run.stationId === stationId) && run.playMode === 'full_story') {
+            FullStoryAnalytics.completeStation(run.stationId);
+        }
     },
 
     abandon(exitMethod = 'leave_button', stationId) {
@@ -159,7 +246,10 @@ const GameAnalytics = {
 
 window.GameAnalytics = GameAnalytics;
 // 關閉分頁、重新整理或切到別處時，以 pagehide 做最佳努力的中途離開紀錄。
-window.addEventListener('pagehide', () => GameAnalytics.abandon('page_hidden'));
+window.addEventListener('pagehide', () => {
+    GameAnalytics.abandon('page_hidden');
+    FullStoryAnalytics.abandon('page_hidden');
+});
 let stationBackgroundPrefetchStarted = false;
 
 const STATION_BACKGROUND_URLS = [
@@ -470,7 +560,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=141', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=142', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
@@ -491,10 +581,16 @@ function setupServiceWorkerUpdate() {
 function bindStationButtons() {
     document.querySelectorAll('[data-station]').forEach((button) => {
         button.addEventListener('click', () => {
-            trackGa4Event('experience_entry_click', { entry_id: button.dataset.station, entry_type: 'game' });
+            const stationId = button.dataset.station;
+            trackGa4Event('experience_entry_click', {
+                entry_id: stationId,
+                entry_type: 'game',
+                entry_source: 'level_select'
+            });
             window.AudioManager?.playSFX('assets/sounds/click.mp3');
             if (typeof startStationGame === 'function') {
-                startStationGame(button.dataset.station);
+                if (stationId === 'story') FullStoryAnalytics.start();
+                startStationGame(stationId);
                 return;
             }
             alert(window.t ? t('common.notLoaded') : '遊戲尚未載入，請重新整理頁面。');
@@ -547,7 +643,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('station-collect-btn')?.addEventListener('click', () => {
-        trackGa4Event('experience_entry_click', { entry_id: 'collection', entry_type: 'collection' });
+        trackGa4Event('experience_entry_click', {
+            entry_id: 'collection',
+            entry_type: 'collection',
+            entry_source: 'level_select'
+        });
     });
 
     setupWelcomeIntro();

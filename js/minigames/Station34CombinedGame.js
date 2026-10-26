@@ -8,6 +8,7 @@ const Station34CombinedGame = {
     dialogueFullText: '',
     active: false,
     only: null, // null = 完整三四關；'cradle' / 'cake' = 單關版
+    playMode: 'combined34',
 
     tr(key, tokens) {
         return typeof window.t === 'function' ? window.t(key, tokens) : key;
@@ -27,6 +28,7 @@ const Station34CombinedGame = {
         this.stop();
         if (window.StationGame) StationGame.stop();
         this.only = options.only || null;
+        this.playMode = options.playMode || 'combined34';
         this.active = true;
         showScene('game-container');
         if (this.only === 'cake') {
@@ -196,7 +198,7 @@ const Station34CombinedGame = {
     startCradle() {
         this.removeShell();
         CradleStationGame.start({
-            mode: 'combined34',
+            mode: this.playMode,
             onComplete: (result) => this.afterCradle(result),
             onExit: () => this.close()
         });
@@ -251,7 +253,7 @@ const Station34CombinedGame = {
     startCake() {
         this.removeShell();
         CakeStationGame.start({
-            mode: 'combined34',
+            mode: this.playMode,
             onComplete: (result) => this.afterCake(result),
             onExit: () => this.close()
         });
@@ -284,6 +286,8 @@ const Station34CombinedGame = {
     showEnding() {
         const wasActive = this.active;
         const wasOnly = this.only;
+        const completedFullStory = this.playMode === 'full_story';
+        if (completedFullStory) window.FullStoryAnalytics?.complete();
         this.stop();
         // 單關版看完祝福卡直接回入口，不進「通關致謝」。
         if (!wasActive || wasOnly) {
@@ -309,6 +313,7 @@ const Station34CombinedGame = {
     },
 
     close() {
+        window.FullStoryAnalytics?.abandon('leave_button');
         this.stop();
         showScene('level-select');
     },
@@ -316,6 +321,7 @@ const Station34CombinedGame = {
     stop() {
         this.active = false;
         this.only = null;
+        this.playMode = 'combined34';
         this.removeShell();
         if (window.CradleStationGame) CradleStationGame.stop();
         if (window.CakeStationGame) CakeStationGame.stop();
