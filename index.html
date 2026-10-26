@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, shrink-to-fit=no">
     <title>Museum Web Game</title>
     <meta name="description" content="走进客家土楼，体验50年前的客家日常生活，认识擂茶、生火与传统点心文化。">
     <link rel="canonical" href="https://persatuankebudayaanhakkagame-gif.github.io/Museum-Web-Game/">
@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap">
 
     <!-- ========== CSS ========== -->
-    <link rel="stylesheet" href="style.css?v=121">
+    <link rel="stylesheet" href="style.css?v=126">
     <link rel="stylesheet" href="css/station-shared.css?v=2">
     <link rel="stylesheet" href="css/station-fire.css?v=1">
     <link rel="stylesheet" href="css/station-tea.css?v=2">
@@ -57,7 +57,7 @@
         <div id="age-select-dialog" class="age-dialog">
             <div class="age-dialog-content">
                 <h2 data-i18n="age.title">选择游戏模式</h2>
-                <p class="age-subtitle" data-i18n="age.subtitle">请选择适合您的版本</p>
+                <p class="age-subtitle" data-i18n="age.subtitle">请选择适合你的版本</p>
                 <div class="age-buttons">
                     <button id="age-child" class="age-btn child-btn">
                         <span class="age-icon">🧒</span>
@@ -81,8 +81,8 @@
             </div>
 
             <div class="menu-buttons">
-                <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="menu.start">搭乘时光机</button>
-                <button id="exitBtn" class="time-machine-btn" type="button" data-i18n="menu.exit">回到现实</button>
+                <button id="startBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="menu.start">出发</button>
+                <button id="exitBtn" class="time-machine-btn" type="button" data-i18n="menu.exit">返回现在</button>
                 <div class="lang-switch" role="group" aria-label="語言 Language">
                     <button type="button" class="lang-btn" data-lang="zh-Hant" lang="zh-Hant">繁體中文</button>
                     <button type="button" class="lang-btn" data-lang="zh-Hans" lang="zh-Hans">简体中文</button>
@@ -90,25 +90,15 @@
             </div>
         </div>
 
-        <!-- 引導說明頁 1／2：土樓旁白過場 -->
-        <div id="intro" class="scene intro-scene" style="display:none;">
-            <div class="intro-panel">
-                <p class="intro-narration" data-i18n="intro.narration">您即将降落于50年前的客家土楼，体验当时客家人的日常生活~</p>
-                <div class="intro-actions">
-                    <button id="introNextBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="intro.next">继续</button>
-                </div>
-            </div>
-            <button class="back-btn intro-back" type="button" onclick="showScene('start-menu')" data-i18n="common.back">返回首页</button>
-        </div>
-
-        <!-- 引導說明頁 2／2：爺爺奶奶一起歡迎 -->
+        <!-- 引導說明頁：抵達土樓，敲門後由爺爺奶奶一起歡迎 -->
         <div id="intro-welcome" class="scene intro-scene" style="display:none;">
             <div class="intro-hosts is-hidden" aria-hidden="true">
                 <img class="intro-host intro-host-grandma" src="assets/images/characters/grandma.webp" alt="">
                 <img class="intro-host intro-host-grandpa" src="assets/images/characters/grandpa.webp" alt="">
             </div>
             <div class="intro-panel intro-welcome-panel">
-                <p class="intro-narration" data-i18n="welcome.arrival" data-welcome-line aria-live="polite">时光机已抵达50年前的客家土楼。你是一位到土楼做客的旅人，敲敲门看看谁在家吧！</p>
+                <p class="intro-narration" data-i18n="welcome.arrival" data-welcome-line aria-live="polite">时光机到站了，这里是50年前的客家土楼。
+你是来做客的旅人，先敲敲门，看看谁在家吧！</p>
                 <div class="intro-actions">
                     <button id="welcomeKnockBtn" class="time-machine-btn time-machine-btn-primary" type="button" data-i18n="welcome.knock">敲敲门</button>
                 </div>
@@ -145,36 +135,35 @@
         <!-- 關卡選擇頁面 -->
         <div id="level-select" class="scene" style="display:none;">
             <h2 data-i18n="level.title">选择游戏入口</h2>
-            <p class="level-subtitle" data-i18n="level.subtitle">请根据您的所在位置挑选您的站点</p>
-            <div class="level-buttons station-entry-list has-cake-station">
+            <p class="level-subtitle" data-i18n="level.subtitle">你现在在哪一站？选一个开始吧</p>
+            <div class="level-buttons station-entry-list">
+                <button id="station-story-btn" class="station-entry station-entry-combined" type="button" data-station="story">
+                    <span class="station-heading">
+                        <span class="station-title" data-i18n="level.story.title">完整剧情</span>
+                        <span class="station-kicker" data-i18n="level.story.kicker">约 10 分钟</span>
+                    </span>
+                    <span class="station-desc" data-i18n="level.story.desc">跟着阿嬷和阿公，把四个客家故事一次走完。</span>
+                </button>
                 <button id="station-fire-btn" class="station-entry" type="button" data-station="fire">
-                    <span class="station-kicker" data-i18n="level.fire.kicker">站点 1</span>
-                    <span class="station-title" data-i18n="level.fire.title">灶台生火</span>
+                    <span class="station-heading"><span class="station-kicker" data-i18n="level.fire.kicker">站点 1</span><span class="station-title" data-i18n="level.fire.title">灶台生火</span></span>
                     <span class="station-desc" data-i18n="level.fire.desc">帮客家阿嬷燃起灶台的炉火吧！</span>
                 </button>
                 <button id="station-tea-btn" class="station-entry" type="button" data-station="tea">
-                    <span class="station-kicker" data-i18n="level.tea.kicker">站点 2</span>
-                    <span class="station-title" data-i18n="level.tea.title">擂茶料理</span>
+                    <span class="station-heading"><span class="station-kicker" data-i18n="level.tea.kicker">站点 2</span><span class="station-title" data-i18n="level.tea.title">擂茶料理</span></span>
                     <span class="station-desc" data-i18n="level.tea.desc">端出一碗擂茶，这是客家人最实在的待客之道。</span>
                 </button>
                 <button id="station-cradle-btn" class="station-entry" type="button" data-station="cradle">
-                    <span class="station-kicker" data-i18n="level.cradle.kicker">站点 3</span>
-                    <span class="station-title" data-i18n="level.cradle.title">摇篮哄睡</span>
+                    <span class="station-heading"><span class="station-kicker" data-i18n="level.cradle.kicker">站点 3</span><span class="station-title" data-i18n="level.cradle.title">摇篮哄睡</span></span>
                     <span class="station-desc" data-i18n="level.cradle.desc">接过阿嬷手里的摇篮，把孩子轻轻哄进梦里。</span>
                 </button>
                 <button id="station-cake-btn" class="station-entry" type="button" data-station="cake">
-                    <span class="station-kicker" data-i18n="level.cake.kicker">站点 4</span>
-                    <span class="station-title" data-i18n="level.cake.title">粄印制作</span>
+                    <span class="station-heading"><span class="station-kicker" data-i18n="level.cake.kicker">站点 4</span><span class="station-title" data-i18n="level.cake.title">粄印制作</span></span>
                     <span class="station-desc" data-i18n="level.cake.desc">印一个红粄，把衷心的祝福压进米团里。</span>
                 </button>
-                <button id="station-story-btn" class="station-entry station-entry-combined" type="button" data-station="story">
-                    <span class="station-kicker" data-i18n="level.story.kicker">约 10 分钟</span>
-                    <span class="station-title" data-i18n="level.story.title">完整剧情体验</span>
-                    <span class="station-desc" data-i18n="level.story.desc">跟着阿嬷阿公，完整体验上述四项客家故事。</span>
-                </button>
+            </div>
+            <div class="station-collection-section">
                 <a id="station-collect-btn" class="station-entry station-entry-collect" href="https://docs.google.com/forms/d/1uiZko3EHKSEQrplxtCcj6f6EU4Yiph-wJtnCdEDpwZc/viewform?pli=1&pli=1&edit_requested=true" target="_blank" rel="noopener noreferrer">
-                    <span class="station-kicker" data-i18n="level.collect.kicker">征集活动</span>
-                    <span class="station-title" data-i18n="level.collect.title">客家老物件征集</span>
+                    <span class="station-heading"><span class="station-kicker" data-i18n="level.collect.kicker">征集活动</span><span class="station-title" data-i18n="level.collect.title">客家老物件征集</span></span>
                     <span class="station-desc" data-i18n="level.collect.desc">家里有阿公阿婆留下来的旧东西吗？粄模、揹带、花布、油灯、算盘、老照片……只要和客家生活有关，我们都想听听它的故事</span>
                 </a>
             </div>
@@ -192,7 +181,7 @@
         <div id="exit-confirm-dialog" class="confirm-dialog" style="display: none;">
             <div class="confirm-dialog-content">
                 <p data-i18n="exit.title">你确定要退出吗？</p>
-                <p class="warning-text" data-i18n="exit.warning">任何未保存的进度都会丢失</p>
+                <p class="warning-text" data-i18n="exit.warning">目前的进度不会保留</p>
                 <div class="confirm-dialog-buttons">
                     <button id="exit-confirm-yes" class="confirm-btn confirm-yes" data-i18n="exit.yes">确认退出</button>
                     <button id="exit-confirm-no" class="confirm-btn confirm-no" data-i18n="exit.no">继续游戏</button>
@@ -203,8 +192,8 @@
 
     <!-- ========== 多語系（最先載入，其他模組會用到 t()） ========== -->
     <script src="js/i18n/i18n.js?v=45"></script>
-    <script src="js/i18n/zh-Hant.js?v=120"></script>
-    <script src="js/i18n/zh-Hans.js?v=120"></script>
+    <script src="js/i18n/zh-Hant.js?v=121"></script>
+    <script src="js/i18n/zh-Hans.js?v=121"></script>
 
     <!-- ========== 共用系統 ========== -->
     <script src="js/core/Logger.js?v=114"></script>
@@ -230,6 +219,6 @@
     <script src="js/minigames/StationGame.js?v=87"></script>
 
     <!-- ========== 主入口（最後載入） ========== -->
-    <script src="js/main.js?v=127"></script>
+    <script src="js/main.js?v=133"></script>
 </body>
 </html>

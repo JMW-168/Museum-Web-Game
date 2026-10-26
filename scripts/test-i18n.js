@@ -47,7 +47,12 @@ function loadI18n(extra = {}) {
     const { I18n, t } = loadI18n();
     I18n.init();
     assert.strictEqual(I18n.getLocale(), 'zh-Hans', '無記憶時預設簡體');
-    assert.strictEqual(t('menu.start'), '搭乘时光机');
+    assert.strictEqual(t('menu.start'), '出发');
+    assert.strictEqual(t('menu.exit'), '返回现在');
+    assert.strictEqual(t('welcome.arrival'), '时光机到站了，这里是50年前的客家土楼。\n你是来做客的旅人，先敲敲门，看看谁在家吧！');
+    assert.strictEqual(t('level.subtitle'), '你现在在哪一站？选一个开始吧');
+    assert.strictEqual(t('level.story.title'), '完整剧情');
+    assert.strictEqual(t('exit.warning'), '目前的进度不会保留');
     assert.strictEqual(t('ending.subtitle').includes('客家土楼'), true);
     assert.strictEqual(t('station.fire.kicker'), '站点一：灶台生火');
     assert.strictEqual(t('station.fire.result.findGrandma'), '去找阿嬷');
@@ -77,7 +82,7 @@ function loadI18n(extra = {}) {
     assert.strictEqual(I18n.getLocale(), 'zh-Hant');
     assert.strictEqual(changed, 'zh-Hant', 'onChange 應觸發');
     assert.strictEqual(ls.getItem('museum-game-lang'), 'zh-Hant', '應寫入 localStorage');
-    assert.strictEqual(t('menu.start'), '搭乘時光機', '切換後取繁體');
+    assert.strictEqual(t('menu.start'), '出發', '切換後取繁體');
 
     I18n.setLocale('fr'); // 非法
     assert.strictEqual(I18n.getLocale(), 'zh-Hant', '非法語言不生效');
@@ -113,12 +118,12 @@ function loadI18n(extra = {}) {
     const { I18n } = loadI18n({ document: fakeDoc });
     I18n.init();
     I18n.applyStatic();
-    assert.strictEqual(textEl.textContent, '回到现实');
+    assert.strictEqual(textEl.textContent, '返回现在');
     assert.strictEqual(attrEl.getAttribute('alt'), '森美兰客家文化博物馆・传统日常再现');
 
     I18n.setLocale('zh-Hant');
     I18n.applyStatic();
-    assert.strictEqual(textEl.textContent, '回到現實', '切換後重掃 data-i18n');
+    assert.strictEqual(textEl.textContent, '返回現在', '切換後重掃 data-i18n');
     assert.strictEqual(attrEl.getAttribute('alt'), '森美蘭客家文化博物館・傳統日常再現');
 }
 
