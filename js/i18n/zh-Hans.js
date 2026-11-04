@@ -112,7 +112,7 @@ window.I18n.register('zh-Hans', {
     'story.combined12.afterTea.2': '我阿爸那时候，家里连盐都快没有了，还是留一碗擂茶给老师喝。',
 
     // 关卡三四合并剧情
-    'story.combined34.opening.1': '厨房外面突然听到 baby 在哭。',
+    'story.combined34.opening.1': '厨房外面突然听到 ong nga 仔在哭。',
     'story.combined34.opening.2': '哎哟，细人醒了！粿才做到一半，阿嬷两只手还黏着粉团 leh。',
     'story.combined34.opening.3': '你先帮阿嬷摇一下摇篮。慢慢摇、轻轻摇哦，不要越摇他越精神。',
     'story.combined34.cradleExit.transition': '哭声慢慢停了，细人闭上眼睛。阿嬷帮他拉好被单。',
@@ -281,7 +281,7 @@ window.I18n.register('zh-Hans', {
     'station.cradle.result.assisted': '阿嬷陪你把节奏放宽了一点，一样顺利哄睡了。',
     'station.cradle.result.perfect': '你稳稳跟上整段节奏，哭声也慢慢停了。',
     'station.cradle.result.findGrandma': '去找阿嬷',
-    'station.cradle.guide.rhythm': '这个光点会左右摆动，是摇篮该跟上的节奏。',
+    'station.cradle.guide.rhythm': '光点会左右移动，跟着光点的节奏轻轻摇动摇篮。',
     'station.cradle.guide.follow': '拖曳摇篮、或按键盘左右方向键，跟着光点一起摆。',
 
     // 粄印制作
@@ -289,8 +289,8 @@ window.I18n.register('zh-Hans', {
     'station.cake.leave': '离开',
     'station.cake.intro.progress': '花纹介绍 {{current}} / {{total}}',
     'station.cake.intro.aria': '介绍进度',
-    'station.cake.intro.prev': '上一张',
-    'station.cake.intro.next': '下一张',
+    'station.cake.intro.prev': '上一个',
+    'station.cake.intro.next': '下一个',
     'station.cake.intro.startMatch': '开始连连看',
     'station.cake.match.from': '从{{name}}开始连线',
     'station.cake.match.to': '连到{{meaning}}',
