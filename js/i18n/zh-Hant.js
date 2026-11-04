@@ -112,7 +112,7 @@ window.I18n.register('zh-Hant', {
     'story.combined12.afterTea.2': '我阿爸那時候，家裡連鹽都快沒有了，還是留一碗擂茶給老師喝。',
 
     // 關卡三四合併劇情
-    'story.combined34.opening.1': '廚房外面突然聽到 baby 在哭。',
+    'story.combined34.opening.1': '廚房外面突然聽到 ong nga 仔在哭。',
     'story.combined34.opening.2': '哎喲，细人醒了！粿才做到一半，阿嬤兩隻手還黏著粉团 leh。',
     'story.combined34.opening.3': '你先幫阿嬤搖一下搖籃。慢慢搖、輕輕搖哦，不要越搖他越精神。',
     'story.combined34.cradleExit.transition': '哭聲慢慢停了，细人閉上眼睛。阿嬤幫他拉好被單。',
@@ -281,7 +281,7 @@ window.I18n.register('zh-Hant', {
     'station.cradle.result.assisted': '阿嬤陪你把節奏放寬了一點，一樣順利哄睡了。',
     'station.cradle.result.perfect': '你穩穩跟上整段節奏，哭聲也慢慢停了。',
     'station.cradle.result.findGrandma': '去找阿嬤',
-    'station.cradle.guide.rhythm': '這個光點會左右擺動，是搖籃該跟上的節奏。',
+    'station.cradle.guide.rhythm': '光點會左右移動，跟著光點的節奏輕輕搖動搖籃。',
     'station.cradle.guide.follow': '拖曳搖籃、或按鍵盤左右方向鍵，跟著光點一起擺。',
 
     // 粄印製作
@@ -289,8 +289,8 @@ window.I18n.register('zh-Hant', {
     'station.cake.leave': '離開',
     'station.cake.intro.progress': '花紋介紹 {{current}} / {{total}}',
     'station.cake.intro.aria': '介紹進度',
-    'station.cake.intro.prev': '上一張',
-    'station.cake.intro.next': '下一張',
+    'station.cake.intro.prev': '上一個',
+    'station.cake.intro.next': '下一個',
     'station.cake.intro.startMatch': '開始連連看',
     'station.cake.match.from': '從{{name}}開始連線',
     'station.cake.match.to': '連到{{meaning}}',
