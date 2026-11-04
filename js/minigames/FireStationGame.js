@@ -187,6 +187,7 @@ const FireStationGame = {
         StationIntroGuide.start({
             host: play,
             steps: [
+                { selector: '.fire-track', textKey: 'station.fire.guide.track' },
                 { selector: '[data-hit]', textKey: 'station.fire.guide.wood' },
                 { selector: '[data-water]', textKey: 'station.fire.guide.water' }
             ],

@@ -294,7 +294,7 @@ const StationGame = {
         this.container.innerHTML = `
             <section class="station-panel station-result-panel has-guide">
                 <div class="station-kicker-line">${this.station.kicker}</div>
-                <h1>${this.tr(success ? 'station.fire.result.success' : 'station.fire.result.retry')}</h1>
+                <h1 class="${success ? '' : 'fire-result-retry-title'}">${this.tr(success ? 'station.fire.result.success' : 'station.fire.result.retry')}</h1>
                 <p class="station-subtitle fire-result-score">${summary}</p>
                 <p class="station-copy fire-result-quote">「${message}」</p>
                 <div class="station-actions">
