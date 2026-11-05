@@ -90,7 +90,8 @@ window.I18n.register('zh-Hans', {
     'story.speaker.playerNarration': '玩家（旁白代答）',
     'story.action.startGame': '开始游戏',
     'story.action.seeResult': '看看成果',
-    'story.action.returnLobby': '返回大厅',
+    'story.action.returnLobby': '返回游戏入口',
+    'story.action.walkToLivingRoom': '走到客厅',
     'story.action.viewBlessingCard': '查看祝福卡',
     'story.action.finishJourney': '完成旅程',
     'story.action.leave': '离开',
@@ -244,6 +245,7 @@ window.I18n.register('zh-Hans', {
     'station.tea.wrongOrder': '顺序错误，下一个是{{item}}',
     'station.tea.designated': '指定食材',
     'station.tea.started': '{{item}}已放入，开始{{verb}}',
+    'station.tea.chop.started': '{{item}}已放入，开始切料，请连续点击菜刀',
     'station.tea.completed': '{{item}}{{verb}}完成！',
     'station.tea.next': ' 下一个是{{item}}',
     'station.tea.timeout': '时间到，师傅帮你完成剩余步骤',
@@ -258,7 +260,7 @@ window.I18n.register('zh-Hans', {
     'station.tea.result.talkGrandpa': '去找阿公',
     'station.tea.guide.order': '先看这一排指定顺序，依照亮起的号码选择目前要处理的食材。',
     'station.tea.guide.pick': '食材会从这条轨道流过来，看到上方指定的食材就把它拖出来。',
-    'station.tea.guide.process': '把食材拖到这里加工：研磨沿着碗边画圈，切料则连点菜刀。',
+    'station.tea.guide.process': '将食材拖到这里加工\n碗内研磨：沿着碗边顺时针画圈\n菜刀切料：连续点击菜刀将食材切碎',
 
     // 摇篮哄睡
     'station.cradle.kicker': '站点三：摇篮哄睡',

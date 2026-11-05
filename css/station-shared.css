@@ -1043,6 +1043,7 @@
 
 .station-guide-tip {
     position: absolute;
+    z-index: 2;
     width: min(78%, 300px);
     padding: 12px 16px;
     border: 2px solid rgba(255, 215, 0, 0.6);
@@ -1053,10 +1054,33 @@
     transition: left 0.25s ease, top 0.25s ease;
 }
 
+.station-guide-overlay.has-drag-demo .station-guide-tip {
+    width: min(90%, 420px);
+}
+
 .station-guide-tip-text {
     margin: 0 0 10px;
+    white-space: pre-line;
     font-size: clamp(14px, 1.9vw, 17px);
     line-height: 1.5;
+}
+
+.station-guide-drag:not([hidden]) {
+    position: absolute;
+    z-index: 1;
+    color: #ffe083;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1;
+    pointer-events: none;
+    text-shadow: 0 2px 5px #000;
+    animation: station-guide-drag-down 1.6s ease-in-out infinite;
+}
+
+@keyframes station-guide-drag-down {
+    0%, 10% { opacity: 0; transform: translate(-50%, -50%); }
+    25% { opacity: 1; }
+    80% { opacity: 1; transform: translate(calc(-50% + var(--drag-x)), calc(-50% + var(--drag-y))); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--drag-x)), calc(-50% + var(--drag-y))); }
 }
 
 .station-guide-tip-foot {
