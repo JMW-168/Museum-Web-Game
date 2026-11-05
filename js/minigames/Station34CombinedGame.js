@@ -267,7 +267,7 @@ const Station34CombinedGame = {
         this.createShell('cake');
         this.showDialogue('cakeAfterPress', () => {
             this.removeShell();
-            CakeStationGame.showCompletedResult(pattern, { onExit: () => this.afterCakeResult(pattern) });
+            CakeStationGame.showCompletedResult(pattern, { onExit: (result) => this.afterCakeResult(result?.pattern || pattern) });
         });
     },
 

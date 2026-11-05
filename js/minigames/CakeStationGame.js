@@ -758,6 +758,7 @@ const CakeStationGame = {
                     <div class="cake-card-actions" aria-label="${this.tr('station.cake.result.actions')}">
                         <button type="button" class="station-primary cake-card-action" data-share-card><span aria-hidden="true">↗</span> ${this.tr('station.cake.result.share')}</button>
                         <button type="button" class="station-secondary cake-card-action" data-download-card><span aria-hidden="true">⇩</span> ${this.tr('station.cake.result.download')}</button>
+                        <button type="button" class="station-secondary cake-card-action" data-remake-card>${this.tr('station.cake.result.remake')}</button>
                         <button type="button" class="station-primary cake-card-action" data-back>${this.tr(this.mode === 'combined34-result' ? 'station.cake.result.findGrandma' : 'game.backToEntrance')}</button>
                     </div>
                     <p class="cake-share-feedback" data-share-feedback aria-live="polite"></p>
@@ -765,7 +766,23 @@ const CakeStationGame = {
             </section>`;
         this.listen(this.container.querySelector('[data-share-card]'), 'click', () => this.shareBlessingCard(pattern));
         this.listen(this.container.querySelector('[data-download-card]'), 'click', () => this.downloadBlessingCard(pattern));
+        this.listen(this.container.querySelector('[data-remake-card]'), 'click', () => this.remakeCard());
         this.listen(this.container.querySelector('[data-back]'), 'click', () => this.close());
+    },
+
+    remakeCard() {
+        if (!this.container || !this.state) return;
+        this.cancelHold(true);
+        this.timers.forEach((timer) => clearTimeout(timer));
+        this.timers = [];
+        this.state.makeStep = 'dough';
+        this.state.doughPositioned = false;
+        this.state.fillingAdded = false;
+        this.state.moldPositioned = false;
+        this.state.moldFaceIndex = 0;
+        this.state.holding = false;
+        this.state.holdStartedAt = 0;
+        this.showSelection();
     },
 
     async createBlessingCard(pattern) {
@@ -919,9 +936,10 @@ const CakeStationGame = {
 
     close() {
         const onExit = this.onExit;
+        const result = this.getResult();
         window.GameAnalytics?.abandon('leave_button', 'cake');
         this.stop();
-        if (onExit) onExit();
+        if (onExit) onExit(result);
         else showScene('level-select');
     },
 

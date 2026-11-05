@@ -357,6 +357,7 @@ window.I18n.register('zh-Hans', {
     'station.cake.result.actions': '祝福卡分享与下载',
     'station.cake.result.share': '分享祝福卡',
     'station.cake.result.download': '下载祝福卡',
+    'station.cake.result.remake': '再做一张祝福卡',
     'station.cake.result.again': '再做一块',
     'station.cake.result.findGrandma': '去找阿嬷',
     'station.cake.card.heading': '这块客家粿是我亲手做的，送给你。',
