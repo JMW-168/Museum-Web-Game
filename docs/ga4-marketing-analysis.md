@@ -6,6 +6,42 @@
 
 本機自動檢查完成不等於正式 GA4 已驗收。以下自訂定義及探索報表須等新版部署到業主網址後設定，並透過 Realtime／DebugView 與處理後報表確認。
 
+## 祝福卡分享與下載
+
+正式業主網域載入新版後，成果頁會送出以下事件；測試站仍受既有主機限制，不會送入正式 GA4。
+
+| 事件 | 送出時點 | 解讀 |
+| --- | --- | --- |
+| `blessing_card_share_click` | 每次按分享按鈕，產圖前 | 點擊分享的意圖，事件數是次數，不是人數 |
+| `blessing_card_share_result` | 分享流程回報結果 | `share_result` 為 `resolved`、`cancelled`、`failed` 或 `unsupported` |
+| `blessing_card_download_click` | 玩家主動按下載按鈕 | 按鈕點擊，不代表下載完成；分享不支援而自動下載不記此事件 |
+
+事件帶 `station_id=cake`、`pattern_id`（`turtle`、`luck`、`fish`、`linked-coins`，無法辨識時為 `unknown`）及 `play_mode`（`standalone`、`full_story`、`combined34` 或 `unknown`）。不傳送祝福文字、圖片、收件人或分享目標。已有 `play_mode_label` 與 `station_label`；如需依花紋或系統回報分組，於 GA4 管理介面新增事件範圍自訂維度，參數分別填入 `pattern_id` 和 `share_result`。
+
+在探索報表篩選事件名稱 `blessing_card_share_click`，用「總使用者數」查看指定期間內按過分享的 GA4 使用者數；「事件計數」則是點擊次數。一人多次點擊會增加次數，不一定增加人數；使用者數受 GA4 身分辨識、瀏覽器及資料收集條件影響，並非精確的自然人數。新增自訂維度不會回填建立前的歷史資料。
+
+`resolved` 只表示瀏覽器分享 API 回報完成，並不保證分享至目標或收件人收到；不同系統的回報時機可能不同。取消、失敗和不支援分別記錄；中斷或未收到回報可能沒有結果事件，不能以點擊數減結果數推定成功。
+
+在業主網域部署後，使用 Realtime／DebugView 測試單關與完整劇情的分享、取消、失敗、不支援下載替代、主動下載及不同花紋；檢查事件與參數後，再於處理完成的探索報表查看人數與次數。開發站未送正式 GA4，不得視為正式資料驗收。
+
+## 館內、推廣與班級的流量分組
+
+遊戲既有 Google tag 可接收網址的 UTM 參數，不需新增 GA4 事件或另外設定自訂維度。請把不同連結做成不同 QR code，並放在相應場所；以下 `class_01` 是示範代碼，實際推廣前請建立清單並為不同班級或場次使用不同代碼。不要把學生姓名、電話、學號等個人資料放進網址。
+
+| 用途 | 專屬入口連結 | 使用位置 |
+| --- | --- | --- |
+| 館內一般 | [館內入口](https://persatuankebudayaanhakkagame-gif.github.io/Museum-Web-Game/?utm_source=museum&utm_medium=qr&utm_campaign=onsite) | 館內固定 QR code |
+| 推廣活動 | [推廣入口](https://persatuankebudayaanhakkagame-gif.github.io/Museum-Web-Game/?utm_source=promotion&utm_medium=qr&utm_campaign=promo_2026) | 一般活動的宣傳品；可依活動改 campaign 代碼 |
+| 班級示範 | [班級 01 範例入口](https://persatuankebudayaanhakkagame-gif.github.io/Museum-Web-Game/?utm_source=school&utm_medium=qr&utm_campaign=class_01) | 範例；各班或各場次請換不同代碼 |
+
+建議用一致的小寫英文、數字與底線管理代碼，將「代碼、活動名稱、日期、負責人」記在內部清單；不要把人名或其他識別資料放在 UTM。改代碼要連同該次 QR code 一起更新；舊 QR code 仍會指向原代碼。
+
+1. 在 GA4「報表 → 獲客 → 流量獲取」（實際選單名稱依介面而異）選擇日期，將主要維度切成「工作階段活動」或「工作階段來源／媒介」；可依 `onsite`、`promo_2026`、`class_01` 對照工作階段及互動。
+2. 若要比較分享行為，在「探索 → 自由形式」加入工作階段活動、事件名稱與總使用者數／事件計數；篩選 `blessing_card_share_click`，並依各活動名稱比較。它計算的是各活動工作階段內觸發事件的 GA4 使用者與點擊次數；同一人跨活動可能分別出現在多組，不能直接加總為不重複人數。
+3. 正式發放前，使用獨立測試瀏覽器逐一掃描各 QR code，檢查最終網址保留參數與首頁可用；在業主 GA4 的 Realtime／DebugView 檢查來源及事件，待資料處理完成後，再於流量獲取／探索報表核對。測試結果在正式環境驗證前保持待驗證。
+
+注意：未標記、未收到資料、重導或縮網址丟失參數的流量不能直接歸為館內；GA4 工作階段採非直接來源最後點擊歸因，直接回訪可能歸到先前活動，因此不是完美的實體位置或班級辨識。PWA 已安裝後透過主畫面重開，亦不能假設仍保留原始 UTM；先分別以一般瀏覽與安裝後開啟測試。若需要嚴格依實際館內位置或班級逐次分類，需另外設計並核定可持續的入口識別方式。
+
 ## 程式送出的欄位
 
 | raw 欄位／事件 | 中文 Label 欄位 | 說明 |
