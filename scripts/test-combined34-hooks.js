@@ -93,6 +93,34 @@ function loadGame(relativePath, exportExpression, extras = {}, extraSourcePaths 
     assert.ok(container.innerHTML.includes('<h1 class="cake-result-meaning">大吉大利</h1>'), '寓意應成為完成頁主標');
     assert.ok(container.innerHTML.includes('<strong>吉紋：</strong>祝你諸事大吉，平安順遂。'), '下一行應合併花紋名與祝福');
     assert.ok(container.innerHTML.indexOf('data-download-card') < container.innerHTML.indexOf('data-back'), '去找阿嬤應排在分享、下載右側');
+    assert.ok(container.innerHTML.includes('data-remake-card'), '成果頁應提供重新製作入口');
+}
+
+{
+    const patterns = [
+        { id: 'turtle', name: '龜紋' },
+        { id: 'fish', name: '魚紋' }
+    ];
+    const { game } = loadGame('js/minigames/CakeStationGame.js', 'CakeStationGame', { CakePatterns: patterns });
+    let selected = false;
+    let result = null;
+    game.container = {};
+    game.state = { selectedPatternId: 'turtle', holding: false, doughPositioned: true, fillingAdded: true, moldPositioned: true };
+    game.mode = 'combined34-result';
+    game.onExit = (value) => { result = value; };
+    game.showSelection = () => { selected = true; game.state.selectedPatternId = null; };
+    game.remakeCard();
+    assert.ok(selected, '重做應回到選擇花紋');
+    assert.strictEqual(game.state.selectedPatternId, null);
+    assert.strictEqual(game.state.doughPositioned, false);
+    assert.strictEqual(game.state.fillingAdded, false);
+    assert.strictEqual(game.state.moldPositioned, false);
+    game.state.selectedPatternId = 'fish';
+    game.showResult = () => {};
+    game.finishCake();
+    game.stop = () => {};
+    game.close();
+    assert.strictEqual(result.pattern.id, 'fish', '重做後離開應傳遞最新花紋');
 }
 
 {
@@ -152,6 +180,10 @@ function loadGame(relativePath, exportExpression, extras = {}, extraSourcePaths 
     assert.strictEqual(transition.sectionId, 'cakeAfterPress', '壓制完成後應先播放完成對話');
     transition.onComplete();
     assert.strictEqual(cardTransition.pattern.id, 'peach', '完成對話後才顯示祝福卡成果');
+
+    const nextPattern = { id: 'fish', name: '魚紋', meaning: '年年有餘', blessing: '平安喜樂' };
+    cardTransition.onExit({ pattern: nextPattern });
+    assert.strictEqual(transition.tokens.patternName, '魚紋', '重做後結尾應使用最新花紋');
 
     cardTransition.onExit();
     assert.strictEqual(transition.sectionId, 'cakeExit', '按下「去找阿嬤」後才進入 cakeExit 對話');

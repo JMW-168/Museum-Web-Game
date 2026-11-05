@@ -357,6 +357,7 @@ window.I18n.register('zh-Hant', {
     'station.cake.result.actions': '祝福卡分享與下載',
     'station.cake.result.share': '分享祝福卡',
     'station.cake.result.download': '下載祝福卡',
+    'station.cake.result.remake': '再做一張祝福卡',
     'station.cake.result.again': '再做一塊',
     'station.cake.result.findGrandma': '去找阿嬤',
     'station.cake.card.heading': '這塊客家粿是我親手做的，送給你。',
