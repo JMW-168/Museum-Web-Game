@@ -594,6 +594,27 @@
     margin: 0;
 }
 
+.station-game-fire .fire-idle-prompt:not([hidden]) {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: #46301c;
+    color: #fff2be;
+    border: 1px solid #f2d17b;
+    font-size: clamp(13px, 1.4vw, 18px);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.station-game-fire .station-actions.compact button.fire-idle-highlight {
+    outline: 3px solid #ffe272;
+    outline-offset: 3px;
+    box-shadow: 0 0 18px 6px rgba(255, 213, 89, .8);
+}
+
 .station-game-fire .station-water-fixed {
     position: absolute;
     right: clamp(18px, 7vw, 96px);

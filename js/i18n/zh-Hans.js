@@ -163,6 +163,7 @@ window.I18n.register('zh-Hans', {
     'station.fire.success': '火候稳了。勤俭不是省掉一切，是把每一分力气用在刚好的地方。',
     'station.fire.fail': '火候还不稳。再试一次，抓到节奏后，灶台就会慢慢旺起来。',
     'station.fire.wait': '等木柴进到火圈里面才加柴',
+    'station.fire.idlePrompt': '请点击添柴',
     'station.fire.hud.score': '分数',
     'station.fire.hud.heat': '火候',
     'station.fire.hud.time': '时间',
