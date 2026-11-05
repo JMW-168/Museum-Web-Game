@@ -97,6 +97,7 @@ const FireStationGame = {
             mistakesRemaining: 5,
             durationMs: FireStationGame.fireDurationMs,
             lastTickAt: 0,
+            hasPressedWood: false,
             finished: false,
             lastResult: game.tr('station.fire.wait'),
         };
@@ -137,6 +138,7 @@ const FireStationGame = {
                 </div>
                 <div class="fire-score-layer" data-score-layer aria-hidden="true"></div>
                 <div class="station-actions compact">
+                    <span class="fire-idle-prompt" data-fire-idle-prompt hidden>${game.tr('station.fire.idlePrompt')}</span>
                     <button type="button" class="station-primary" data-hit>${game.tr('station.fire.addWood')}</button>
                 </div>
                 <button type="button" class="station-water station-water-fixed" data-water>${game.tr('station.fire.sprayWater')}</button>
@@ -210,6 +212,7 @@ const FireStationGame = {
                     if (!game.state || game.state.finished) return;
                     game.state.startedAt = time;
                     game.state.lastTickAt = time;
+                    FireStationGame.scheduleWoodPrompt(game);
                     FireStationGame.renderFireHud(game);
                     game.animationId = requestAnimationFrame((nextTime) => FireStationGame.tickFire(game, nextTime));
                 });
@@ -456,6 +459,7 @@ const FireStationGame = {
 
     hitFireBeat(game) {
         if (!game.state || game.state.finished) return;
+        if (game.state.startedAt) FireStationGame.dismissWoodPrompt(game);
 
         const track = game.container.querySelector('.fire-track');
         const trackWidth = track ? track.clientWidth : 1;
@@ -501,6 +505,27 @@ const FireStationGame = {
         } else {
             FireStationGame.applyFireScore(game, game.tr('station.fire.heat.neutral', { timing: timingLabel, wood: woodLabel }), basePoints, fireDelta);
         }
+    },
+
+    scheduleWoodPrompt(game) {
+        const currentState = game.state;
+        const timer = setTimeout(() => {
+            if (game.state !== currentState || !currentState || currentState.finished || currentState.hasPressedWood) return;
+            const button = game.container?.querySelector('[data-hit]');
+            const prompt = game.container?.querySelector('[data-fire-idle-prompt]');
+            if (button && prompt) {
+                button.classList.add('fire-idle-highlight');
+                prompt.hidden = false;
+            }
+        }, 5000);
+        game.timers.push(timer);
+    },
+
+    dismissWoodPrompt(game) {
+        game.state.hasPressedWood = true;
+        game.container?.querySelector('[data-hit]')?.classList.remove('fire-idle-highlight');
+        const prompt = game.container?.querySelector('[data-fire-idle-prompt]');
+        if (prompt) prompt.hidden = true;
     },
 
     applyFireScore(game, label, points, fireDelta, countJudgement = true, countMistake = false) {
