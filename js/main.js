@@ -18,7 +18,10 @@ const GA4_LABELS = {
         station_retry: '再次遊玩',
         story_started: '完整劇情開始',
         story_completed: '完整劇情完成',
-        story_abandoned: '完整劇情中途離開'
+        story_abandoned: '完整劇情中途離開',
+        blessing_card_share_click: '祝福卡分享點擊',
+        blessing_card_share_result: '祝福卡分享系統回報',
+        blessing_card_download_click: '祝福卡下載點擊'
     },
     station: {
         fire: '第一關：灶台生火',
@@ -560,7 +563,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=153', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=154', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
