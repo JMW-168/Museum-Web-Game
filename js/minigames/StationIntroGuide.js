@@ -51,6 +51,7 @@ const StationIntroGuide = {
         overlay.innerHTML = `
             <div class="station-guide-spot" data-guide-spot aria-hidden="true"></div>
             <div class="station-guide-hand" data-guide-hand aria-hidden="true">👆</div>
+            <div class="station-guide-drag" data-guide-drag aria-hidden="true" hidden>↓</div>
             <div class="station-guide-tip" data-guide-tip role="dialog" aria-live="polite">
                 <p class="station-guide-tip-text" data-guide-text></p>
                 <div class="station-guide-tip-foot">
@@ -92,6 +93,7 @@ const StationIntroGuide = {
             return;
         }
         const step = this.steps[this.index];
+        this.overlay.classList.toggle('has-drag-demo', Boolean(step.dragFrom));
         const text = this.overlay.querySelector('[data-guide-text]');
         const stepLabel = this.overlay.querySelector('[data-guide-step]');
         const next = this.overlay.querySelector('[data-guide-next]');
@@ -122,10 +124,12 @@ const StationIntroGuide = {
         const spot = overlay.querySelector('[data-guide-spot]');
         const hand = overlay.querySelector('[data-guide-hand]');
         const tip = overlay.querySelector('[data-guide-tip]');
+        const drag = overlay.querySelector('[data-guide-drag]');
         if (!spot || !hand || !tip) return;
 
         const hostRect = host.getBoundingClientRect();
         const target = this.resolveTarget(step);
+        if (drag) drag.hidden = true;
 
         if (!target) {
             // 沒有可框的元素時，提示框置中、不畫光圈與手指。
@@ -139,6 +143,19 @@ const StationIntroGuide = {
         hand.style.opacity = '';
 
         const rect = target.getBoundingClientRect();
+        const source = step.dragFrom && host.querySelector(step.dragFrom);
+        if (drag && source) {
+            const sourceRect = source.getBoundingClientRect();
+            const startX = sourceRect.left + sourceRect.width * 0.15 - hostRect.left;
+            const startY = sourceRect.top + sourceRect.height / 2 - hostRect.top;
+            const endX = rect.left + rect.width * 0.15 - hostRect.left;
+            const endY = rect.top + Math.min(rect.height / 3, 50) - hostRect.top;
+            drag.style.left = `${startX}px`;
+            drag.style.top = `${startY}px`;
+            drag.style.setProperty('--drag-x', `${endX - startX}px`);
+            drag.style.setProperty('--drag-y', `${Math.max(0, endY - startY)}px`);
+            drag.hidden = false;
+        }
         const pad = 8;
         const left = rect.left - hostRect.left - pad;
         const top = rect.top - hostRect.top - pad;

@@ -263,7 +263,7 @@ const TeaStationGame = {
             steps: [
                 { selector: '[data-tea-order]', textKey: 'station.tea.guide.order' },
                 { selector: '[data-tea-track]', textKey: 'station.tea.guide.pick' },
-                { selector: '[data-tea-drop]', textKey: 'station.tea.guide.process' }
+                { selector: '[data-tea-drop]', dragFrom: '[data-tea-track]', textKey: 'station.tea.guide.process' }
             ],
             onFinish: begin
         });
@@ -572,7 +572,8 @@ const TeaStationGame = {
         game.state.rotationAngle = 0;
         game.state.lastPointerAngle = null;
         game.state.grindPath = null;
-        game.state.feedback = game.tr('station.tea.started', { item: item.name, verb: config.verb });
+        const startedKey = game.state.phase === 'chop' ? 'station.tea.chop.started' : 'station.tea.started';
+        game.state.feedback = game.tr(startedKey, { item: item.name, verb: config.verb });
         game.playClick();
         TeaStationGame.renderTeaStage(game);
     },
@@ -850,7 +851,7 @@ const TeaStationGame = {
         game.container.querySelector('[data-continue]').addEventListener('click', () => {
             const onComplete = game.mode === 'combined' ? () => game.showCombinedEnding() : () => game.close();
             game.showCombinedDialogue('teaExit', onComplete, {
-                actionLabelKey: game.mode === 'combined' ? undefined : 'story.action.returnLobby'
+                actionLabelKey: game.fullStory ? 'story.action.walkToLivingRoom' : 'story.action.returnLobby'
             });
         });
     },
