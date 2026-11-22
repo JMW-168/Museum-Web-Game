@@ -381,7 +381,7 @@ function resetWelcomeIntro() {
     hosts?.classList.add('is-hidden');
     welcome.dataset.conversationStep = '0';
     line.dataset.i18n = 'welcome.arrival';
-    line.textContent = window.t ? t('welcome.arrival') : '時光機到站了，這裡是50年前的客家土樓。\n你是來做客的旅人，先敲敲門，看看誰在家吧！';
+    line.textContent = window.t ? t('welcome.arrival') : '時光機到站了，這裡是50年前的客家土樓。\n您是來做客的旅人，先敲敲門，看看誰在家吧！';
     reply.dataset.i18n = 'welcome.reply.identity';
     reply.textContent = window.t ? t('welcome.reply.identity') : '你好，我是旅行經過這裡的人，請問這裡是哪裡呢？';
     knock.hidden = false;
@@ -408,7 +408,7 @@ function setupWelcomeIntro() {
         hosts?.classList.remove('is-hidden');
         welcome.dataset.conversationStep = '1';
         line.dataset.i18n = 'welcome.question';
-        line.textContent = window.t ? t('welcome.question') : '你好～請問你是誰？';
+        line.textContent = window.t ? t('welcome.question') : '你好～請問您是誰？';
         replies.hidden = false;
     });
 
@@ -425,7 +425,7 @@ function setupWelcomeIntro() {
         }
         if (step === '2') {
             line.dataset.i18n = 'welcome.response.invite';
-            line.textContent = window.t ? t('welcome.response.invite') : '是呀，這裡有好多客家人的生活故事。歡迎你呀～來裡面坐～';
+            line.textContent = window.t ? t('welcome.response.invite') : '是呀，這裡有好多客家人的生活故事。歡迎您呀～來裡面坐～';
             replies.hidden = true;
             enterWrap.hidden = false;
             welcome.dataset.conversationStep = '3';
@@ -563,7 +563,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=154', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=155', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;
