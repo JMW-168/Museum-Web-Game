@@ -49,13 +49,13 @@ function loadI18n(extra = {}) {
     assert.strictEqual(I18n.getLocale(), 'zh-Hans', '無記憶時預設簡體');
     assert.strictEqual(t('menu.start'), '出发');
     assert.strictEqual(t('menu.exit'), '返回现在');
-    assert.strictEqual(t('welcome.arrival'), '时光机到站了，这里是50年前的客家土楼。\n你是来做客的旅人，先敲敲门，看看谁在家吧！');
-    assert.strictEqual(t('level.subtitle'), '你现在在哪一站？选一个开始吧');
+    assert.strictEqual(t('welcome.arrival'), '时光机到站了，这里是50年前的客家土楼。\n您是来做客的旅人，先敲敲门，看看谁在家吧！');
+    assert.strictEqual(t('level.subtitle'), '您现在在哪一站？选一个开始吧');
     assert.strictEqual(t('level.story.title'), '完整剧情');
     assert.strictEqual(t('exit.warning'), '目前的进度不会保留');
     assert.strictEqual(t('ending.subtitle').includes('客家土楼'), true);
     assert.strictEqual(t('station.fire.kicker'), '站点一：灶台生火');
-    assert.strictEqual(t('station.fire.result.findGrandma'), '去找阿嬷');
+    assert.strictEqual(t('station.fire.result.findGrandma'), '去找阿婆');
     assert.strictEqual(t('station.fire.summary', { score: 1022 }), '分数 1022');
 
     I18n.register('zh-Hans', { 'test.token': '选择「{{name}}」，共 {{count}} 张' });
@@ -209,7 +209,7 @@ function loadI18n(extra = {}) {
     assert.ok(openingNarration.text.includes('吱呀'));
     assert.ok(!openingNarration.text.includes('塵封'));
     const opening = context.StationGame.localizeStoryLine(context.StationCombinedStory.sections.fireEntry.lines[1]);
-    assert.strictEqual(opening.speaker, '阿嬤');
+    assert.strictEqual(opening.speaker, '阿婆');
     assert.ok(opening.text.includes('廚房'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龜紋');
     assert.ok(context.CakeStationGame.patterns.every((pattern) => pattern.blessing.startsWith('祝你')), '繁體四種祝福應統一使用「祝你」');
@@ -219,7 +219,7 @@ function loadI18n(extra = {}) {
         context.Station34CombinedStory.sections.cakeAfterPress.lines[0],
         { patternName: '桃纹', meaning: '福寿吉祥' }
     );
-    assert.strictEqual(ending.speaker, '阿嬷');
+    assert.strictEqual(ending.speaker, '阿婆');
     assert.ok(ending.text.includes('自己做的'));
     assert.strictEqual(context.CakeStationGame.patterns[0].name, '龟纹');
     assert.strictEqual(context.CakeStationGame.patterns[2].meaning, '年年有余');

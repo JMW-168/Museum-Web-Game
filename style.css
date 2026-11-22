@@ -311,7 +311,7 @@ button {
 
 #intro-welcome {
     justify-content: flex-end;
-    padding-bottom: clamp(18px, 6vh, 56px);
+    padding-bottom: clamp(8px, 2vh, 18px);
     background-image:
         linear-gradient(rgba(10, 8, 5, 0.3), rgba(10, 8, 5, 0.6) 58%, rgba(10, 8, 5, 0.82)),
         url('assets/images/intro/courtyard-welcome-20260907.webp');
@@ -320,10 +320,13 @@ button {
 /* 爺爺奶奶站在中央大廳前，一左一右 */
 .intro-hosts {
     position: absolute;
-    inset: 0;
+    top: var(--welcome-host-top, 8px);
+    left: 0;
+    right: 0;
+    height: var(--welcome-host-height, 70%);
     z-index: 1;
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: center;
     gap: clamp(0px, 4vw, 40px);
     pointer-events: none;
@@ -345,8 +348,8 @@ button {
 
 .intro-host {
     width: auto;
-    height: clamp(52%, 74vh, 88%);
-    max-width: 46%;
+    height: 100%;
+    max-width: none;
     object-fit: contain;
     object-position: bottom center;
     filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45));
@@ -373,6 +376,17 @@ button {
     width: min(88%, 760px);
     padding: clamp(16px, 4vh, 30px) clamp(20px, 5vw, 44px);
     background: rgba(18, 12, 6, 0.78);
+}
+
+/* 量測所有對話步驟時使用，避免下一句換行造成角色縮放或跳位。 */
+.intro-welcome-panel.is-measuring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-height: 0 !important;
+    visibility: hidden;
+    pointer-events: none;
+    animation: none;
 }
 
 .intro-replies {
@@ -459,8 +473,6 @@ button {
         line-height: 1.75;
     }
 
-    .intro-host { height: 78%; }
-
     .intro-replies { gap: 8px; }
 
     .intro-scene .intro-replies .time-machine-btn-secondary {
@@ -473,6 +485,22 @@ button {
         min-height: 40px;
         font-size: clamp(14px, 2vw, 18px);
     }
+}
+
+#intro-welcome.is-compact .intro-welcome-panel {
+    padding: 8px 18px;
+}
+
+#intro-welcome.is-compact .intro-narration {
+    margin-bottom: 8px;
+    font-size: clamp(15px, 2.2vw, 19px);
+    line-height: 1.4;
+}
+
+#intro-welcome.is-compact .time-machine-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+    font-size: clamp(14px, 2vw, 17px);
 }
 
 /* 遊戲入口 */

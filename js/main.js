@@ -295,6 +295,7 @@ function applyLocale(locale) {
         button.setAttribute('aria-pressed', String(button.dataset.lang === locale));
     });
     updateInstallButton();
+    updateWelcomeLayout();
 }
 
 function setupLanguageSwitch() {
@@ -312,6 +313,66 @@ function setupLanguageSwitch() {
 function updateAppViewportHeight() {
     const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+    updateWelcomeLayout();
+}
+
+function updateWelcomeLayout() {
+    const welcome = document.getElementById('intro-welcome');
+    const panel = welcome?.querySelector?.('.intro-welcome-panel');
+    if (!panel || !welcome.clientHeight || !panel.offsetWidth) return;
+    welcome.classList.toggle('is-compact', welcome.clientHeight <= 460);
+
+    // 同一寬度下取四步對話的最大高度，避免敲門或換句時人物跳位。
+    const probe = panel.cloneNode(true);
+    probe.classList.add('is-measuring');
+    probe.style.width = `${panel.offsetWidth}px`;
+    probe.removeAttribute('aria-live');
+    probe.setAttribute('aria-hidden', 'true');
+    probe.querySelectorAll('[id]').forEach((element) => element.removeAttribute('id'));
+    const line = probe.querySelector('[data-welcome-line]');
+    const reply = probe.querySelector('[data-welcome-reply]');
+    const knock = probe.querySelector('.intro-actions');
+    const replies = probe.querySelector('[data-welcome-replies]');
+    const enter = probe.querySelector('[data-welcome-enter-wrap]');
+    welcome.appendChild(probe);
+    let panelHeight = 0;
+    const steps = [
+        ['welcome.arrival', null],
+        ['welcome.question', 'welcome.reply.identity'],
+        ['welcome.response.identity', 'welcome.reply.interest'],
+        ['welcome.response.invite', null]
+    ];
+    steps.forEach(([lineKey, replyKey], index) => {
+        if (window.t) {
+            line.textContent = t(lineKey);
+            if (replyKey) reply.textContent = t(replyKey);
+        }
+        knock.hidden = index !== 0;
+        // resetWelcomeIntro 隱藏的是按鈕；量測時恢復它的初始狀態。
+        knock.querySelector('button').hidden = false;
+        replies.hidden = !replyKey;
+        enter.hidden = index !== 3;
+        panelHeight = Math.max(panelHeight, probe.offsetHeight);
+    });
+    probe.remove();
+    panel.style.minHeight = `${panelHeight}px`;
+
+    const height = welcome.clientHeight;
+    const padding = parseFloat(getComputedStyle(welcome).paddingBottom) || 0;
+    const panelTop = height - padding - panelHeight;
+    // 兩張 1024×1536 素材的頭飾至下巴均在前 54% 內。
+    // 額外保留 38px，涵蓋人物與群組入場的總向下位移及臉框間距。
+    const headFraction = 0.54;
+    const gap = 38;
+    const topInset = 8;
+    const hostHeight = Math.max(0, Math.min(
+        height * 0.9,
+        (panelTop - topInset - gap) / headFraction,
+        welcome.clientWidth * 0.43 / (1024 / 1536)
+    ));
+    const hostTop = Math.max(topInset, panelTop - gap - hostHeight * headFraction);
+    welcome.style.setProperty('--welcome-host-height', `${hostHeight}px`);
+    welcome.style.setProperty('--welcome-host-top', `${hostTop}px`);
 }
 
 updateAppViewportHeight();
@@ -381,7 +442,7 @@ function resetWelcomeIntro() {
     hosts?.classList.add('is-hidden');
     welcome.dataset.conversationStep = '0';
     line.dataset.i18n = 'welcome.arrival';
-    line.textContent = window.t ? t('welcome.arrival') : '時光機到站了，這裡是50年前的客家土樓。\n你是來做客的旅人，先敲敲門，看看誰在家吧！';
+    line.textContent = window.t ? t('welcome.arrival') : '時光機到站了，這裡是50年前的客家土樓。\n您是來做客的旅人，先敲敲門，看看誰在家吧！';
     reply.dataset.i18n = 'welcome.reply.identity';
     reply.textContent = window.t ? t('welcome.reply.identity') : '你好，我是旅行經過這裡的人，請問這裡是哪裡呢？';
     knock.hidden = false;
@@ -408,7 +469,7 @@ function setupWelcomeIntro() {
         hosts?.classList.remove('is-hidden');
         welcome.dataset.conversationStep = '1';
         line.dataset.i18n = 'welcome.question';
-        line.textContent = window.t ? t('welcome.question') : '你好～請問你是誰？';
+        line.textContent = window.t ? t('welcome.question') : '你好～請問您是誰？';
         replies.hidden = false;
     });
 
@@ -425,7 +486,7 @@ function setupWelcomeIntro() {
         }
         if (step === '2') {
             line.dataset.i18n = 'welcome.response.invite';
-            line.textContent = window.t ? t('welcome.response.invite') : '是呀，這裡有好多客家人的生活故事。歡迎你呀～來裡面坐～';
+            line.textContent = window.t ? t('welcome.response.invite') : '是呀，這裡有好多客家人的生活故事。歡迎您呀～來裡面坐～';
             replies.hidden = true;
             enterWrap.hidden = false;
             welcome.dataset.conversationStep = '3';
@@ -440,6 +501,12 @@ function setupWelcomeIntro() {
         window.setTimeout(() => showScene('level-select'), 520);
     });
     resetWelcomeIntro();
+    if (typeof ResizeObserver !== 'undefined') {
+        const observer = new ResizeObserver(updateWelcomeLayout);
+        observer.observe(welcome);
+    }
+    document.fonts?.ready.then(updateWelcomeLayout);
+    document.fonts?.addEventListener('loadingdone', updateWelcomeLayout);
 }
 
 function showScene(sceneId) {
@@ -457,6 +524,7 @@ function showScene(sceneId) {
         if (target) target.style.display = 'flex';
     }
     if (sceneId === 'level-select') prefetchStationBackgrounds();
+    if (sceneId === 'intro-welcome') updateWelcomeLayout();
     updateServiceWorkerUpdateBanner();
 }
 
@@ -563,7 +631,7 @@ function setupServiceWorkerUpdate() {
         if (isApplyingServiceWorkerUpdate) window.location.reload();
     });
 
-    navigator.serviceWorker.register('sw.js?v=154', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('sw.js?v=156', { updateViaCache: 'none' })
         .then((registration) => {
             const inspectWorker = (worker) => {
                 if (!worker) return;

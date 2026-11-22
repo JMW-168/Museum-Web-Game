@@ -17,7 +17,7 @@ const EndingScreen = {
         if (window.AudioManager) AudioManager.stopBGM();
         const kicker = opts.kicker || this.tr('ending.kicker', '旅程完成');
         const title = opts.title || this.tr('ending.title', '感謝遊玩');
-        const subtitle = opts.subtitle || this.tr('ending.subtitle', '謝謝你來到客家土樓，和我們一起留下這段生活記憶。');
+        const subtitle = opts.subtitle || this.tr('ending.subtitle', '謝謝您來到客家土樓，和我們一起留下這段生活記憶。');
         const buttonLabel = opts.button || this.tr('ending.return', '返回入口');
         const collectLabel = this.tr('ending.collect', '提供客家老物件');
         const collectUrl = 'https://docs.google.com/forms/d/1uiZko3EHKSEQrplxtCcj6f6EU4Yiph-wJtnCdEDpwZc/viewform?pli=1&pli=1&edit_requested=true';
